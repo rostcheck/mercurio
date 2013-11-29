@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public interface IPersistentQueue
+    public enum PeristentQueueType
     {
-        void Add(IMercurioMessage message);
-        IMercurioMessage GetNext();
-        int Length();
+        LocalFileStorage
     }
 }

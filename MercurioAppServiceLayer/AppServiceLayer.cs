@@ -11,7 +11,7 @@ namespace Mercurio
     {
         private ICryptoManager cryptoManager;
         private MessageService messageService;
-        private IPersistentQueue queue = new FileBasedPersistentQueue(); // TODO: Make configurable
+        private IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage); // TODO: Make configurable
 
         public AppServiceLayer(ICryptoManager cryptoManager)
         {
@@ -23,7 +23,7 @@ namespace Mercurio
         {
             string publicKey = cryptoManager.GetPublicKey(userID);
             string[] signatures = cryptoManager.GetSignatures();
-            ConnectInvitationMessage message = new ConnectInvitationMessage(publicKey, signatures, evidenceURL);
+            ConnectInvitationMessage message = new ConnectInvitationMessage(address, publicKey, signatures, evidenceURL);
             messageService.Send(message);
         }
     }

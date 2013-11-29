@@ -32,12 +32,22 @@ namespace Entities
             }
         }
 
+        public string Address
+        {
+            get
+            {
+                return address;
+            }
+        }
+
         private string publicKey;
         private string[] signatures;
         private string evidence;
+        private string address;
 
-        public ConnectInvitationMessage(string publicKey, string[] signatures, string evidence)
+        public ConnectInvitationMessage(string address, string publicKey, string[] signatures, string evidence)
         {
+            this.address = address;
             this.publicKey = publicKey;
             this.signatures = signatures;
             this.evidence = evidence;

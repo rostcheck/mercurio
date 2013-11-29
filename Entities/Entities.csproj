@@ -39,15 +39,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DummyMessage.cs" />
+    <Compile Include="PersistentQueueType.cs" />
     <Compile Include="ConnectInvitationMessage.cs" />
     <Compile Include="EncryptionAlgorithmEnum.cs" />
-    <Compile Include="FileBasedPersistentQueue.cs" />
     <Compile Include="GPGManager.cs" />
     <Compile Include="ICryptoManager.cs" />
     <Compile Include="IMercurioMessage.cs" />
     <Compile Include="IMessageStore.cs" />
     <Compile Include="IPersistentQueue.cs" />
     <Compile Include="MessageService.cs" />
+    <Compile Include="PersistentQueueFactory.cs" />
+    <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
+    <Compile Include="Serializer.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

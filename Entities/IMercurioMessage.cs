@@ -8,5 +8,6 @@ namespace Entities
 {
     public interface IMercurioMessage
     {
+        string Address { get; }
     }
 }
