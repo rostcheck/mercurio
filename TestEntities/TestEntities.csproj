@@ -50,6 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="CryptoManagerTest.cs" />
     <Compile Include="MessageServiceTest.cs" />
     <Compile Include="PersistentQueueTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

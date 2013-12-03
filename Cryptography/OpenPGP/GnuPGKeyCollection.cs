@@ -102,19 +102,39 @@ namespace Starksoft.Cryptography.OpenPGP
             {
                 // read a line from the output stream
                 string line = data.ReadLine();
+                if (line == null || line == string.Empty || line.Length < 3)
+                    continue;
 
                 // skip lines we are not interested in
-                if (!line.StartsWith("pub") && !line.StartsWith("sec") && !line.StartsWith("uid"))
+                switch (line.Substring(0, 3))
                 {
-                    // make sure this isn't the end of a key parsing operation
-                    if (text.Length != 0)
-                    {
-                        _keyList.Add(new GnuPGKey(text));
-                        text = "";   // clear the key variable
-                    }
-                    continue;
+                    case "pub":
+                    case "sec":
+                        // finish key being collected, if any; start collecting text for new key
+                        if (text.Length != 0)
+                        {
+                            _keyList.Add(new GnuPGKey(text));
+                        }
+                        text = line; // reset text accumulator
+                        break;
+                    case "uid":
+                    case "ssb":
+                    case "sub":
+                        if (text.Length > 0)
+                        {
+                            text += System.Environment.NewLine;
+                        }
+                        text += line;
+                        break;
+                    default:
+                        continue;
+
                 }
-                text += line;
+            }
+            // process any leftover text
+            if (text.Length != 0)
+            {
+                _keyList.Add(new GnuPGKey(text));
             }
         }
 

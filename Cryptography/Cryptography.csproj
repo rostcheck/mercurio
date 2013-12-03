@@ -46,6 +46,7 @@
     <Compile Include="OpenPGP\GnuPGException.cs" />
     <Compile Include="OpenPGP\GnuPGKey.cs" />
     <Compile Include="OpenPGP\GnuPGKeyCollection.cs" />
+    <Compile Include="OpenPGP\GnuPGKeyType.cs" />
     <Compile Include="OpenPGP\SignAsyncCompletedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

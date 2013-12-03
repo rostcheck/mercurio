@@ -39,6 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigurationKeyEnum.cs" />
+    <Compile Include="CryptoManagerFactory.cs" />
+    <Compile Include="CryptoManagerType.cs" />
     <Compile Include="DummyMessage.cs" />
     <Compile Include="PersistentQueueType.cs" />
     <Compile Include="ConnectInvitationMessage.cs" />
@@ -54,6 +57,12 @@
     <Compile Include="Serializer.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cryptography\Cryptography.csproj">
+      <Project>{eba5e064-56a7-409e-aba0-1882180e3678}</Project>
+      <Name>Cryptography</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
