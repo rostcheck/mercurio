@@ -45,8 +45,6 @@ namespace Starksoft.Cryptography.OpenPGP
         private static string COL_KEY_EXPIRATION = "KeyExpiration";
         private static string COL_USER_ID = "UserId";
         private static string COL_USER_NAME = "UserName";
-        private static string COL_SUB_KEY = "SubKey";
-        private static string COL_SUB_KEY_EXPIRATION = "SubKeyExpiration";
         private static string COL_RAW = "Raw";
         
         /// <summary>
@@ -216,8 +214,6 @@ namespace Starksoft.Cryptography.OpenPGP
                 row[COL_USER_NAME] = item.UserName;
                 row[COL_KEY] = item.Key;
                 row[COL_KEY_EXPIRATION] = item.KeyExpiration;
-                row[COL_SUB_KEY] = item.SubKey;
-                row[COL_SUB_KEY_EXPIRATION] = item.SubKeyExpiration;
                 dataTbl.Rows.Add(row);
             }
 
@@ -230,8 +226,6 @@ namespace Starksoft.Cryptography.OpenPGP
             dataTbl.Columns.Add(new DataColumn(COL_USER_NAME, typeof(string)));
             dataTbl.Columns.Add(new DataColumn(COL_KEY, typeof(string)));
             dataTbl.Columns.Add(new DataColumn(COL_KEY_EXPIRATION, typeof(DateTime)));
-            dataTbl.Columns.Add(new DataColumn(COL_SUB_KEY, typeof(string)));
-            dataTbl.Columns.Add(new DataColumn(COL_SUB_KEY_EXPIRATION, typeof(DateTime)));
             dataTbl.Columns.Add(new DataColumn(COL_RAW, typeof(string)));
         }
 

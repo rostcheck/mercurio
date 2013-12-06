@@ -9,33 +9,39 @@ namespace Entities
 {
     class PersistentQueueWithLocalFileStorage : IPersistentQueue
     {
-        private Queue<IMercurioMessage> messages;
-        private const string queueFileName = "messages.bin";
-
         public PersistentQueueWithLocalFileStorage()
         {
-            if (File.Exists(queueFileName))
-                messages = Serializer.DeSerialize<Queue<IMercurioMessage>>(queueFileName);
-            else
-                messages = new Queue<IMercurioMessage>();
         }
 
         public void Add(IMercurioMessage message)
         {
+            Queue<IMercurioMessage> messages = OpenQueue(message.Address);
             messages.Enqueue(message);
-            Serializer.Serialize(queueFileName, messages);
+            Serializer.Serialize(message.Address, messages);
         }
 
-        public IMercurioMessage GetNext()
+        public IMercurioMessage GetNext(string address)
         {
+            Queue<IMercurioMessage> messages = OpenQueue(address);
             IMercurioMessage message = messages.Dequeue();
-            Serializer.Serialize(queueFileName, messages);
+            Serializer.Serialize(address, messages);
             return message;
         }
 
-        public int Length()
+        public int Length(string address)
         {
+            Queue<IMercurioMessage> messages = OpenQueue(address);
             return messages.Count;
+        }
+
+        private Queue<IMercurioMessage> OpenQueue(string queueFileName)
+        {
+            Queue<IMercurioMessage> messages;
+            if (File.Exists(queueFileName))
+                messages = Serializer.DeSerialize<Queue<IMercurioMessage>>(queueFileName);
+            else
+                messages = new Queue<IMercurioMessage>();
+            return messages;
         }
     }
 }

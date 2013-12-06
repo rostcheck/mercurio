@@ -36,8 +36,8 @@ namespace Entities
             GnuPG gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
                 configuration[ConfigurationKeyEnum.GPGBinaryPath]);
             GnuPGKey firstSecretKey = gpg.GetSecretKeys().FirstOrDefault<GnuPGKey>();
-            GnuPGKey publicKey = gpg.GetKeys().FirstOrDefault(s => s.UserId == firstSecretKey.UserId);
-            return publicKey.ToString();
+            GnuPGKey publicKey = gpg.GetKeys().FirstOrDefault(s => s.Key == firstSecretKey.Key);
+            return gpg.GetActualKey(publicKey.Key);
         }
 
         public string[] GetSignatures()

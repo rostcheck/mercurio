@@ -9,7 +9,7 @@ namespace Entities
     public interface IPersistentQueue
     {
         void Add(IMercurioMessage message);
-        IMercurioMessage GetNext();
-        int Length();
+        IMercurioMessage GetNext(string address);
+        int Length(string address);
     }
 }

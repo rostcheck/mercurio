@@ -348,6 +348,17 @@ namespace Starksoft.Cryptography.OpenPGP
         }
 
         /// <summary>
+        /// Export a key (as text) and return it
+        /// </summary>
+        /// <param name="keyID">Key id from a GnuPGKey</param>
+        /// <returns>String representation of the key</returns>
+        public string GetActualKey(string keyID)
+        {
+            StreamReader sr = GetCommand(string.Format("--export -a {0}", keyID));
+            return sr.ReadToEnd();
+        }
+
+        /// <summary>
         /// Retrieves a collection of all keys from the GnuPG application.
         /// </summary>
         /// <returns>Collection of GnuPGKey objects.</returns>

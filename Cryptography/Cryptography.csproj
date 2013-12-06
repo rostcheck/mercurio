@@ -42,6 +42,7 @@
     <Compile Include="OpenPGP\DecryptAsyncCompletedEventArgs.cs" />
     <Compile Include="OpenPGP\EncryptAsyncCompletedEventArgs.cs" />
     <Compile Include="OpenPGP\GnuPG.cs" />
+    <Compile Include="OpenPGP\GnuPGAlgorithmType.cs" />
     <Compile Include="OpenPGP\GnuPGBadPassphraseException.cs" />
     <Compile Include="OpenPGP\GnuPGException.cs" />
     <Compile Include="OpenPGP\GnuPGKey.cs" />

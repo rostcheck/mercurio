@@ -13,15 +13,10 @@ namespace Entities
             switch (queueType)
             {
                 case PeristentQueueType.LocalFileStorage:
-                    return CreateWithLocalFileStorage();
+                    return new PersistentQueueWithLocalFileStorage();
                 default:
                     throw new NotImplementedException();
             }
-        }
-
-        private static IPersistentQueue CreateWithLocalFileStorage()
-        {
-            return new PersistentQueueWithLocalFileStorage();
         }
     }
 }

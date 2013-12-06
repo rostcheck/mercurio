@@ -14,7 +14,7 @@ namespace TestEntities
             string firstMessage = "first dummy message";
             string secondMessage = "second dummy message";
             IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage);
-            while (queue.Length() > 0) { queue.GetNext(); } // clear queue
+            while (queue.Length(address) > 0) { queue.GetNext(address); } // clear queue
 
             IMercurioMessage message = new DummyMessage(address, firstMessage);
             queue.Add(message);
@@ -23,13 +23,13 @@ namespace TestEntities
 
             // Create a new queue - should read the persisted file
             queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage);
-            message = queue.GetNext();
+            message = queue.GetNext(address);
             Assert.IsTrue(message.ToString() == firstMessage);
             Assert.IsTrue(message.Address == address);
-            message = queue.GetNext();
+            message = queue.GetNext(address);
             Assert.IsTrue(message.ToString() == secondMessage);
             Assert.IsTrue(message.Address == address);
-            Assert.IsTrue(queue.Length() == 0);
+            Assert.IsTrue(queue.Length(address) == 0);
         }
     }
 }

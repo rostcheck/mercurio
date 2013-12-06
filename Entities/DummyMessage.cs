@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace Entities
 {
     [Serializable()]
-    public class DummyMessage : IMercurioMessage, ISerializable
+    public class DummyMessage : IMercurioMessage
     {
         private string message;
         private string address;

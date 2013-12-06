@@ -37,13 +37,15 @@ namespace Starksoft.Cryptography.OpenPGP
     public class GnuPGKey
     {
         private string _key;
-        private DateTime _keyExpiration;
+        private DateTime _creationDate;
+        private DateTime? _keyExpiration;
         private string _userId;
         private string _userName;
-        private string _subKey;
-        private DateTime _subKeyExpiration;
         private string _raw;
         private GnuPGKeyType _keyType;
+        private GnuPGAlgorithmType _algorithm;
+        private uint _keyLength = 0;
+        private List<GnuPGKey> _subKeys;
 
         /// <summary>
         /// GnuPGKey constructor.
@@ -51,8 +53,9 @@ namespace Starksoft.Cryptography.OpenPGP
         /// <param name="raw">Raw output stream text data containing key information.</param>
         public GnuPGKey(string raw)
         {
+            _subKeys = new List<GnuPGKey>();
             _raw = raw;
-            ParseRaw();          
+            ParseRaw();
         }
 
         /// <summary>
@@ -64,11 +67,27 @@ namespace Starksoft.Cryptography.OpenPGP
         }
 
         /// <summary>
+        /// Date and time of key creation
+        /// </summary>
+        public DateTime CreationDate
+        {
+            get { return _creationDate; }
+        }
+
+        /// <summary>
         /// Key expiration date and time.
         /// </summary>
-        public DateTime KeyExpiration
+        public DateTime? KeyExpiration
         {
             get { return _keyExpiration; }
+        }
+
+        /// <summary>
+        /// Key length (bits)
+        /// </summary>
+        public uint KeyLength
+        {
+            get { return _keyLength; }
         }
 
         /// <summary>
@@ -87,20 +106,10 @@ namespace Starksoft.Cryptography.OpenPGP
             get { return _userName; }
         }
 
-        /// <summary>
-        /// Sub-key information.
-        /// </summary>
-        public string SubKey
+        public List<GnuPGKey> SubKeys
         {
-            get { return _subKey; }
-        }
-
-        /// <summary>
-        /// Sub-key expiration data and time.
-        /// </summary>
-        public DateTime SubKeyExpiration
-        {
-            get { return _subKeyExpiration; }
+            // Return a list copy so recipient can't change our list
+            get { return new List<GnuPGKey>(_subKeys); }
         }
 
         /// <summary>
@@ -109,6 +118,11 @@ namespace Starksoft.Cryptography.OpenPGP
         public GnuPGKeyType KeyType
         {
             get { return _keyType; }
+        }
+
+        public GnuPGAlgorithmType Algorithm
+        {
+            get { return _algorithm; }
         }
 
         /// <summary>
@@ -124,7 +138,7 @@ namespace Starksoft.Cryptography.OpenPGP
         //uid       ...
         //ssb   1024g/42A71AD8 2006-12-10
         //
-        //pub   1024D/543C3595 2006-12-10
+        //pub   1024D/543C3595 2006-12-10 [expires: 2015-08-18]
         //uid                  Benton Stark <benton@starksoft.com>
         //uid       ...
         //uid       ...
@@ -144,38 +158,54 @@ namespace Starksoft.Cryptography.OpenPGP
                 switch (fields[0])
                 {
                     case "pub":
-                        _key = fields[1];
-                        _keyExpiration = DateTime.Parse(fields[2]);
+                        ParseKeyFields(fields);
                         _keyType = GnuPGKeyType.Public;
                         break;
                     case "uid":
                         ParseUid(line);
                         break;
                     case "sec":
-                        _key = fields[1];
-                        _keyExpiration = DateTime.Parse(fields[2]);
+                        ParseKeyFields(fields);
                         _keyType = GnuPGKeyType.Secret;
                         break;
                     case "sub":
                     case "ssb":
-                        _subKey = fields[1];
-                        _subKeyExpiration = DateTime.Parse(fields[2]);
+                        // From the subkey's perspective, sub is the pub part, ssb is the sec part
+                        string alteredLine = line.Replace("sub", "pub");
+                        alteredLine = alteredLine.Replace("ssb", "sec");
+                        GnuPGKey newSubKey = new GnuPGKey(alteredLine);
+                        _subKeys.Add(newSubKey);
                         break;
                     default:
                         break;
                 }
             }
+        }
 
-            //string[] pub = SplitSpaces(lines[0]);
-            //string uid = lines[1];
-            //string[] sub = SplitSpaces(lines[2]);
-                        
-            //_key = pub[1];
-            //_keyExpiration = DateTime.Parse(pub[2]);
-            //_subKey = sub[1];
-            //_subKeyExpiration = DateTime.Parse(sub[2]);
+        private void ParseKeyFields(string[] fields)
+        {
+            _key = fields[1];
+            string[] keyFields = fields[1].Split('/');
+            _keyLength = Convert.ToUInt16(keyFields[0].Substring(0, keyFields[0].Length - 1));
+            _algorithm = ParseAlgorithm(keyFields[0].Substring(keyFields[0].Length - 1));
+            _key = keyFields[1];
+            _creationDate = DateTime.Parse(fields[2]);
+            if (fields.Length > 4 && fields[3] == "[expires")
+            {
+                _keyExpiration = DateTime.Parse(fields[4].Substring(0, fields[4].Length - 1));
+            }
+        }
 
-            //ParseUid(uid);
+        // Parse the algorithm from the letter code
+        private GnuPGAlgorithmType ParseAlgorithm(string letterCode)
+        {
+            switch (letterCode)
+            {
+                case "R":
+                    return GnuPGAlgorithmType.RSA;
+                default:
+                    return GnuPGAlgorithmType.Unknown;
+            }
         }
 
         private string[] SplitSpaces(string input)
@@ -183,7 +213,6 @@ namespace Starksoft.Cryptography.OpenPGP
             char[] splitChar = { ' '};
             return input.Split(splitChar, StringSplitOptions.RemoveEmptyEntries);
         }
-
      
         private void ParseUid(string uid)
         {
