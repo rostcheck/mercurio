@@ -11,12 +11,14 @@ namespace Mercurio
     {
         private ICryptoManager cryptoManager;
         private MessageService messageService;
+        private IMercurioUI userInterface;
         private IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage); // TODO: Make configurable
 
-        public AppServiceLayer(ICryptoManager cryptoManager)
+        public AppServiceLayer(ICryptoManager cryptoManager, IMercurioUI userInterface)
         {
             this.cryptoManager = cryptoManager;
-            this.messageService = new MessageService(queue);
+            this.userInterface = userInterface;
+            this.messageService = new MessageService(queue, userInterface, cryptoManager);
         }
 
         public void SendInvitation(string userID, string address, string evidenceURL)

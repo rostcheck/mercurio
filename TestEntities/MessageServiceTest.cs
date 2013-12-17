@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestUtils;
 
 namespace TestEntities
 {
@@ -15,10 +16,11 @@ namespace TestEntities
         [TestMethod]
         public void ConnectInvitationTest()
         {
-            Dictionary <ConfigurationKeyEnum, string> configuration = TestConfiguration.Create();
+            Dictionary <ConfigurationKeyEnum, string> configuration = TestUtils.TestConfiguration1.Create();
             ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, configuration);
             IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage);
-            MessageService messageService = new MessageService(queue);
+            IMercurioUI userInterface = new DummyMercurioUI(); 
+            MessageService messageService = new MessageService(queue, userInterface, cryptoManager);
             string[] signatures = new string[0];
             IMercurioMessage connectInvitationMessage = new ConnectInvitationMessage(recipientAddress, cryptoManager.GetPublicKey(senderKey), signatures, evidenceURL);
             messageService.Send(connectInvitationMessage);

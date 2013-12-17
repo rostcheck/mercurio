@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,13 @@ namespace Entities
             GnuPGKey firstSecretKey = gpg.GetSecretKeys().FirstOrDefault<GnuPGKey>();
             GnuPGKey publicKey = gpg.GetKeys().FirstOrDefault(s => s.Key == firstSecretKey.Key);
             return gpg.GetActualKey(publicKey.Key);
+        }
+
+        public void ImportKey(string key)
+        {
+            GnuPG gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
+                configuration[ConfigurationKeyEnum.GPGBinaryPath]);
+            gpg.Import(new MemoryStream(Encoding.ASCII.GetBytes(key)));
         }
 
         public string[] GetSignatures()

@@ -18,6 +18,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestEntities", "TestEntitie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCryptography", "TestCryptography\TestCryptography.csproj", "{76B24DC4-DA0A-4A9B-B4A3-E892F96F3609}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFunctionality", "TestFunctionality\TestFunctionality.csproj", "{9ABCC625-FBCB-4805-883C-93350CD4040B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestKeyRings", "TestKeyRings", "{9C1B4323-615D-4C22-997F-E716C47B5DB0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Alice", "Alice", "{59CD760D-3591-45CE-8A25-A3E4D2A386ED}"
+	ProjectSection(SolutionItems) = preProject
+		TestKeyRings\Alice\pubring.gpg = TestKeyRings\Alice\pubring.gpg
+		TestKeyRings\Alice\secring.gpg = TestKeyRings\Alice\secring.gpg
+		TestKeyRings\Alice\trustdb.gpg = TestKeyRings\Alice\trustdb.gpg
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bob", "Bob", "{9C5F9319-D62F-4ED2-9852-CA79581633A9}"
+	ProjectSection(SolutionItems) = preProject
+		TestKeyRings\Bob\pubring.gpg = TestKeyRings\Bob\pubring.gpg
+		TestKeyRings\Bob\secring.gpg = TestKeyRings\Bob\secring.gpg
+		TestKeyRings\Bob\trustdb.gpg = TestKeyRings\Bob\trustdb.gpg
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestUtils", "TestUtils\TestUtils.csproj", "{8E90EEAA-8440-456F-B682-AE0E35C8095D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageProcessors", "Messages\MessageProcessors.csproj", "{E83101FB-4ECD-498B-9E04-AC8B02948AD1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,8 +70,24 @@ Global
 		{76B24DC4-DA0A-4A9B-B4A3-E892F96F3609}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76B24DC4-DA0A-4A9B-B4A3-E892F96F3609}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76B24DC4-DA0A-4A9B-B4A3-E892F96F3609}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9ABCC625-FBCB-4805-883C-93350CD4040B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9ABCC625-FBCB-4805-883C-93350CD4040B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9ABCC625-FBCB-4805-883C-93350CD4040B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9ABCC625-FBCB-4805-883C-93350CD4040B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E90EEAA-8440-456F-B682-AE0E35C8095D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E90EEAA-8440-456F-B682-AE0E35C8095D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E90EEAA-8440-456F-B682-AE0E35C8095D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E90EEAA-8440-456F-B682-AE0E35C8095D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E83101FB-4ECD-498B-9E04-AC8B02948AD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E83101FB-4ECD-498B-9E04-AC8B02948AD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E83101FB-4ECD-498B-9E04-AC8B02948AD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E83101FB-4ECD-498B-9E04-AC8B02948AD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{59CD760D-3591-45CE-8A25-A3E4D2A386ED} = {9C1B4323-615D-4C22-997F-E716C47B5DB0}
+		{9C5F9319-D62F-4ED2-9852-CA79581633A9} = {9C1B4323-615D-4C22-997F-E716C47B5DB0}
 	EndGlobalSection
 EndGlobal

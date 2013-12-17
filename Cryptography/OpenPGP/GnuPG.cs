@@ -71,7 +71,7 @@ namespace Starksoft.Cryptography.OpenPGP
     /// </para>
     /// <para>
     /// If you are new to GnuPG please install the application and then read how to generate new key pair or importing existing OpenPGP keys. 
-    /// You can rad more about key generation and importing at http://www.gnupg.org/gph/en/manual.html#AEN26
+    /// You can read more about key generation and importing at http://www.gnupg.org/gph/en/manual.html#AEN26
     /// </para>
     /// <para>
     /// Encrypt File Example:
@@ -155,7 +155,11 @@ namespace Starksoft.Cryptography.OpenPGP
             /// <summary>
             /// Verify signed data.
             /// </summary>
-            Verify
+            Verify,
+            /// <summary>
+            /// Import a key
+            /// </summary>
+            Import
 		};
 
         /// <summary>
@@ -337,6 +341,20 @@ namespace Starksoft.Cryptography.OpenPGP
             ExecuteGPG(ActionTypes.Verify, inputStream, new MemoryStream());
         }
 
+        /// <summary>
+        /// Import key from the input stream
+        /// </summary>
+        /// <param name="inputStream">Input stream containing key data</param>
+        public void Import(Stream inputStream)
+        {
+            if (inputStream == null)
+                throw new ArgumentNullException("Argument inputStream can not be null.");
+
+            if (!inputStream.CanRead)
+                throw new ArgumentException("Argument inputStream must be readable.");
+
+            ExecuteGPG(ActionTypes.Import, inputStream, new MemoryStream());
+        }
 
         /// <summary>
         /// Retrieves a collection of secret keys from the GnuPG application.
@@ -464,6 +482,9 @@ namespace Starksoft.Cryptography.OpenPGP
                     break;
                 case ActionTypes.Verify:
                     options.Append("--verify ");
+                    break;
+                case ActionTypes.Import:
+                    options.Append("--import");
                     break;
             }
 

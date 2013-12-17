@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F24263DC-2BBB-47B2-93E8-73055B3B8E76}</ProjectGuid>
+    <ProjectGuid>{9ABCC625-FBCB-4805-883C-93350CD4040B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestEntities</RootNamespace>
-    <AssemblyName>TestEntities</AssemblyName>
+    <RootNamespace>TestFunctionality</RootNamespace>
+    <AssemblyName>TestFunctionality</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -50,16 +50,17 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="CryptoManagerTest.cs" />
-    <Compile Include="DummyMercurioUI.cs" />
-    <Compile Include="MessageServiceTest.cs" />
-    <Compile Include="PersistentQueueTest.cs" />
+    <Compile Include="FunctionalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{ce737374-d61e-4d4c-8796-580ec758a00c}</Project>
       <Name>Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestEntities\TestEntities.csproj">
+      <Project>{f24263dc-2bbb-47b2-93e8-73055b3b8e76}</Project>
+      <Name>TestEntities</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestUtils\TestUtils.csproj">
       <Project>{8e90eeaa-8440-456f-b682-ae0e35c8095d}</Project>

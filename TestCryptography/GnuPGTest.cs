@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Starksoft.Cryptography.OpenPGP;
+using TestUtils;
 
 namespace TestCryptography
 {
@@ -10,9 +11,11 @@ namespace TestCryptography
     public class GnuPGTest
     {
         [TestMethod]
-        public void TestListKeys()
+        public void ListKeysTest()
         {
-            string keyPath = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\gnupg";
+            string userName = "mercurio";
+            TestUtils.TestUtils.SetupDirs(new List<string>() { userName });
+            string keyPath = TestUtils.TestUtils.GetUserDir(userName);
             string binaryPath = Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) + "\\GNU\\GnuPG\\gpg2.exe";
 
             GnuPG gpg = new GnuPG(keyPath, binaryPath);
@@ -39,6 +42,19 @@ namespace TestCryptography
             Assert.IsNull(hermesSubKey.KeyExpiration);
             Assert.IsTrue(hermesSubKey.SubKeys.Count == 0);
             Assert.IsTrue(hermesSubKey.Key == "51649C30");
+        }
+
+        [TestMethod]
+        public void ImportBadKeyTest()
+        {
+            string keyPath = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\gnupg";
+            string binaryPath = Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) + "\\GNU\\GnuPG\\gpg2.exe";
+
+        }
+
+        [TestMethod]
+        public void ImportGoodKeyTest()
+        {
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Entities
         string Sign(string message);
         bool Validate(string message);
         string GetPublicKey(string identifier);
+        void ImportKey(string key);
         string[] GetSignatures();
     }
 }
