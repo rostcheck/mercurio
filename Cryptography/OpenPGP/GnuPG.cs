@@ -366,6 +366,16 @@ namespace Starksoft.Cryptography.OpenPGP
         }
 
         /// <summary>
+        /// Delete the specified key from the keyring
+        /// </summary>
+        /// <param name="keyID">Key ID to delete</param>
+        public void DeleteKey(string keyID)
+        {
+            StreamReader sr = GetCommand(string.Format("--batch --yes --delete-key {0}", keyID));
+            string output = sr.ReadToEnd();
+        }
+
+        /// <summary>
         /// Export a key (as text) and return it
         /// </summary>
         /// <param name="keyID">Key id from a GnuPGKey</param>

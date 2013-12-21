@@ -10,7 +10,7 @@ namespace TestUtils
     public static class TestUtils
     {
         private const string TestKeyChainSourceDirectory = "..\\..\\..\\TestKeyRings";
-        private static readonly string TestKeyChainBaseDirectory = Environment.SpecialFolder.MyDocuments + "\\TestKeychains";
+        private static readonly string TestKeyChainBaseDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\TestKeychains";
 
         public static string GetUserDir(string userName)
         {
