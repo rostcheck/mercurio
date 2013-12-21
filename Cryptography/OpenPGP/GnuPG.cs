@@ -387,6 +387,26 @@ namespace Starksoft.Cryptography.OpenPGP
         }
 
         /// <summary>
+        /// Get the fingerprint of the key (must be imported first)
+        /// </summary>
+        /// <param name="keyID">Key id from a GnuPGKey</param>
+        /// <returns>String representation of the fingerprint, including spaces (ex. "9DC5 4DB6 ...")</returns>
+        public string GetFingerprint(string keyID)
+        {
+            StreamReader sr = GetCommand(string.Format("--fingerprint {0}", keyID));
+            string output = sr.ReadToEnd();
+            Match match = Regex.Match(output, @"Key fingerprint = ([\w\d ]+)", RegexOptions.Multiline);
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
         /// Retrieves a collection of all keys from the GnuPG application.
         /// </summary>
         /// <returns>Collection of GnuPGKey objects.</returns>
