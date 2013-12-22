@@ -22,7 +22,7 @@ namespace TestUtils
         public static Dictionary<ConfigurationKeyEnum, string> GetTestConfiguration(string userName)
         {
             Dictionary<ConfigurationKeyEnum, string> configuration = TestConfiguration1.Create();
-            configuration[ConfigurationKeyEnum.UserHome] = TestUtils.GetUserDir(userName);
+            //configuration[ConfigurationKeyEnum.UserHome] = TestUtils.GetUserDir(userName);
             return configuration;
         }
     }

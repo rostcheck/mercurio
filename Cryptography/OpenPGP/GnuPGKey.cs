@@ -36,7 +36,7 @@ namespace Starksoft.Cryptography.OpenPGP
     /// </summary>
     public class GnuPGKey
     {
-        private string _key;
+        private string _keyId;
         private DateTime _creationDate;
         private DateTime? _keyExpiration;
         private string _userId;
@@ -59,11 +59,11 @@ namespace Starksoft.Cryptography.OpenPGP
         }
 
         /// <summary>
-        /// Key text information.
+        /// Key ID information.
         /// </summary>
-        public string Key
+        public string KeyID
         {
-            get { return _key; }
+            get { return _keyId; }
         }
 
         /// <summary>
@@ -184,11 +184,11 @@ namespace Starksoft.Cryptography.OpenPGP
 
         private void ParseKeyFields(string[] fields)
         {
-            _key = fields[1];
+            _keyId = fields[1];
             string[] keyFields = fields[1].Split('/');
             _keyLength = Convert.ToUInt16(keyFields[0].Substring(0, keyFields[0].Length - 1));
             _algorithm = ParseAlgorithm(keyFields[0].Substring(keyFields[0].Length - 1));
-            _key = keyFields[1];
+            _keyId = keyFields[1];
             _creationDate = DateTime.Parse(fields[2]);
             if (fields.Length > 4 && fields[3] == "[expires")
             {

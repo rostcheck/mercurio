@@ -212,7 +212,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 DataRow row = dataTbl.NewRow();
                 row[COL_USER_ID] = item.UserId;
                 row[COL_USER_NAME] = item.UserName;
-                row[COL_KEY] = item.Key;
+                row[COL_KEY] = item.KeyID;
                 row[COL_KEY_EXPIRATION] = item.KeyExpiration;
                 dataTbl.Rows.Add(row);
             }

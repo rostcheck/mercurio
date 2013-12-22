@@ -21,8 +21,8 @@ namespace TestFunctionality
         {
             // Initialize to test key rings
             string directory = Directory.GetCurrentDirectory();
-            string[] users = { "Alice", "Bob" };
-            TestUtils.TestUtils.SetupDirs(new List<string>(users));
+            //string[] users = { "Alice", "Bob" };
+            TestUtils.TestUtils.SetupUserDir("Alice");
 
             // Sign in as Alice and send an invitation to Bob
             Dictionary<ConfigurationKeyEnum, string> aliceConfig = TestConfiguration1.GetTestConfiguration("Alice");

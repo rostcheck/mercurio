@@ -386,6 +386,12 @@ namespace Starksoft.Cryptography.OpenPGP
             return sr.ReadToEnd();
         }
 
+        public void SignKey(string keyID)
+        {
+            StreamReader sr = GetCommand(string.Format("--yes --sign-key {0}", keyID), true);
+            string output = sr.ReadToEnd();
+        }
+
         /// <summary>
         /// Get the fingerprint of the key (must be imported first)
         /// </summary>
@@ -415,14 +421,9 @@ namespace Starksoft.Cryptography.OpenPGP
             return new GnuPGKeyCollection(GetCommand("--list-keys"));
         }
 
-        private StreamReader GetCommand(string command)
+        private StreamReader GetCommand(string command, bool needsPassword = false)
         {
-            StringBuilder options = new StringBuilder();
-
-            //  set a home directory if the user specifies one
-            if (_homePath != null && _homePath.Length != 0)
-                options.Append(String.Format(CultureInfo.InvariantCulture, "--homedir \"{0}\" ", _homePath));
-
+            StringBuilder options = SetStandardOptions(needsPassword);
             options.Append(command);
 
             // get the full path to either GPG.EXE or GPG2.EXE
@@ -446,8 +447,11 @@ namespace Starksoft.Cryptography.OpenPGP
                 _proc = Process.Start(procInfo);
 
                 //  push passphrase onto stdin with a CRLF
-                //_proc.StandardInput.WriteLine("");
-                _proc.StandardInput.Flush();
+                if (needsPassword)
+                {
+                    _proc.StandardInput.WriteLine(_passphrase);
+                    _proc.StandardInput.Flush();
+                }
 
                 //  wait for the process to return with an exit code (with a timeout variable)
                 if (!_proc.WaitForExit(Timeout))
@@ -475,7 +479,7 @@ namespace Starksoft.Cryptography.OpenPGP
             return reader;
         }
 
-        private string GetCmdLineSwitches(ActionTypes action)
+        private StringBuilder SetStandardOptions(bool needsPassword)
         {
             StringBuilder options = new StringBuilder();
 
@@ -483,14 +487,24 @@ namespace Starksoft.Cryptography.OpenPGP
             if (_homePath != null && _homePath.Length != 0)
                 options.Append(String.Format(CultureInfo.InvariantCulture, "--homedir \"{0}\" ", _homePath));
 
-            //  read the passphrase from the standard input
-            options.Append("--passphrase-fd 0 ");
+            if (needsPassword)
+            {
+                //  read the passphrase from the standard input
+                options.Append("--passphrase-fd 0 ");
+            }
 
             //  turn off verbose statements
             options.Append("--no-verbose --batch ");
 
             //  always use the trusted model so we don't get an interactive session with gpg.exe
             options.Append("--trust-model always ");
+
+            return options;
+        }
+
+        private string GetCmdLineSwitches(ActionTypes action)
+        {
+            StringBuilder options = SetStandardOptions(true);
 
             //  handle the action
             switch (action)
@@ -514,7 +528,7 @@ namespace Starksoft.Cryptography.OpenPGP
                     options.Append("--verify ");
                     break;
                 case ActionTypes.Import:
-                    options.Append("--import");
+                    options.Append("--import ");
                     break;
             }
 
