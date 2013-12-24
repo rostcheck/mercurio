@@ -10,26 +10,27 @@ namespace TestEntities
         [TestMethod]
         public void EnqueueMessageTest()
         {
-            string address = "davidr@maker.net";
+            string senderAddress = "alice@naker.net";
+            string recipientAddress = "davidr@maker.net";
             string firstMessage = "first dummy message";
             string secondMessage = "second dummy message";
             IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage);
-            while (queue.Length(address) > 0) { queue.GetNext(address); } // clear queue
+            while (queue.Length(recipientAddress) > 0) { queue.GetNext(recipientAddress); } // clear queue
 
-            IMercurioMessage message = new DummyMessage(address, firstMessage);
+            IMercurioMessage message = new DummyMessage(senderAddress, recipientAddress, firstMessage);
             queue.Add(message);
-            message = new DummyMessage(address, secondMessage);
+            message = new DummyMessage(senderAddress, recipientAddress, secondMessage);
             queue.Add(message);
 
             // Create a new queue - should read the persisted file
             queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage);
-            message = queue.GetNext(address);
+            message = queue.GetNext(recipientAddress);
             Assert.IsTrue(message.ToString() == firstMessage);
-            Assert.IsTrue(message.Address == address);
-            message = queue.GetNext(address);
+            Assert.IsTrue(message.RecipientAddress == recipientAddress);
+            message = queue.GetNext(recipientAddress);
             Assert.IsTrue(message.ToString() == secondMessage);
-            Assert.IsTrue(message.Address == address);
-            Assert.IsTrue(queue.Length(address) == 0);
+            Assert.IsTrue(message.RecipientAddress == recipientAddress);
+            Assert.IsTrue(queue.Length(recipientAddress) == 0);
         }
     }
 }

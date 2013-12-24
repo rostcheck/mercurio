@@ -4,11 +4,12 @@ using Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtils;
 
-namespace TestEntities
+namespace TestMessages
 {
     [TestClass]
     public class MessageServiceTest
     {
+        private const string senderAddress = "alice@maker.net";
         private const string recipientAddress = "bob@maker.net";
         private const string evidenceURL = "http://thisisdavidr.net/pgp_fingerprint.m4v";
         private const string senderKey = "79222C24";
@@ -22,7 +23,7 @@ namespace TestEntities
             IMercurioUI userInterface = new DummyMercurioUI(); 
             MessageService messageService = new MessageService(queue, userInterface, cryptoManager);
             string[] signatures = new string[0];
-            IMercurioMessage connectInvitationMessage = new ConnectInvitationMessage(recipientAddress, cryptoManager.GetPublicKey(senderKey), signatures, evidenceURL);
+            IMercurioMessage connectInvitationMessage = new ConnectInvitationMessage(senderAddress, recipientAddress, cryptoManager.GetPublicKey(senderKey), signatures, evidenceURL);
             messageService.Send(connectInvitationMessage);
         }
     }

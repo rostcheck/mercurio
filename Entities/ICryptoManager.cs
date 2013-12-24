@@ -14,8 +14,10 @@ namespace Entities
         bool Validate(string message);
         string GetPublicKey(string identifier);
         string ImportKey(string key); // returns imported key id
+        void SignKey(string key);
         string[] GetSignatures();
         string GetFingerprint(string identifier);
         void DeleteKey(string identifier);
+        Identity[] GetAvailableIdentities();
     }
 }

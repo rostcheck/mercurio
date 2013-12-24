@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F24263DC-2BBB-47B2-93E8-73055B3B8E76}</ProjectGuid>
+    <ProjectGuid>{E3034699-B16F-4D9F-BD37-7F6B8D7882F8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestEntities</RootNamespace>
-    <AssemblyName>TestEntities</AssemblyName>
+    <RootNamespace>TestMessages</RootNamespace>
+    <AssemblyName>TestMessages</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -50,14 +50,17 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="CryptoManagerTest.cs" />
-    <Compile Include="PersistentQueueTest.cs" />
+    <Compile Include="MessageServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{ce737374-d61e-4d4c-8796-580ec758a00c}</Project>
       <Name>Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Messages\MessageProcessors.csproj">
+      <Project>{e83101fb-4ecd-498b-9e04-ac8b02948ad1}</Project>
+      <Name>MessageProcessors</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestUtils\TestUtils.csproj">
       <Project>{8e90eeaa-8440-456f-b682-ae0e35c8095d}</Project>

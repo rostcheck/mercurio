@@ -9,6 +9,7 @@ namespace Entities
     // Represents everything a UI can do
     public interface IMercurioUI
     {
+        string GetSelectedIdentity(ICryptoManager cryptoManager);
         bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint);
     }
 }

@@ -9,6 +9,7 @@ namespace Entities
 {
     public interface IMercurioMessage : ISerializable
     {
-        string Address { get; }
+        string SenderAddress { get; }
+        string RecipientAddress { get; }
     }
 }

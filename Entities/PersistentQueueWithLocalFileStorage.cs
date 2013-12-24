@@ -15,9 +15,9 @@ namespace Entities
 
         public void Add(IMercurioMessage message)
         {
-            Queue<IMercurioMessage> messages = OpenQueue(message.Address);
+            Queue<IMercurioMessage> messages = OpenQueue(message.RecipientAddress);
             messages.Enqueue(message);
-            Serializer.Serialize(message.Address, messages);
+            Serializer.Serialize(message.RecipientAddress, messages);
         }
 
         public IMercurioMessage GetNext(string address)

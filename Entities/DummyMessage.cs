@@ -11,8 +11,10 @@ namespace Entities
     public class DummyMessage : IMercurioMessage
     {
         private string message;
-        private string address;
-        private const string AddressName = "address";
+        private string senderAddress;
+        private string recipientAddress;
+        private const string SenderAddressName = "sender_address";
+        private const string RecipientAddressName = "recipient_address";
         private const string MessageName = "message";
 
         public string Message
@@ -23,17 +25,26 @@ namespace Entities
             }
         }
 
-        public string Address
+        public string SenderAddress
         {
             get
             {
-                return address;
+                return senderAddress;
             }
         }
 
-        public DummyMessage(string address, string message)
+        public string RecipientAddress
         {
-            this.address = address;
+            get
+            {
+                return recipientAddress;
+            }
+        }
+
+        public DummyMessage(string senderAddress, string recipientAddress, string message)
+        {
+            this.senderAddress = senderAddress;
+            this.recipientAddress = recipientAddress;
             this.message = message;
         }
 
@@ -44,13 +55,15 @@ namespace Entities
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(AddressName, address);
+            info.AddValue(SenderAddressName, senderAddress);
+            info.AddValue(RecipientAddressName, recipientAddress);
             info.AddValue(MessageName, message);
         }
 
         public DummyMessage(SerializationInfo info, StreamingContext ctxt)
         {
-            this.address = info.GetString(AddressName);
+            this.senderAddress = info.GetString(SenderAddressName);
+            this.recipientAddress = info.GetString(RecipientAddressName);
             this.message = info.GetString(MessageName);
         }
     }

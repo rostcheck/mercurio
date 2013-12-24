@@ -60,11 +60,31 @@ namespace Entities
             return gpg.GetFingerprint(identity);
         }
 
+        public void SignKey(string identity)
+        {
+            GnuPG gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
+                configuration[ConfigurationKeyEnum.GPGBinaryPath]);
+            gpg.SignKey(identity);
+        }
+
         public void DeleteKey(string identity)
         {
             GnuPG gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
                 configuration[ConfigurationKeyEnum.GPGBinaryPath]);
             gpg.DeleteKey(identity);
+        }
+
+        public Identity[] GetAvailableIdentities()
+        {
+            GnuPG gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
+                configuration[ConfigurationKeyEnum.GPGBinaryPath]);
+            List<Identity> identityList = new List<Identity>();
+            GnuPGKeyCollection secretKeys = gpg.GetSecretKeys();
+            foreach (GnuPGKey secretKey in secretKeys)
+            {
+                identityList.Add(new Identity(secretKey.KeyID, secretKey.UserName));
+            }
+            return identityList.ToArray();
         }
     }
 }

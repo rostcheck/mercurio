@@ -39,10 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectInvitationAcceptedMessage.cs" />
     <Compile Include="ConfigurationKeyEnum.cs" />
     <Compile Include="CryptoManagerFactory.cs" />
     <Compile Include="CryptoManagerType.cs" />
     <Compile Include="DummyMessage.cs" />
+    <Compile Include="Identity.cs" />
     <Compile Include="IMercurioMessageProcessor.cs" />
     <Compile Include="IMercurioUI.cs" />
     <Compile Include="PersistentQueueType.cs" />
@@ -53,7 +55,6 @@
     <Compile Include="IMercurioMessage.cs" />
     <Compile Include="IMessageStore.cs" />
     <Compile Include="IPersistentQueue.cs" />
-    <Compile Include="MessageService.cs" />
     <Compile Include="PersistentQueueFactory.cs" />
     <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
     <Compile Include="Serializer.cs" />

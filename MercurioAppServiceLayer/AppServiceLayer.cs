@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities;
 
-namespace Mercurio
+namespace MercurioAppServiceLayer
 {
     public class AppServiceLayer
     {
@@ -21,11 +21,11 @@ namespace Mercurio
             this.messageService = new MessageService(queue, userInterface, cryptoManager);
         }
 
-        public void SendInvitation(string userID, string address, string evidenceURL)
+        public void SendInvitation(string userID, string senderAddress, string recipientAddress, string evidenceURL)
         {
             string publicKey = cryptoManager.GetPublicKey(userID);
             string[] signatures = cryptoManager.GetSignatures();
-            ConnectInvitationMessage message = new ConnectInvitationMessage(address, publicKey, signatures, evidenceURL);
+            ConnectInvitationMessage message = new ConnectInvitationMessage(senderAddress, recipientAddress, publicKey, signatures, evidenceURL);
             messageService.Send(message);
         }
     }

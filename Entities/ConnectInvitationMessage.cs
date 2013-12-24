@@ -10,7 +10,8 @@ namespace Entities
     [Serializable]
     public class ConnectInvitationMessage : IMercurioMessage
     {
-        private const string AddressName = "address";
+        private const string SenderAddressName = "sender_address";
+        private const string RecipientAddressName = "recipient_address";
         private const string PublicKeyName = "public_key";
         private const string SignaturesName = "signatures";
         private const string EvidenceURLName = "evidence_url";
@@ -39,22 +40,31 @@ namespace Entities
             }
         }
 
-        public string Address
+        public string RecipientAddress
         {
             get
             {
-                return address;
+                return recipientAddress;
             }
         }
 
+        public string SenderAddress
+        {
+            get
+            {
+                return senderAddress;
+            }
+        }
         private string publicKey;
         private string[] signatures;
         private string evidence;
-        private string address;
+        private string recipientAddress;
+        private string senderAddress;
 
-        public ConnectInvitationMessage(string address, string publicKey, string[] signatures, string evidence)
+        public ConnectInvitationMessage(string senderAddress, string recipientAddress, string publicKey, string[] signatures, string evidence)
         {
-            this.address = address;
+            this.senderAddress = senderAddress;
+            this.recipientAddress = recipientAddress;
             this.publicKey = publicKey;
             this.signatures = signatures;
             this.evidence = evidence;
@@ -62,7 +72,8 @@ namespace Entities
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(AddressName, address);
+            info.AddValue(RecipientAddressName, recipientAddress);
+            info.AddValue(SenderAddressName, recipientAddress);
             info.AddValue(PublicKeyName, publicKey);
             info.AddValue(SignaturesName, signatures);
             info.AddValue(EvidenceURLName, Evidence);
@@ -70,7 +81,8 @@ namespace Entities
 
         public ConnectInvitationMessage(SerializationInfo info, StreamingContext ctxt)
         {
-            this.address = info.GetString(AddressName);
+            this.recipientAddress = info.GetString(RecipientAddressName);
+            this.senderAddress = info.GetString(SenderAddressName);
             this.publicKey = info.GetString(PublicKeyName);
             this.signatures = (string[]) info.GetValue(SignaturesName, typeof(string[]));
             this.evidence = info.GetString(EvidenceURLName);

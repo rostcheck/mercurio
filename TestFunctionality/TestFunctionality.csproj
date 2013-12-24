@@ -50,13 +50,19 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="DummyMercurioUI.cs" />
     <Compile Include="FunctionalTests.cs" />
+    <Compile Include="MessageServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{ce737374-d61e-4d4c-8796-580ec758a00c}</Project>
       <Name>Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MercurioAppServiceLayer\MercurioAppServiceLayer.csproj">
+      <Project>{9f972ae2-7fe2-4d5b-9b2e-fb1bbfacb3b3}</Project>
+      <Name>MercurioAppServiceLayer</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestEntities\TestEntities.csproj">
       <Project>{f24263dc-2bbb-47b2-93e8-73055b3b8e76}</Project>
