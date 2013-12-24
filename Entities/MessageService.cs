@@ -29,15 +29,21 @@ namespace Entities
             string messageType = message.GetType().ToString();
             switch(messageType)
             {
-                case "ConnectInvitationMessage":
+                case "Entities.ConnectInvitationMessage":
                     ConnectInvitationMessage thisMessage = message as ConnectInvitationMessage;
-                    if (ui.AcceptInvitation(thisMessage))
+                    string keyID = cryptoManager.ImportKey(thisMessage.PublicKey);
+                    string fingerprint = cryptoManager.GetFingerprint(keyID);
+                    if (ui.AcceptInvitation(thisMessage, fingerprint))
                     {
-                        cryptoManager.ImportKey(thisMessage.PublicKey);
+
+                    }
+                    else
+                    {
+                        cryptoManager.DeleteKey(keyID);
                     }
                     break;
                 default:
-                    throw new Exception("Don't know how to process a message of type" + messageType);
+                    throw new Exception("Don't know how to process a message of type " + messageType);
             }
         }
        

@@ -13,7 +13,9 @@ namespace Entities
         string Sign(string message);
         bool Validate(string message);
         string GetPublicKey(string identifier);
-        void ImportKey(string key);
+        string ImportKey(string key); // returns imported key id
         string[] GetSignatures();
+        string GetFingerprint(string identifier);
+        void DeleteKey(string identifier);
     }
 }

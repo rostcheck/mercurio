@@ -40,7 +40,7 @@ namespace TestFunctionality
             ICryptoManager bobCryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, bobConfig);
             IMercurioMessage receivedMessage = queue.GetNext(recipientAddress);
             Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationMessage));
-            //messageService
+            messageService.ProcessMessage(receivedMessage);
 
 
             // Sign in as Alice, receive accepted invitation

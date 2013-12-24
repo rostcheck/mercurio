@@ -41,16 +41,30 @@ namespace Entities
             return gpg.GetActualKey(publicKey.KeyID);
         }
 
-        public void ImportKey(string key)
+        public string ImportKey(string key)
         {
             GnuPG gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
                 configuration[ConfigurationKeyEnum.GPGBinaryPath]);
-            gpg.Import(new MemoryStream(Encoding.ASCII.GetBytes(key)));
+            return gpg.Import(new MemoryStream(Encoding.ASCII.GetBytes(key)));
         }
 
         public string[] GetSignatures()
         {
             throw new NotImplementedException();
+        }
+
+        public string GetFingerprint(string identity)
+        {
+            GnuPG gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
+                configuration[ConfigurationKeyEnum.GPGBinaryPath]);
+            return gpg.GetFingerprint(identity);
+        }
+
+        public void DeleteKey(string identity)
+        {
+            GnuPG gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
+                configuration[ConfigurationKeyEnum.GPGBinaryPath]);
+            gpg.DeleteKey(identity);
         }
     }
 }

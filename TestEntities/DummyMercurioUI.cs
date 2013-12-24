@@ -9,7 +9,7 @@ namespace TestEntities
 {
     public class DummyMercurioUI : IMercurioUI
     {
-        public bool AcceptInvitation(ConnectInvitationMessage invitationMessage)
+        public bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint)
         {
             return true;
         }

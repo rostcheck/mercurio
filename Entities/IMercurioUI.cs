@@ -9,6 +9,6 @@ namespace Entities
     // Represents everything a UI can do
     public interface IMercurioUI
     {
-        bool AcceptInvitation(ConnectInvitationMessage invitationMessage);
+        bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint);
     }
 }

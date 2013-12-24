@@ -345,7 +345,8 @@ namespace Starksoft.Cryptography.OpenPGP
         /// Import key from the input stream
         /// </summary>
         /// <param name="inputStream">Input stream containing key data</param>
-        public void Import(Stream inputStream)
+        /// <returns>Key ID</returns>
+        public string Import(Stream inputStream)
         {
             if (inputStream == null)
                 throw new ArgumentNullException("Argument inputStream can not be null.");
@@ -353,7 +354,20 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!inputStream.CanRead)
                 throw new ArgumentException("Argument inputStream must be readable.");
 
-            ExecuteGPG(ActionTypes.Import, inputStream, new MemoryStream());
+            MemoryStream outputStream = new MemoryStream();
+            ExecuteGPG(ActionTypes.Import, inputStream, outputStream);
+            StreamReader reader = new StreamReader(outputStream);
+            reader.BaseStream.Position = 0;
+            string output = reader.ReadToEnd();
+            Match match = Regex.Match(output, @"key ([A-Z0-9]+):", RegexOptions.Multiline);
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         /// <summary>
