@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bob", "Bob", "{9C5F9319-D62
 		TestKeyRings\Bob\trustdb.gpg = TestKeyRings\Bob\trustdb.gpg
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestUtils", "TestUtils\TestUtils.csproj", "{8E90EEAA-8440-456F-B682-AE0E35C8095D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestUtilities", "TestUtils\TestUtilities.csproj", "{8E90EEAA-8440-456F-B682-AE0E35C8095D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageProcessors", "Messages\MessageProcessors.csproj", "{E83101FB-4ECD-498B-9E04-AC8B02948AD1}"
 EndProject

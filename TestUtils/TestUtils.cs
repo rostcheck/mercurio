@@ -5,17 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TestUtils
+namespace TestUtilities
 {
     public static class TestUtils
     {
         private const string TestKeyChainSourceDirectory = "..\\..\\..\\TestKeyRings";
-        private static readonly string KeyChainDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\gnupg";
+        public static readonly string KeyChainDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\gnupg";
         private static readonly string KeyChainBackupDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\gnupg\\test-backup";
+        private static readonly string KeyChainWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\TestKeyChains";
 
-        public static string GetUserDir(string userName)
+        public static string GetUserWorkingDir(string userName)
         {
-            return KeyChainDirectory;
+            return KeyChainWorkingDirectory + "\\" + userName;
         }
 
         public static string GetUserSourceDir(string userName)
@@ -23,14 +24,24 @@ namespace TestUtils
             return TestKeyChainSourceDirectory + "\\" + userName;
         }
 
-        public static string SetupUserDir(string userName)
+        // Copies the keyrings from the test source dir to a working dir
+        public static void SetupUserDir(string userName)
         {
             string userSourceDir = GetUserSourceDir(userName);
-            string userDestDir = GetUserDir(userName);
+            string userWorkingDir = GetUserWorkingDir(userName);
 
             CopyGPGFiles(KeyChainDirectory, KeyChainBackupDirectory);
-            CopyGPGFiles(userSourceDir, KeyChainDirectory);
-            return userDestDir;
+            CopyGPGFiles(userSourceDir, userWorkingDir);
+            CopyGPGFiles(userSourceDir, KeyChainDirectory);           
+        }
+
+        public static void SwitchUser(string fromUser, string toUser)
+        {
+            if (fromUser != null && fromUser != string.Empty)
+            {
+                CopyGPGFiles(KeyChainDirectory, GetUserWorkingDir(fromUser));
+            }
+            CopyGPGFiles(GetUserWorkingDir(toUser), KeyChainDirectory);
         }
 
         private static void CopyGPGFiles(string sourceDir, string destinationDir)

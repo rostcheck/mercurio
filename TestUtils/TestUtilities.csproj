@@ -6,7 +6,7 @@
     <ProjectGuid>{8E90EEAA-8440-456F-B682-AE0E35C8095D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestUtils</RootNamespace>
+    <RootNamespace>TestUtilities</RootNamespace>
     <AssemblyName>TestUtils</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

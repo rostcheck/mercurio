@@ -6,11 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities;
 
-namespace TestUtils
+namespace TestUtilities
 {
-    public static class TestConfiguration1
+    public static class TestConfig
     {
-
         public static Dictionary<ConfigurationKeyEnum, string> Create()
         {
             Dictionary<ConfigurationKeyEnum, string> configuration = new Dictionary<ConfigurationKeyEnum, string>();
@@ -21,7 +20,7 @@ namespace TestUtils
 
         public static Dictionary<ConfigurationKeyEnum, string> GetTestConfiguration(string userName)
         {
-            Dictionary<ConfigurationKeyEnum, string> configuration = TestConfiguration1.Create();
+            Dictionary<ConfigurationKeyEnum, string> configuration = TestConfig.Create();
             //configuration[ConfigurationKeyEnum.UserHome] = TestUtils.GetUserDir(userName);
             return configuration;
         }

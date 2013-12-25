@@ -9,6 +9,7 @@ namespace Entities
     // Responsible for providing cryptographic functions (with a commmon interface)
     public interface ICryptoManager
     {
+        void SetPassphrase(string passphrase);
         string Encrypt(string message, EncryptionAlgorithmEnum algorithm);
         string Sign(string message);
         bool Validate(string message);
@@ -18,6 +19,7 @@ namespace Entities
         string[] GetSignatures();
         string GetFingerprint(string identifier);
         void DeleteKey(string identifier);
+        bool HasPublicKey(string key); // Public key exists in keychain
         Identity[] GetAvailableIdentities();
     }
 }

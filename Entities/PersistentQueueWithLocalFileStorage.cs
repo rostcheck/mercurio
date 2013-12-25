@@ -37,7 +37,7 @@ namespace Entities
         private Queue<IMercurioMessage> OpenQueue(string queueFileName)
         {
             Queue<IMercurioMessage> messages;
-            if (File.Exists(queueFileName))
+            if (File.Exists(queueFileName) && new FileInfo(queueFileName).Length > 0)
                 messages = Serializer.DeSerialize<Queue<IMercurioMessage>>(queueFileName);
             else
                 messages = new Queue<IMercurioMessage>();

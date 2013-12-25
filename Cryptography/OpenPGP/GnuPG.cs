@@ -279,7 +279,11 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Argument outputStream must be writable.");
 
-            ExecuteGPG(ActionTypes.Encrypt, inputStream, outputStream);
+            if (_passphrase == null || _passphrase == string.Empty)
+                throw new GnuPGException("Passphrase must be set");
+
+            StringBuilder options = GetCmdLineSwitches(ActionTypes.Encrypt, true);
+            ExecuteGPG(options, inputStream, outputStream);
         }
 
         /// <summary>
@@ -300,8 +304,12 @@ namespace Starksoft.Cryptography.OpenPGP
 
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Argument outputStream must be writable.");
-            
-            ExecuteGPG(ActionTypes.Decrypt, inputStream, outputStream);
+
+            if (_passphrase == null || _passphrase == string.Empty)
+                throw new GnuPGException("Passphrase must be set");
+
+            StringBuilder options = GetCmdLineSwitches(ActionTypes.Decrypt, true);
+            ExecuteGPG(options, inputStream, outputStream);
         }
 
         /// <summary>
@@ -323,7 +331,11 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Argument outputStream must be writable.");
 
-            ExecuteGPG(ActionTypes.Sign, inputStream, outputStream);
+            if (_passphrase == null || _passphrase == string.Empty)
+                throw new GnuPGException("Passphrase must be set");
+
+            StringBuilder options = GetCmdLineSwitches(ActionTypes.Sign, true);
+            ExecuteGPG(options, inputStream, outputStream);
         }
 
         /// <summary>
@@ -338,7 +350,8 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!inputStream.CanRead)
                 throw new ArgumentException("Argument inputStream must be readable.");
 
-            ExecuteGPG(ActionTypes.Verify, inputStream, new MemoryStream());
+            StringBuilder options = GetCmdLineSwitches(ActionTypes.Verify, false);
+            ExecuteGPG(options, inputStream, new MemoryStream());
         }
 
         /// <summary>
@@ -355,7 +368,9 @@ namespace Starksoft.Cryptography.OpenPGP
                 throw new ArgumentException("Argument inputStream must be readable.");
 
             MemoryStream outputStream = new MemoryStream();
-            ExecuteGPG(ActionTypes.Import, inputStream, outputStream);
+
+            StringBuilder options = new StringBuilder("--import");
+            ExecuteGPG(options, inputStream, outputStream, false);
             StreamReader reader = new StreamReader(outputStream);
             reader.BaseStream.Position = 0;
             string output = reader.ReadToEnd();
@@ -366,7 +381,7 @@ namespace Starksoft.Cryptography.OpenPGP
             }
             else
             {
-                return string.Empty;
+                throw new GnuPGException("Error importing key");
             }
         }
 
@@ -402,6 +417,9 @@ namespace Starksoft.Cryptography.OpenPGP
 
         public void SignKey(string keyID)
         {
+            if (_passphrase == null || _passphrase == string.Empty)
+                throw new GnuPGException("Passphrase must be set");
+
             StreamReader sr = GetCommand(string.Format("--yes --sign-key {0}", keyID), true);
             string output = sr.ReadToEnd();
         }
@@ -435,7 +453,7 @@ namespace Starksoft.Cryptography.OpenPGP
             return new GnuPGKeyCollection(GetCommand("--list-keys"));
         }
 
-        private StreamReader GetCommand(string command, bool needsPassword = false)
+        private StreamReader GetCommand(string command, bool needsPassword = false, Stream inputStream = null)
         {
             StringBuilder options = SetStandardOptions(needsPassword);
             options.Append(command);
@@ -459,13 +477,23 @@ namespace Starksoft.Cryptography.OpenPGP
             {
                 //  start the gpg process and get back a process start info object
                 _proc = Process.Start(procInfo);
-
-                //  push passphrase onto stdin with a CRLF
+                
                 if (needsPassword)
                 {
+                    //  push passphrase onto stdin with a CRLF                    
                     _proc.StandardInput.WriteLine(_passphrase);
                     _proc.StandardInput.Flush();
                 }
+
+                if (inputStream != null)
+                {
+                    //  copy the input stream to the process standard input object
+                    CopyStream(inputStream, _proc.StandardInput.BaseStream);
+                    _proc.StandardInput.Flush();
+                }
+
+                // close the process standard input object
+                _proc.StandardInput.Close();
 
                 //  wait for the process to return with an exit code (with a timeout variable)
                 if (!_proc.WaitForExit(Timeout))
@@ -497,7 +525,7 @@ namespace Starksoft.Cryptography.OpenPGP
         {
             StringBuilder options = new StringBuilder();
 
-            //  set a home directory if the user specifies one
+            // set a home directory if the user specifies one
             if (_homePath != null && _homePath.Length != 0)
                 options.Append(String.Format(CultureInfo.InvariantCulture, "--homedir \"{0}\" ", _homePath));
 
@@ -507,18 +535,18 @@ namespace Starksoft.Cryptography.OpenPGP
                 options.Append("--passphrase-fd 0 ");
             }
 
-            //  turn off verbose statements
+            // turn off verbose statements
             options.Append("--no-verbose --batch ");
 
-            //  always use the trusted model so we don't get an interactive session with gpg.exe
+            // always use the trusted model so we don't get an interactive session with gpg.exe
             options.Append("--trust-model always ");
 
             return options;
         }
 
-        private string GetCmdLineSwitches(ActionTypes action)
+        private StringBuilder GetCmdLineSwitches(ActionTypes action, bool requiresPassword = true)
         {
-            StringBuilder options = SetStandardOptions(true);
+            StringBuilder options = SetStandardOptions(requiresPassword);
 
             //  handle the action
             switch (action)
@@ -546,17 +574,17 @@ namespace Starksoft.Cryptography.OpenPGP
                     break;
             }
 
-            return options.ToString();
+            return options;
         }
 
-		private void ExecuteGPG(ActionTypes action, Stream inputStream, Stream outputStream)
+		private void ExecuteGPG(StringBuilder options, Stream inputStream, Stream outputStream, bool needsPassword = true)
 		{
             string gpgErrorText = string.Empty;
 
             string gpgPath = GetGnuPGPath();
 
             //  create a process info object with command line options
-			ProcessStartInfo procInfo = new ProcessStartInfo(gpgPath, GetCmdLineSwitches(action));
+			ProcessStartInfo procInfo = new ProcessStartInfo(gpgPath, options.ToString());
 			
             //  init the procInfo object
 			procInfo.CreateNoWindow = true; 
@@ -570,9 +598,12 @@ namespace Starksoft.Cryptography.OpenPGP
                 //  start the gpg process and get back a process start info object
                 _proc = Process.Start(procInfo);
 
-                //  push passphrase onto stdin with a CRLF
-                _proc.StandardInput.WriteLine(_passphrase);
-                _proc.StandardInput.Flush();
+                if (needsPassword)
+                {
+                    //  push passphrase onto stdin with a CRLF
+                    _proc.StandardInput.WriteLine(_passphrase);
+                    _proc.StandardInput.Flush();
+                }
                 
                 _outputStream = outputStream;
                 _errorStream = new MemoryStream();
@@ -588,8 +619,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 errorThread.Start();
 
                 //  copy the input stream to the process standard input object
-                CopyStream(inputStream, _proc.StandardInput.BaseStream);
-                                
+                CopyStream(inputStream, _proc.StandardInput.BaseStream);                                
                 _proc.StandardInput.Flush();
                
                 // close the process standard input object
@@ -607,18 +637,24 @@ namespace Starksoft.Cryptography.OpenPGP
                 if (!errorThread.Join(_timeout / 2))
                     errorThread.Abort();
 
-                //  if the process exit code is not 0 then read the error text from the gpg.exe process 
-                if (_proc.ExitCode != 0)
+                _errorStream.Position = 0;
+                StreamReader rerror = new StreamReader(_errorStream);
+                string errorOutput = rerror.ReadToEnd();
+                
+                if (_proc.ExitCode == 0)
                 {
-                    StreamReader rerror = new StreamReader(_errorStream);
-                    _errorStream.Position = 0;
-                    gpgErrorText = rerror.ReadToEnd();
-                }        
-
+                    StreamWriter writer = new StreamWriter(_outputStream);
+                    writer.Write(errorOutput); // Sometimes GPG output appears on stderr - copy to stdout
+                    writer.Flush();
+                }
+                else
+                {
+                    gpgErrorText = errorOutput; // Actual processerror
+                }
             }
             catch (Exception exp)
             {
-                throw new GnuPGException(String.Format(CultureInfo.InvariantCulture, "An error occurred while trying to {0} data using GnuPG.  GPG.EXE command switches used: {1}", action.ToString(), procInfo.Arguments), exp);
+                throw new GnuPGException(String.Format(CultureInfo.InvariantCulture, "An error occurred while trying to execute GnuPG command {0}", options.ToString(), exp));
             }
             finally
             {

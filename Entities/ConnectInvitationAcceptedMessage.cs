@@ -11,6 +11,7 @@ namespace Entities
     /// Represents an accepted invitation. Carries a signed public key from
     /// the inviter (recipient) being returned to it by to the invitee (sender)
     /// </summary>
+    [Serializable]
     public class ConnectInvitationAcceptedMessage : IMercurioMessage
     {
         private const string SenderAddressName = "sender_address";

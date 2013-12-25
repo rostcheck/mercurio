@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Starksoft.Cryptography.OpenPGP;
-using TestUtils;
+using TestUtilities;
 
 namespace TestCryptography
 {
@@ -65,8 +65,9 @@ LcrXlt1MbO1jFunrxKc3bwqez6ahvw==
 
         private GnuPG PrepareTest(string userName)
         {
-            TestUtils.TestUtils.SetupUserDir(userName);
-            string keyPath = TestUtils.TestUtils.GetUserDir(userName);
+            TestUtils.SetupUserDir(userName);
+            TestUtils.SwitchUser(null, userName);
+            string keyPath = TestUtils.KeyChainDirectory;
             string binaryPath = Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) + "\\GNU\\GnuPG\\gpg2.exe";
             return new GnuPG(keyPath, binaryPath);
         }
