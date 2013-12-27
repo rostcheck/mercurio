@@ -10,6 +10,14 @@ namespace Entities
     public interface IMercurioMessageProcessor
     {
         string MessageTypeName { get; }
-        void ProcessMessage(IMercurioMessage message, ICryptoManager cryptoManager, IMercurioUI ui, IPersistentQueue queue);
+
+        /// <summary>
+        /// Can return a response or null
+        /// </summary>
+        /// <param name="message">Incoming message</param>
+        /// <param name="cryptoManager">Crypto manager</param>
+        /// <param name="ui">Reference to UI</param>
+        /// <returns>A repsonse message or null</returns>
+        IMercurioMessage ProcessMessage(IMercurioMessage message, ICryptoManager cryptoManager, IMercurioUI ui);
     }
 }

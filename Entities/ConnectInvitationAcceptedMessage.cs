@@ -67,7 +67,7 @@ namespace Entities
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(RecipientAddressName, recipientAddress);
-            info.AddValue(SenderAddressName, recipientAddress);
+            info.AddValue(SenderAddressName, senderAddress);
             info.AddValue(SenderKeyIDName, senderKeyID);
             info.AddValue(SignedPublicKeyName, signedPublicKey);
         }

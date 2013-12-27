@@ -58,6 +58,8 @@
     <Compile Include="PersistentQueueFactory.cs" />
     <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
     <Compile Include="Serializer.cs" />
+    <Compile Include="SignedKeyMessage.cs" />
+    <Compile Include="SimpleTextMessage.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
