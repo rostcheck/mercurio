@@ -53,7 +53,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Page Include="InvitationWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -61,12 +61,18 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
+    <Compile Include="InvitationWindow.xaml.cs">
+      <DependentUpon>InvitationWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -94,6 +100,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Entities\Entities.csproj">
+      <Project>{ce737374-d61e-4d4c-8796-580ec758a00c}</Project>
+      <Name>Entities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MercurioAppServiceLayer\MercurioAppServiceLayer.csproj">
       <Project>{9f972ae2-7fe2-4d5b-9b2e-fb1bbfacb3b3}</Project>
       <Name>MercurioAppServiceLayer</Name>

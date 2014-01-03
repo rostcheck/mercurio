@@ -54,11 +54,11 @@ namespace TestFunctionality
             receivedMessage = queue.GetNext(aliceAddress);
             Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationAcceptedMessage));
             var signedKeyMessage = aliceMessageService.ProcessMessage(receivedMessage); // Returns a signed copy of Bob's public key
-            aliceMessageService.Send(signedKeyMessage); // Send signed key            
+            aliceMessageService.Send(signedKeyMessage); // Send signed key 
+           
             // Alice also sends a message to Bob
             IMercurioMessage helloMessage = new SimpleTextMessage(aliceAddress, bobAddress, aliceMessage);
             aliceMessageService.Send(helloMessage);
-            //Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationAcceptedMessage));
 
             // Sign in as Bob, receive signed key
             TestUtils.SwitchUser(aliceName, bobName);

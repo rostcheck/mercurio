@@ -44,7 +44,6 @@
     <Compile Include="CryptoManagerFactory.cs" />
     <Compile Include="CryptoManagerType.cs" />
     <Compile Include="DummyMessage.cs" />
-    <Compile Include="Identity.cs" />
     <Compile Include="IMercurioMessageProcessor.cs" />
     <Compile Include="IMercurioUI.cs" />
     <Compile Include="PersistentQueueType.cs" />

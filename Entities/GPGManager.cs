@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Starksoft.Cryptography.OpenPGP;
 
@@ -78,15 +79,45 @@ namespace Entities
             return (gpg.GetKeys().FirstOrDefault(s => s.KeyID == key) != null);
         }
 
-        public Identity[] GetAvailableIdentities()
+        public List<User> GetAvailableIdentities()
         {
-            List<Identity> identityList = new List<Identity>();
+            List<User> identityList = new List<User>();
             GnuPGKeyCollection secretKeys = gpg.GetSecretKeys();
             foreach (GnuPGKey secretKey in secretKeys)
             {
-                identityList.Add(new Identity(secretKey.KeyID, secretKey.UserName));
+                identityList.Add(MakeUser(secretKey));
             }
-            return identityList.ToArray();
+            return identityList;
+        }
+
+        public List<User> GetAvailableUsers()
+        {
+            List<User> userList = new List<User>();
+            GnuPGKeyCollection publicKeys = gpg.GetKeys();
+            foreach (GnuPGKey key in publicKeys)
+            {
+                userList.Add(MakeUser(key));
+            }
+            return userList;
+        }
+
+        private User MakeUser(GnuPGKey key)
+        {
+            string name = string.Empty;
+            string description = string.Empty;
+            // Match expressions of form: Alice (Alice's Key) 
+            Match match = Regex.Match(key.UserName, @"(.+)\((.+)\)", RegexOptions.None);
+            if (match.Success)
+            {
+                name = match.Groups[1].Value;
+                description = match.Groups[2].Value;
+            }
+            else
+            {
+                name = key.UserName;
+            }
+
+            return new User(key.KeyID, name, key.UserId, description);
         }
     }
 }

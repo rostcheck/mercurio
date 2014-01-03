@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppServiceLayer.cs" />
+    <Compile Include="AppCryptoManagerType.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

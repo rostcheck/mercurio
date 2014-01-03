@@ -27,10 +27,10 @@ namespace TestFunctionality
 
         public string GetSelectedIdentity(ICryptoManager cryptoManager)
         {
-            Identity[] identityList = cryptoManager.GetAvailableIdentities();
-            if (identityList.Length == 1)
+           List<User> identityList = cryptoManager.GetAvailableIdentities();
+            if (identityList.Count == 1)
                 return identityList[0].Identifier;
-            else if (identityList.Length > 1)
+            else if (identityList.Count > 1)
                 return identityList[0].Identifier;
             else
                 throw new Exception("No identities available");
