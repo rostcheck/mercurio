@@ -27,6 +27,13 @@ namespace Entities
             gpg.Passphrase = passphrase;
         }
 
+        public Stream Encrypt(Stream messageStream, EncryptionAlgorithmEnum algorithm)
+        {
+            MemoryStream outputStream = new MemoryStream();
+            gpg.Encrypt(messageStream, outputStream);
+            return outputStream;
+        }
+
         public string Encrypt(string message, EncryptionAlgorithmEnum algorithm)
         {
             throw new NotImplementedException();

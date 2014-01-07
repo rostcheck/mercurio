@@ -17,6 +17,7 @@ namespace MercurioAppServiceLayer
        
         public void Send(IMercurioMessage message)
         {
+            //cryptoManager.Encrypt(message, EncryptionAlgorithmEnum.
             queue.Add(message);
         }
 

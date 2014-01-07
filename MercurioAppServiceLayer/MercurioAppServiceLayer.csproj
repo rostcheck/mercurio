@@ -41,6 +41,10 @@
   <ItemGroup>
     <Compile Include="AppServiceLayer.cs" />
     <Compile Include="AppCryptoManagerType.cs" />
+    <Compile Include="DataStoreException.cs" />
+    <Compile Include="IMessageDataStore.cs" />
+    <Compile Include="MercurioException.cs" />
+    <Compile Include="MessageDataStoreGPG.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

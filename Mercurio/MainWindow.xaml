@@ -5,9 +5,14 @@
         Title="Mercurio Secure Communicator" Height="419" Width="598" Loaded="OnLoaded">
     <Grid Margin="0,0,0,56">
         <StackPanel x:Name="spMain" Height="333" VerticalAlignment="Top" Orientation="Horizontal">
-            <DataGrid x:Name="dgUsers" ItemsSource="{Binding}" AutoGenerateColumns="False">
+            <DataGrid x:Name="dgUsers" ItemsSource="{Binding}" AutoGenerateColumns="False" Margin="0,0,0,5">
                 <DataGrid.Columns>
                     <DataGridTextColumn x:Name="colUsers" Binding="{Binding Name}" ClipboardContentBinding="{x:Null}" Width="100" Header="Contact Name"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <DataGrid Margin="0,0,0,5">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{x:Null}" ClipboardContentBinding="{x:Null}" Header="Message"/>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

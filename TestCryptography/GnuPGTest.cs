@@ -15,6 +15,7 @@ namespace TestCryptography
         private const string hermesPublicKeyID = "6C628193";
         private const string hermesPublicSubKeyID = "44AE5384";
         private const string hermesPassphrase = @"Our technology has been TurneD AGAINST US :(";
+        private const string secretMessage = "This is my secret message. There are many like it, but this one is mine.";
         private const string puttyPublicKeyID = "B41CAE29";
         private const string puttyPublicKeyFingerprint = "AE 65 D3 F7 85 D3 18 E0  3B 0C 9B 02 FF 3A 81 FE";
         private const string puttyPublicKey = @"-----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -110,5 +111,23 @@ LcrXlt1MbO1jFunrxKc3bwqez6ahvw==
             string signedKey = gpg.GetActualKey(key.KeyID);
             Assert.IsTrue(signedKey.Length > 0);
         }
+
+        [TestMethod]
+        public void EncryptTest()
+        {
+            GnuPG gpg = PrepareTest("mercurio");
+            gpg.Passphrase = hermesPassphrase;
+            gpg.Recipient = hermesPublicKeyID; // Encrypt to ourself
+
+            MemoryStream inputStream = new MemoryStream(Encoding.ASCII.GetBytes(secretMessage));
+            MemoryStream outputStream = new MemoryStream();
+            gpg.Encrypt(inputStream, outputStream);
+            outputStream.Position = 0;
+            StreamReader reader = new StreamReader(outputStream);
+            string encryptedMessage = reader.ReadToEnd();
+            Assert.IsTrue(encryptedMessage != null);
+            Assert.IsTrue(encryptedMessage.Length > 0);
+        }
+
     }    
 }
