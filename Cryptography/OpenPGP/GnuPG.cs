@@ -262,10 +262,11 @@ namespace Starksoft.Cryptography.OpenPGP
         /// </summary>
         /// <param name="inputStream">Input stream data containing the data to encrypt.</param>
         /// <param name="outputStream">Output stream which will contain encrypted data.</param>
+        /// <param name="metadataStream">Output stream which will contain GPG metadata about the operation.</param>
         /// <remarks>
         /// You must add the recipient's public key to your GnuPG key ring before calling this method.  Please see the GnuPG documentation for more information.
         /// </remarks>
-        public void Encrypt(Stream inputStream, Stream outputStream)
+        public void Encrypt(Stream inputStream, Stream outputStream, Stream metadataStream)
         {
             if (inputStream == null)
                 throw new ArgumentNullException("Argument inputStream can not be null.");
@@ -283,7 +284,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 throw new GnuPGException("Passphrase must be set");
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Encrypt, true);
-            ExecuteGPG(options, inputStream, outputStream);
+            ExecuteGPG(options, inputStream, outputStream, metadataStream);
         }
 
         /// <summary>
@@ -291,7 +292,8 @@ namespace Starksoft.Cryptography.OpenPGP
         /// </summary>
         /// <param name="inputStream">Input stream containing encrypted data.</param>
         /// <param name="outputStream">Output stream which will contain decrypted data.</param>
-        public void Decrypt(Stream inputStream, Stream outputStream)
+        /// <param name="metadataStream">Output stream which will contain GPG metadata about the operation.</param> 
+        public void Decrypt(Stream inputStream, Stream outputStream, Stream metadataStream)
         {
             if (inputStream == null)
                 throw new ArgumentNullException("Argument inputStream can not be null.");
@@ -309,7 +311,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 throw new GnuPGException("Passphrase must be set");
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Decrypt, true);
-            ExecuteGPG(options, inputStream, outputStream);
+            ExecuteGPG(options, inputStream, outputStream, metadataStream);
         }
 
         /// <summary>
@@ -317,7 +319,8 @@ namespace Starksoft.Cryptography.OpenPGP
         /// </summary>
         /// <param name="inputStream">Input stream containing data to sign.</param>
         /// <param name="outputStream">Output stream containing signed data.</param>
-        public void Sign(Stream inputStream, Stream outputStream)
+        /// <param name="outputStream">Output stream which will contain GPG metadata about the operation.</param>        
+        public void Sign(Stream inputStream, Stream outputStream, Stream metadataStream)
         {
             if (inputStream == null)
                 throw new ArgumentNullException("Argument inputStream can not be null.");
@@ -335,7 +338,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 throw new GnuPGException("Passphrase must be set");
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Sign, true);
-            ExecuteGPG(options, inputStream, outputStream);
+            ExecuteGPG(options, inputStream, outputStream, metadataStream);
         }
 
         /// <summary>
@@ -351,7 +354,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 throw new ArgumentException("Argument inputStream must be readable.");
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Verify, false);
-            ExecuteGPG(options, inputStream, new MemoryStream());
+            ExecuteGPG(options, inputStream, new MemoryStream(), new MemoryStream());
         }
 
         /// <summary>
@@ -368,10 +371,11 @@ namespace Starksoft.Cryptography.OpenPGP
                 throw new ArgumentException("Argument inputStream must be readable.");
 
             MemoryStream outputStream = new MemoryStream();
+            MemoryStream metadataStream = new MemoryStream();
 
             StringBuilder options = new StringBuilder("--import");
-            ExecuteGPG(options, inputStream, outputStream, false);
-            StreamReader reader = new StreamReader(outputStream);
+            ExecuteGPG(options, inputStream, outputStream, metadataStream, false);
+            StreamReader reader = new StreamReader(metadataStream);
             reader.BaseStream.Position = 0;
             string output = reader.ReadToEnd();
             Match match = Regex.Match(output, @"key ([A-Z0-9]+):", RegexOptions.Multiline);
@@ -577,7 +581,7 @@ namespace Starksoft.Cryptography.OpenPGP
             return options;
         }
 
-		private void ExecuteGPG(StringBuilder options, Stream inputStream, Stream outputStream, bool needsPassword = true)
+		private void ExecuteGPG(StringBuilder options, Stream inputStream, Stream outputStream, Stream metadataStream, bool needsPassword = true)
 		{
             string gpgErrorText = string.Empty;
 
@@ -643,9 +647,13 @@ namespace Starksoft.Cryptography.OpenPGP
                 
                 if (_proc.ExitCode == 0)
                 {
-                    StreamWriter writer = new StreamWriter(_outputStream);
-                    writer.Write(errorOutput); // Sometimes GPG output appears on stderr - copy to stdout
-                    writer.Flush();
+                    // If the process succeeded, treat error output as metadata
+                    if (metadataStream != null)
+                    {
+                        StreamWriter writer = new StreamWriter(metadataStream);
+                        writer.Write(errorOutput);
+                        writer.Flush();
+                    }
                 }
                 else
                 {
@@ -871,10 +879,11 @@ namespace Starksoft.Cryptography.OpenPGP
         /// </summary>
         /// <param name="inputStream">Input stream data containing the data to encrypt.</param>
         /// <param name="outputStream">Output stream which will contain encrypted data.</param>
+        /// <param name="metadataStream">Output stream which will contain GPG metadata about the operation.</param>        
         /// <remarks>
         /// You must add the recipient's public key to your GnuPG key ring before calling this method.  Please see the GnuPG documentation for more information.
         /// </remarks>
-        public void EncryptAsync(Stream inputStream, Stream outputStream)
+        public void EncryptAsync(Stream inputStream, Stream outputStream, Stream metadataStream)
         {
           if (_asyncWorker != null && _asyncWorker.IsBusy)
               throw new InvalidOperationException("The GnuPG object is already busy executing another asynchronous operation.  You can only execute one asychronous method at a time.");
@@ -886,6 +895,7 @@ namespace Starksoft.Cryptography.OpenPGP
           Object[] args = new Object[2];
           args[0] = inputStream;
           args[1] = outputStream;
+          args[2] = metadataStream;
           _asyncWorker.RunWorkerAsync(args);
       }
 
@@ -894,7 +904,7 @@ namespace Starksoft.Cryptography.OpenPGP
           try
           {
               Object[] args = (Object[])e.Argument;
-              Encrypt((Stream)args[0], (Stream)args[1]);
+              Encrypt((Stream)args[0], (Stream)args[1], (Stream)args[2]);
           }
           catch (Exception ex)
           {
@@ -918,7 +928,8 @@ namespace Starksoft.Cryptography.OpenPGP
         /// </summary>
         /// <param name="inputStream">Input stream containing encrypted data.</param>
         /// <param name="outputStream">Output stream which will contain decrypted data.</param>
-        public void DecryptAsync(Stream inputStream, Stream outputStream)
+        /// <param name="metadataStream">Output stream which will contain GPG metadata about the operation.</param>        
+        public void DecryptAsync(Stream inputStream, Stream outputStream, Stream metadataStream)
         {
             if (_asyncWorker != null && _asyncWorker.IsBusy)
                 throw new InvalidOperationException("The GnuPG object is already busy executing another asynchronous operation.  You can only execute one asychronous method at a time.");
@@ -930,6 +941,7 @@ namespace Starksoft.Cryptography.OpenPGP
             Object[] args = new Object[2];
             args[0] = inputStream;
             args[1] = outputStream;
+            args[2] = metadataStream;
             _asyncWorker.RunWorkerAsync(args);
         }
 
@@ -938,7 +950,7 @@ namespace Starksoft.Cryptography.OpenPGP
             try
             {
                 Object[] args = (Object[])e.Argument;
-                Decrypt((Stream)args[0], (Stream)args[1]);
+                Decrypt((Stream)args[0], (Stream)args[1], (Stream)args[2]);
             }
             catch (Exception ex)
             {
@@ -962,7 +974,8 @@ namespace Starksoft.Cryptography.OpenPGP
         /// </summary>
         /// <param name="inputStream">Input stream containing data to sign.</param>
         /// <param name="outputStream">Output stream which will contain Signed data.</param>
-        public void SignAsync(Stream inputStream, Stream outputStream)
+        /// <param name="metadataStream">Output stream which will contain GPG metadata about the operation.</param>        
+        public void SignAsync(Stream inputStream, Stream outputStream, Stream metadataStream)
         {
             if (_asyncWorker != null && _asyncWorker.IsBusy)
                 throw new InvalidOperationException("The GnuPG object is already busy executing another asynchronous operation.  You can only execute one asychronous method at a time.");
@@ -974,6 +987,7 @@ namespace Starksoft.Cryptography.OpenPGP
             Object[] args = new Object[2];
             args[0] = inputStream;
             args[1] = outputStream;
+            args[2] = metadataStream;
             _asyncWorker.RunWorkerAsync(args);
         }
 
@@ -982,7 +996,7 @@ namespace Starksoft.Cryptography.OpenPGP
             try
             {
                 Object[] args = (Object[])e.Argument;
-                Sign((Stream)args[0], (Stream)args[1]);
+                Sign((Stream)args[0], (Stream)args[1], (Stream)args[2]);
             }
             catch (Exception ex)
             {

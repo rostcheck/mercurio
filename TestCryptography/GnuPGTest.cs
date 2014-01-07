@@ -113,21 +113,31 @@ LcrXlt1MbO1jFunrxKc3bwqez6ahvw==
         }
 
         [TestMethod]
-        public void EncryptTest()
+        public void EncryptDecryptTest()
         {
             GnuPG gpg = PrepareTest("mercurio");
             gpg.Passphrase = hermesPassphrase;
             gpg.Recipient = hermesPublicKeyID; // Encrypt to ourself
 
+            // verify encryption
             MemoryStream inputStream = new MemoryStream(Encoding.ASCII.GetBytes(secretMessage));
             MemoryStream outputStream = new MemoryStream();
-            gpg.Encrypt(inputStream, outputStream);
+            MemoryStream metadataStream = new MemoryStream();
+            gpg.Encrypt(inputStream, outputStream, metadataStream);
             outputStream.Position = 0;
             StreamReader reader = new StreamReader(outputStream);
             string encryptedMessage = reader.ReadToEnd();
             Assert.IsTrue(encryptedMessage != null);
             Assert.IsTrue(encryptedMessage.Length > 0);
-        }
 
+            // Verify decryption
+            inputStream = new MemoryStream(Encoding.ASCII.GetBytes(encryptedMessage));
+            outputStream = new MemoryStream();
+            gpg.Decrypt(inputStream, outputStream, metadataStream);
+            outputStream.Position = 0;
+            reader = new StreamReader(outputStream);
+            string decryptedMessage = reader.ReadToEnd();
+            Assert.IsTrue(decryptedMessage == secretMessage);
+        }
     }    
 }

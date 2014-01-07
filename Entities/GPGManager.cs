@@ -13,6 +13,7 @@ namespace Entities
     {
         private Dictionary<ConfigurationKeyEnum, string> configuration;
         private GnuPG gpg;
+        private delegate void GpgOperation(Stream inputStream, Stream outputStream, Stream metadataStream);
 
         public GPGManager(Dictionary<ConfigurationKeyEnum, string> configuration)
         {
@@ -27,19 +28,46 @@ namespace Entities
             gpg.Passphrase = passphrase;
         }
 
-        public Stream Encrypt(Stream messageStream, EncryptionAlgorithmEnum algorithm)
+        private Stream ExecuteGPGStreamOperation(GpgOperation operation, Stream messageStream)
         {
             MemoryStream outputStream = new MemoryStream();
-            gpg.Encrypt(messageStream, outputStream);
+            MemoryStream metadataStream = new MemoryStream();
+            operation(messageStream, outputStream, metadataStream);
             return outputStream;
         }
 
-        public string Encrypt(string message, EncryptionAlgorithmEnum algorithm)
+        private string ExecuteGPGStringOperation(GpgOperation operation, string message)
         {
-            throw new NotImplementedException();
+            MemoryStream messageStream = new MemoryStream(Encoding.ASCII.GetBytes(message));
+            MemoryStream resultStream = new MemoryStream();
+            MemoryStream metadataStream = new MemoryStream();
+            gpg.Encrypt(messageStream, resultStream, metadataStream);
+            resultStream.Position = 0;
+            StreamReader reader = new StreamReader(resultStream);
+            return reader.ReadToEnd();
         }
 
-        public string Sign(string message)
+        public Stream Encrypt(Stream messageStream)
+        {
+            return ExecuteGPGStreamOperation(gpg.Encrypt, messageStream);
+        }
+
+        public string Encrypt(string message)
+        {
+            return ExecuteGPGStringOperation(gpg.Encrypt, message);
+        }
+
+        public Stream Decrypt(Stream messageStream)
+        {
+            return ExecuteGPGStreamOperation(gpg.Decrypt, messageStream);
+        }
+
+        public string Decrypt(string message)
+        {
+            return ExecuteGPGStringOperation(gpg.Decrypt, message);
+        }
+
+        public string EncryptSymmetric(string message, EncryptionAlgorithmEnum algorithm)
         {
             throw new NotImplementedException();
         }
@@ -47,6 +75,16 @@ namespace Entities
         public bool Validate(string message)
         {
             throw new NotImplementedException();
+        }
+
+        public Stream Sign(Stream messageStream)
+        {
+            return ExecuteGPGStreamOperation(gpg.Sign, messageStream);
+        }
+
+        public string Sign(string message)
+        {
+            return ExecuteGPGStringOperation(gpg.Sign, message);
         }
 
         public string GetPublicKey(string identity)
