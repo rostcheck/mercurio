@@ -47,13 +47,15 @@ namespace Entities
             return reader.ReadToEnd();
         }
 
-        public Stream Encrypt(Stream messageStream)
+        public Stream Encrypt(Stream messageStream, string identifier)
         {
+            gpg.Recipient = identifier;
             return ExecuteGPGStreamOperation(gpg.Encrypt, messageStream);
         }
 
-        public string Encrypt(string message)
+        public string Encrypt(string message, string identifier)
         {
+            gpg.Recipient = identifier;
             return ExecuteGPGStringOperation(gpg.Encrypt, message);
         }
 

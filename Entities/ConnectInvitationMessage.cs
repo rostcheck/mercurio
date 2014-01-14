@@ -4,9 +4,11 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using ProtoBuf;
 
 namespace Entities
 {
+    [ProtoContract]
     [Serializable]
     public class ConnectInvitationMessage : IMercurioMessage
     {
@@ -16,45 +18,84 @@ namespace Entities
         private const string SignaturesName = "signatures";
         private const string EvidenceURLName = "evidence_url";
 
+        [ProtoMember(1)]
         public string PublicKey
         {
             get
             {
                 return publicKey;
             }
-        }
 
-        public string[] Signatures
-        {
-            get
+            set
             {
-                return signatures;
+                publicKey = value;
             }
         }
 
+        //[ProtoMember(2)]
+        //public string[] Signatures
+        //{
+        //    get
+        //    {
+        //        return signatures;
+        //    }
+        //}
+
+        [ProtoMember(3)]
         public string Evidence
         {
             get
             {
                 return evidence;
             }
+
+            set
+            {
+                evidence = value;
+            }
         }
 
+        [ProtoMember(4)]
         public string RecipientAddress
         {
             get
             {
                 return recipientAddress;
             }
+
+            set
+            {
+                recipientAddress = value;
+            }
         }
 
+        [ProtoMember(5)]
         public string SenderAddress
         {
             get
             {
                 return senderAddress;
             }
+
+            set
+            {
+                senderAddress = value;
+            }
         }
+
+        [ProtoMember(6)]
+        public bool Encryptable
+        {
+            get
+            {
+                return false;
+            }
+
+            set
+            {
+            }
+        }
+
         private string publicKey;
         private string[] signatures;
         private string evidence;

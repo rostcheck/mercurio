@@ -10,24 +10,41 @@ namespace Entities
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
 
-    public static class Serializer
+    public class Serializer
     {
-        public static void Serialize(string filename, object objectToSerialize)
+        private ISerializerCore core;
+
+        public Serializer(ISerializerCore core)
+        {
+            if (core == null)
+                throw new ArgumentException("Must initialize Serializer with a valid SerializerCore");
+
+            this.core = core;
+        }
+
+        public void Serialize(string filename, object objectToSerialize)
         {
             Stream stream = File.Open(filename, FileMode.Create);
-            BinaryFormatter bFormatter = new BinaryFormatter();
-            bFormatter.Serialize(stream, objectToSerialize);
+            Serialize(stream, objectToSerialize);
             stream.Close();
         }
 
-        public static T DeSerialize<T>(string filename)
+        public void Serialize(Stream stream, object objectToSerialize)
         {
-            object objectToSerialize;
+            this.core.Serialize(stream, objectToSerialize);
+        }
+
+        public T Deserialize<T>(string filename)
+        {
             Stream stream = File.Open(filename, FileMode.Open);
-            BinaryFormatter bFormatter = new BinaryFormatter();
-            objectToSerialize = (T)bFormatter.Deserialize(stream);
+            T returnVal = Deserialize<T>(stream);
             stream.Close();
-            return (T)objectToSerialize;
+            return returnVal;
+        }
+
+        public T Deserialize<T>(Stream stream)
+        {
+            return (T)core.Deserialize<T>(stream);
         }
     }
 }

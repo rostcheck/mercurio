@@ -23,8 +23,11 @@ namespace TestFunctionality
         private const string bobPassphrase = "Bob, just plain Bob, nothing to see here...";
         private const string aliceMessage = "Hi Bob. I'm Alice. Um... do you maybe want to hook up?";
         private const string bobMessage = "Hi Alice. Well, maybe. Can you send me some pics of you?";
-        private IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage);
-        private DummyMercurioUI userInterface = new DummyMercurioUI();
+        private Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+        private IPersistentQueue queue;
+        private const string logFileName = "test.log";
+        private static FileLogger logger = new FileLogger("test.log");
+        private DummyMercurioUI userInterface = new DummyMercurioUI(logger);
         private Dictionary<ConfigurationKeyEnum, string> aliceConfig, bobConfig;
         private ICryptoManager aliceCryptoManager, bobCryptoManager;
         private MessageService aliceMessageService, bobMessageService;
@@ -44,14 +47,14 @@ namespace TestFunctionality
 
             // Sign in as Bob, accept invitation
             TestUtils.SwitchUser(aliceName, bobName);
-            IMercurioMessage receivedMessage = queue.GetNext(bobAddress);
+            IMercurioMessage receivedMessage = bobMessageService.GetNext(bobAddress);
             Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationMessage));
             IMercurioMessage response = bobMessageService.ProcessMessage(receivedMessage);
             bobMessageService.Send(response);
 
             // Sign in as Alice, receive accepted invitation
             TestUtils.SwitchUser(bobName, aliceName);
-            receivedMessage = queue.GetNext(aliceAddress);
+            receivedMessage = aliceMessageService.GetNext(aliceAddress);
             Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationAcceptedMessage));
             var signedKeyMessage = aliceMessageService.ProcessMessage(receivedMessage); // Returns a signed copy of Bob's public key
             aliceMessageService.Send(signedKeyMessage); // Send signed key 
@@ -62,12 +65,12 @@ namespace TestFunctionality
 
             // Sign in as Bob, receive signed key
             TestUtils.SwitchUser(aliceName, bobName);
-            receivedMessage = queue.GetNext(bobAddress);
+            receivedMessage = bobMessageService.GetNext(bobAddress);
             Assert.IsTrue(receivedMessage.GetType() == typeof(SignedKeyMessage));
             bobMessageService.ProcessMessage(receivedMessage);
 
             // Then receive message, reply
-            receivedMessage = queue.GetNext(bobAddress);
+            receivedMessage = bobMessageService.GetNext(bobAddress);
             Assert.IsTrue(receivedMessage.GetType() == typeof(SimpleTextMessage));
             bobMessageService.ProcessMessage(receivedMessage);
             Assert.IsTrue(userInterface.LastDisplayedMessage == aliceMessage);
@@ -76,7 +79,7 @@ namespace TestFunctionality
 
             // Sign in as Alice, receive reply
             TestUtils.SwitchUser(bobName, aliceName);
-            receivedMessage = queue.GetNext(aliceAddress);
+            receivedMessage = aliceMessageService.GetNext(aliceAddress);
             Assert.IsTrue(receivedMessage.GetType() == typeof(SimpleTextMessage));
             aliceMessageService.ProcessMessage(receivedMessage);
             Assert.IsTrue(userInterface.LastDisplayedMessage == bobMessage);
@@ -87,16 +90,20 @@ namespace TestFunctionality
             foreach (string file in Directory.GetFiles(".", "*maker.net"))
                 File.Delete(file);
 
+            if (File.Exists(logFileName))
+                File.Delete(logFileName);
+
+            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
             aliceConfig = TestConfig.GetTestConfiguration(aliceName);
             bobConfig = TestConfig.GetTestConfiguration(bobName);
             TestUtils.SetupUserDir(aliceName);
             TestUtils.SetupUserDir(bobName);
             aliceCryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, aliceConfig);
-            aliceMessageService = new MessageService(queue, userInterface, aliceCryptoManager);
+            aliceMessageService = new MessageService(queue, userInterface, aliceCryptoManager, serializer);
             aliceCryptoManager.SetPassphrase(alicePassphrase);
             bobCryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, bobConfig);
             bobCryptoManager.SetPassphrase(bobPassphrase);
-            bobMessageService = new MessageService(queue, userInterface, bobCryptoManager);
+            bobMessageService = new MessageService(queue, userInterface, bobCryptoManager, serializer);
         }
 
         private void ClearQueue(string address)

@@ -20,9 +20,11 @@ namespace TestFunctionality
         {
             Dictionary <ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create();
             ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, configuration);
-            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage);
-            IMercurioUI userInterface = new DummyMercurioUI(); 
-            MessageService messageService = new MessageService(queue, userInterface, cryptoManager);
+            Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
+            FileLogger logger = new FileLogger("test.log");
+            IMercurioUserAgent userInterface = new DummyMercurioUI(logger); 
+            MessageService messageService = new MessageService(queue, userInterface, cryptoManager, serializer);
             string[] signatures = new string[0];
             IMercurioMessage connectInvitationMessage = new ConnectInvitationMessage(senderAddress, recipientAddress, cryptoManager.GetPublicKey(senderKey), signatures, evidenceURL);
             messageService.Send(connectInvitationMessage);

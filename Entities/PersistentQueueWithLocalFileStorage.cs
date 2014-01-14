@@ -9,38 +9,41 @@ namespace Entities
 {
     class PersistentQueueWithLocalFileStorage : IPersistentQueue
     {
-        public PersistentQueueWithLocalFileStorage()
+        private Serializer serializer;
+
+        public PersistentQueueWithLocalFileStorage(Serializer serializer)
         {
+            this.serializer = serializer;
         }
 
-        public void Add(IMercurioMessage message)
+        public void Add(EnvelopedMercurioMessage message)
         {
-            Queue<IMercurioMessage> messages = OpenQueue(message.RecipientAddress);
+            Queue<EnvelopedMercurioMessage> messages = OpenQueue(message.RecipientAddress);
             messages.Enqueue(message);
-            Serializer.Serialize(message.RecipientAddress, messages);
+            serializer.Serialize(message.RecipientAddress, messages);
         }
 
-        public IMercurioMessage GetNext(string address)
+        public EnvelopedMercurioMessage GetNext(string address)
         {
-            Queue<IMercurioMessage> messages = OpenQueue(address);
-            IMercurioMessage message = messages.Dequeue();
-            Serializer.Serialize(address, messages);
+            Queue<EnvelopedMercurioMessage> messages = OpenQueue(address);
+            EnvelopedMercurioMessage message = messages.Dequeue();
+            serializer.Serialize(address, messages);
             return message;
         }
 
         public int Length(string address)
         {
-            Queue<IMercurioMessage> messages = OpenQueue(address);
+            Queue<EnvelopedMercurioMessage> messages = OpenQueue(address);
             return messages.Count;
         }
 
-        private Queue<IMercurioMessage> OpenQueue(string queueFileName)
+        private Queue<EnvelopedMercurioMessage> OpenQueue(string queueFileName)
         {
-            Queue<IMercurioMessage> messages;
+            Queue<EnvelopedMercurioMessage> messages;
             if (File.Exists(queueFileName) && new FileInfo(queueFileName).Length > 0)
-                messages = Serializer.DeSerialize<Queue<IMercurioMessage>>(queueFileName);
+                messages = serializer.Deserialize<Queue<EnvelopedMercurioMessage>>(queueFileName);
             else
-                messages = new Queue<IMercurioMessage>();
+                messages = new Queue<EnvelopedMercurioMessage>();
             return messages;
         }
     }

@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net">
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -39,13 +42,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="ConnectInvitationAcceptedMessage.cs" />
     <Compile Include="ConfigurationKeyEnum.cs" />
     <Compile Include="CryptoManagerFactory.cs" />
     <Compile Include="CryptoManagerType.cs" />
     <Compile Include="DummyMessage.cs" />
+    <Compile Include="EncryptedMercurioMessage.cs" />
+    <Compile Include="EnvelopedMercurioMessage.cs" />
+    <Compile Include="FileLogger.cs" />
+    <Compile Include="IMercurioLogger.cs" />
     <Compile Include="IMercurioMessageProcessor.cs" />
-    <Compile Include="IMercurioUI.cs" />
+    <Compile Include="ISerializerCore.cs" />
+    <Compile Include="IMercurioUserAgent.cs" />
+    <Compile Include="LogMessageLevelEnum.cs" />
     <Compile Include="PersistentQueueType.cs" />
     <Compile Include="ConnectInvitationMessage.cs" />
     <Compile Include="EncryptionAlgorithmEnum.cs" />
@@ -57,6 +67,8 @@
     <Compile Include="PersistentQueueFactory.cs" />
     <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
     <Compile Include="Serializer.cs" />
+    <Compile Include="SerializerFactory.cs" />
+    <Compile Include="SerializerType.cs" />
     <Compile Include="SignedKeyMessage.cs" />
     <Compile Include="SimpleTextMessage.cs" />
     <Compile Include="User.cs" />
@@ -67,6 +79,9 @@
       <Project>{eba5e064-56a7-409e-aba0-1882180e3678}</Project>
       <Name>Cryptography</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

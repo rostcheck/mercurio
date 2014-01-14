@@ -44,6 +44,14 @@ namespace Entities
             }
         }
 
+        public bool Encryptable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public SignedKeyMessage(string recipientAddress, string senderAddress, string signedPublicKey, string evidence)
         {
             this.senderAddress = senderAddress;

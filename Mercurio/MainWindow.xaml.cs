@@ -55,26 +55,6 @@ namespace Mercurio
             }
         }
 
-        public void DisplayTextMessage(string textMessage)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetSelectedIdentity(ICryptoManager cryptoManager)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool AcceptInvitationResponse(ConnectInvitationAcceptedMessage invitationAcceptedMessage, string fingerprint)
-        {
-            throw new NotImplementedException();
-        }
-
         private void btnInvite_Click(object sender, RoutedEventArgs e)
         {
             Window inviteWindow = new InvitationWindow();

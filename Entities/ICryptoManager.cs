@@ -11,10 +11,11 @@ namespace Entities
     public interface ICryptoManager
     {
         void SetPassphrase(string passphrase);
-        Stream Encrypt(Stream messageStream);
-        string Encrypt(string message);
+        Stream Encrypt(Stream messageStream, string identifier);
+        string Encrypt(string message, string identifier);
         string EncryptSymmetric(string message, EncryptionAlgorithmEnum algorithm);
 
+        Stream Decrypt(Stream messageStream);
         string Sign(string message);
         bool Validate(string message);
         string GetPublicKey(string identifier); // for a single key

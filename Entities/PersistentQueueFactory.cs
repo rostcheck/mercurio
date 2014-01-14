@@ -8,12 +8,12 @@ namespace Entities
 {
     public static class PersistentQueueFactory
     {
-        public static IPersistentQueue Create(PeristentQueueType queueType)
+        public static IPersistentQueue Create(PeristentQueueType queueType, Serializer serializer)
         {
             switch (queueType)
             {
                 case PeristentQueueType.LocalFileStorage:
-                    return new PersistentQueueWithLocalFileStorage();
+                    return new PersistentQueueWithLocalFileStorage(serializer);
                 default:
                     throw new NotImplementedException();
             }

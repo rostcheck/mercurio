@@ -7,12 +7,14 @@ using Entities;
 
 namespace MercurioAppServiceLayer
 {
-    public class AppServiceLayer
+    public class AppServiceLayer : IMercurioUserAgent
     {
         private ICryptoManager cryptoManager;
         private MessageService messageService;
         private IMercurioUI userInterface;
-        private IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage); // TODO: Make configurable
+        private IMercurioLogger logger;
+        private Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+        private IPersistentQueue queue;
 
         public IPersistentQueue MessageQueue
         {
@@ -32,7 +34,9 @@ namespace MercurioAppServiceLayer
             }
             this.cryptoManager = CryptoManagerFactory.Create(GetCryptoManagerType(cryptoManagerType), configuration);
             this.userInterface = userInterface;
-            this.messageService = new MessageService(queue, userInterface, cryptoManager);
+            this.logger = new FileLogger("mercurio_log.txt");
+            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer); // TODO: Make configurable
+            this.messageService = new MessageService(queue, this, cryptoManager, serializer);
         }
 
         public void SendInvitation(string userID, string senderAddress, string recipientAddress, string evidenceURL)
@@ -134,5 +138,45 @@ namespace MercurioAppServiceLayer
             return errorString;
         }
 
+        #region IMercurioUI
+        public void DisplayTextMessage(string textMessage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetSelectedIdentity(ICryptoManager cryptoManager)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AcceptInvitationResponse(ConnectInvitationAcceptedMessage invitationAcceptedMessage, string fingerprint)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InvalidMessageReceived(object message)
+        {
+            IMercurioMessage mercurioMessage = message as IMercurioMessage;
+            if (mercurioMessage == null)
+            {
+                string objectAsString = Convert.ToString(message);
+                string firstPart = objectAsString.Substring(0, 25);
+                string formatMessage = "Received invalid message - cannot be deserialized (starts with {0})";
+                string logMessage = string.Format(formatMessage, firstPart);
+                logger.Log(LogMessageLevelEnum.Normal, logMessage);
+            }
+            else
+            {
+                string formatMessage = "Received invalid message from {0} - cannot be deserialized (unknown message type {1})";
+                string logMessage = string.Format(formatMessage, mercurioMessage.SenderAddress, mercurioMessage.GetType().ToString());
+                logger.Log(LogMessageLevelEnum.Normal, logMessage);
+            }
+        }
+        #endregion
     }
 }

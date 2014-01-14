@@ -11,5 +11,6 @@ namespace Entities
     {
         string SenderAddress { get; }
         string RecipientAddress { get; }
+        bool Encryptable { get; } // invitations are not encryptable
     }
 }

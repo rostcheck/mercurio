@@ -8,8 +8,8 @@ namespace Entities
 {
     public interface IPersistentQueue
     {
-        void Add(IMercurioMessage message);
-        IMercurioMessage GetNext(string address);
+        void Add(EnvelopedMercurioMessage message);
+        EnvelopedMercurioMessage GetNext(string address);
         int Length(string address);
     }
 }

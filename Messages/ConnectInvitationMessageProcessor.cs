@@ -14,7 +14,7 @@ namespace Messages
             get { return "Entities.ConnectInvitationMessage"; }
         }
 
-        public IMercurioMessage ProcessMessage(IMercurioMessage message, ICryptoManager cryptoManager, IMercurioUI ui)
+        public IMercurioMessage ProcessMessage(IMercurioMessage message, ICryptoManager cryptoManager, IMercurioUserAgent ui)
         {
             if (message.GetType() != typeof(ConnectInvitationMessage))
             {

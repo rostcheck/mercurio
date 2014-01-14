@@ -6,12 +6,19 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    // Represents everything a UI can do
-    public interface IMercurioUI
+    /// <summary>
+    /// Encapsulates interaction with the user
+    /// </summary>
+    public interface IMercurioUserAgent
     {
         void DisplayTextMessage(string textMessage);
         string GetSelectedIdentity(ICryptoManager cryptoManager);
         bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint);
         bool AcceptInvitationResponse(ConnectInvitationAcceptedMessage invitationAcceptedMessage, string fingerprint);
+        /// <summary>
+        /// Got a message, can't deserialize it
+        /// </summary>
+        /// <param name="message">The message as an object</param>
+        void InvalidMessageReceived(object message);
     }
 }

@@ -41,6 +41,14 @@ namespace Entities
             }
         }
 
+        public bool Encryptable
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public SimpleTextMessage(string senderAddress, string recipientAddress, string content)
         {
             this.senderAddress = senderAddress;

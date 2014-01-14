@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net">
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,6 +45,7 @@
     <Compile Include="AppServiceLayer.cs" />
     <Compile Include="AppCryptoManagerType.cs" />
     <Compile Include="DataStoreException.cs" />
+    <Compile Include="IMercurioUI.cs" />
     <Compile Include="IMessageDataStore.cs" />
     <Compile Include="MercurioException.cs" />
     <Compile Include="MessageDataStoreGPG.cs" />
@@ -57,6 +61,9 @@
       <Project>{e83101fb-4ecd-498b-9e04-ac8b02948ad1}</Project>
       <Name>MessageProcessors</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

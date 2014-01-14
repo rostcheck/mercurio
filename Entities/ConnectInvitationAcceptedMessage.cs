@@ -43,6 +43,14 @@ namespace Entities
             }
         }
 
+        public bool Encryptable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         private string signedPublicKey;
         private string senderKeyID;
         private string senderAddress;

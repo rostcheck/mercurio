@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
+using Entities;
 
-namespace Entities
+namespace TestEntities
 {
     [Serializable()]
     public class DummyMessage : IMercurioMessage

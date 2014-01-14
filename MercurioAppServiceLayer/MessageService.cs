@@ -5,27 +5,60 @@ using System.Text;
 using System.Threading.Tasks;
 using Messages;
 using Entities;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MercurioAppServiceLayer
 {
     public class MessageService
     {
         private IPersistentQueue queue;
-        private IMercurioUI ui;
+        private IMercurioUserAgent ui;
         private ICryptoManager cryptoManager;
         private Dictionary<string, IMercurioMessageProcessor> messageProcessors;
+        private Serializer serializer;
        
         public void Send(IMercurioMessage message)
         {
-            //cryptoManager.Encrypt(message, EncryptionAlgorithmEnum.
-            queue.Add(message);
+            IMercurioMessage sendableMessage = message;
+            if (message.Encryptable)
+            {
+                sendableMessage = new EncryptedMercurioMessage(cryptoManager, serializer, message);
+            }
+
+            EnvelopedMercurioMessage envelopedMessage = new EnvelopedMercurioMessage(
+                message.SenderAddress, message.RecipientAddress, sendableMessage, serializer);
+
+            queue.Add(envelopedMessage);
         }
 
-        public MessageService(IPersistentQueue queue, IMercurioUI userInterface, ICryptoManager cryptoManager)
+        public IMercurioMessage GetNext(string address)
+        {
+            object rawMessage = queue.GetNext(address);
+            EnvelopedMercurioMessage envelopedMessage = rawMessage as EnvelopedMercurioMessage;
+            if (envelopedMessage == null)
+            {
+                ui.InvalidMessageReceived(rawMessage);
+                return null;
+            }
+            else
+            {
+                IMercurioMessage message = envelopedMessage.PayloadAsMessage(serializer);
+                if (message.GetType() == typeof(EncryptedMercurioMessage))
+                {
+                    return ((EncryptedMercurioMessage)message).Decrypt(cryptoManager, serializer);
+                }
+                else return message;
+            }
+        }
+
+        public MessageService(IPersistentQueue queue, IMercurioUserAgent userInterface, 
+            ICryptoManager cryptoManager, Serializer serializer)
         {
             this.queue = queue;
             this.ui = userInterface;
             this.cryptoManager = cryptoManager;
+            this.serializer = serializer;
             messageProcessors = LoadMessageProcessors();
         }
 
