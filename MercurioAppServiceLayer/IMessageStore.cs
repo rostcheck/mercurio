@@ -7,12 +7,13 @@ using Entities;
 
 namespace MercurioAppServiceLayer
 {
-    public interface IMessageDataStore
+    public interface IMessageStore
     {
         bool IsLocked { get; }
         AppCryptoManagerType CryptoType { get; }
         bool Unlock(ICryptoManager cryptoManager, string passphrase);
         void Lock(ICryptoManager cryptoManager, string passphrase);
         List<IMercurioMessage> GetMessages(string identifier);
+        void Store(IMercurioMessage message, string identifier);
     }
 }

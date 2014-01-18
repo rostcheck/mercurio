@@ -26,7 +26,7 @@ namespace Messages
                 throw new Exception("Unknown message type " + message + " passed to SimpleTextMessageProcessor:ProcessMessage");
             }
             SimpleTextMessage thisMessage = message as SimpleTextMessage;
-            ui.DisplayTextMessage(thisMessage.Content);
+            ui.DisplayMessage(thisMessage, message.SenderAddress);
             return null;
         }
     }

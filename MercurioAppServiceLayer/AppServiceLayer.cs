@@ -15,6 +15,7 @@ namespace MercurioAppServiceLayer
         private IMercurioLogger logger;
         private Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
         private IPersistentQueue queue;
+        private MessageStoreTransientUnencrypted messageStore = new MessageStoreTransientUnencrypted();
 
         public IPersistentQueue MessageQueue
         {
@@ -37,6 +38,7 @@ namespace MercurioAppServiceLayer
             this.logger = new FileLogger("mercurio_log.txt");
             queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer); // TODO: Make configurable
             this.messageService = new MessageService(queue, this, cryptoManager, serializer);
+
         }
 
         public void SendInvitation(string userID, string senderAddress, string recipientAddress, string evidenceURL)
@@ -52,15 +54,14 @@ namespace MercurioAppServiceLayer
             return cryptoManager.GetAvailableUsers();
         }
 
-        public User GetIdentity()
+        public List<User> GetAvailableIdentities()
         {
-            return cryptoManager.GetAvailableIdentities().FirstOrDefault<User>(); // TODO: generalize this
+            return cryptoManager.GetAvailableIdentities();
         }
 
-        public List<string> GetMessages(string identity)
+        public List<IMercurioMessage> GetMessages(string withUser)
         {
-            //TODO: implement for real
-            return new List<string>();
+            return messageStore.GetMessages(withUser);
         }
 
         private Dictionary<ConfigurationKeyEnum, string> SetupConfiguration(AppCryptoManagerType appCryptoManagerType)
@@ -138,10 +139,12 @@ namespace MercurioAppServiceLayer
             return errorString;
         }
 
-        #region IMercurioUI
-        public void DisplayTextMessage(string textMessage)
+        #region IMercurioUserAgent
+
+        public void DisplayMessage(IMercurioMessage message, string senderAddress)
         {
-            throw new NotImplementedException();
+            messageStore.Store(message, senderAddress);
+            userInterface.NewMessage(message, senderAddress);
         }
 
         public string GetSelectedIdentity(ICryptoManager cryptoManager)

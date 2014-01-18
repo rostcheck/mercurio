@@ -43,6 +43,14 @@ namespace Entities
             }
         }
 
+        public string Content
+        {
+            get
+            {
+                return signedPublicKey;
+            }
+        }
+
         public bool Encryptable
         {
             get

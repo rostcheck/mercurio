@@ -11,7 +11,7 @@ namespace Entities
     /// </summary>
     public interface IMercurioUserAgent
     {
-        void DisplayTextMessage(string textMessage);
+        void DisplayMessage(IMercurioMessage message, string senderAddress);
         string GetSelectedIdentity(ICryptoManager cryptoManager);
         bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint);
         bool AcceptInvitationResponse(ConnectInvitationAcceptedMessage invitationAcceptedMessage, string fingerprint);

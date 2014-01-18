@@ -51,10 +51,10 @@ namespace TestFunctionality
             return true;
         }
 
-        public void DisplayTextMessage(string textMessage)
+        public void DisplayMessage(IMercurioMessage message, string recipientAddress)
         {
-            logger.Log(LogMessageLevelEnum.Normal, textMessage);
-            lastDisplayedMessage = textMessage;
+            logger.Log(LogMessageLevelEnum.Normal, message.ToString());
+            lastDisplayedMessage = message.ToString();
         }
 
         public void InvalidMessageReceived(object message)

@@ -49,6 +49,11 @@ namespace Entities
             }
         }
 
+        public override string ToString()
+        {
+            return this.content;
+        }
+
         public SimpleTextMessage(string senderAddress, string recipientAddress, string content)
         {
             this.senderAddress = senderAddress;

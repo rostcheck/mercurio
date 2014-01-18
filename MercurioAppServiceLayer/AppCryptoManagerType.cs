@@ -8,6 +8,7 @@ namespace MercurioAppServiceLayer
 {
     public enum AppCryptoManagerType
     {
+        None,
         GPG
     }
 }

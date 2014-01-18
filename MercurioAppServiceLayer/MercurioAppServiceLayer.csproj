@@ -46,9 +46,9 @@
     <Compile Include="AppCryptoManagerType.cs" />
     <Compile Include="DataStoreException.cs" />
     <Compile Include="IMercurioUI.cs" />
-    <Compile Include="IMessageDataStore.cs" />
+    <Compile Include="IMessageStore.cs" />
     <Compile Include="MercurioException.cs" />
-    <Compile Include="MessageDataStoreGPG.cs" />
+    <Compile Include="MessageStoreTransientUnencrypted.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

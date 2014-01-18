@@ -32,6 +32,14 @@ namespace Entities
             }
         }
 
+        public string Content
+        {
+            get
+            {
+                return publicKey;
+            }
+        }
+
         //[ProtoMember(2)]
         //public string[] Signatures
         //{

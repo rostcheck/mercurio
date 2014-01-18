@@ -18,7 +18,7 @@ namespace TestEntities
         private const string RecipientAddressName = "recipient_address";
         private const string MessageName = "message";
 
-        public string Message
+        public string Content
         {
             get
             {

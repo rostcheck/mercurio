@@ -62,7 +62,6 @@
     <Compile Include="GPGManager.cs" />
     <Compile Include="ICryptoManager.cs" />
     <Compile Include="IMercurioMessage.cs" />
-    <Compile Include="IMessageStore.cs" />
     <Compile Include="IPersistentQueue.cs" />
     <Compile Include="PersistentQueueFactory.cs" />
     <Compile Include="PersistentQueueWithLocalFileStorage.cs" />

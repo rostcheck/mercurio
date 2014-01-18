@@ -22,7 +22,7 @@ namespace Mercurio
     /// </summary>
     public partial class InvitationWindow : Window
     {
-        private AppServiceLayer appServiceLayer;
+        //private AppServiceLayer appServiceLayer;
 
         public InvitationWindow()
         {
