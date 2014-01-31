@@ -26,6 +26,7 @@ namespace Mercurio
 
         public InvitationWindow()
         {
+            InitializeComponent();
         }
 
         private void btnInvite__Click(object sender, RoutedEventArgs e)
