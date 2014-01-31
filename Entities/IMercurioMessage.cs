@@ -9,6 +9,7 @@ namespace Entities
 {
     public interface IMercurioMessage : ISerializable
     {
+        Guid ContentID { get; }
         string SenderAddress { get; }
         string RecipientAddress { get; }
         bool Encryptable { get; } // invitations are not encryptable

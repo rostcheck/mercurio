@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace MercurioAppServiceLayer
         private Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
         private IPersistentQueue queue;
         private MessageStoreTransientUnencrypted messageStore = new MessageStoreTransientUnencrypted();
+        private bool listening = false;
 
         public IPersistentQueue MessageQueue
         {
@@ -38,7 +40,55 @@ namespace MercurioAppServiceLayer
             this.logger = new FileLogger("mercurio_log.txt");
             queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer); // TODO: Make configurable
             this.messageService = new MessageService(queue, this, cryptoManager, serializer);
+        }
 
+        public async Task InjectTestMessages()
+        {
+            const string testMessageQueue = "messages_for_alice@maker.net";
+            const string testMessageQueuePath = @"..\..\..\TestKeyRings\" + testMessageQueue;
+            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
+            if (File.Exists(testMessageQueue))
+                File.Delete(testMessageQueue);
+            File.Copy(testMessageQueuePath, testMessageQueue);
+            
+            const int delay = 5000;
+            bool bExit = false;
+            while (!bExit)
+            {
+                await Task.Delay(delay);
+                EnvelopedMercurioMessage message = queue.GetNext(testMessageQueue);
+                if (message == null)
+                    bExit = true;
+                else
+                    queue.Add(message);
+            }
+        }
+
+        public async Task StartListener(string listeningAddress, string passphrase)
+        {
+            const int delay = 500;
+            listening = true;
+            cryptoManager.SetPassphrase(passphrase);
+            Task.Run(() => InjectTestMessages());
+            IMercurioMessage nextMessage = null;
+            while (listening)
+            {
+                if (nextMessage == null)
+                {
+                    nextMessage = messageService.GetNext(listeningAddress);
+                }
+                if (nextMessage != null)
+                {
+                    nextMessage = messageService.ProcessMessage(nextMessage);
+                }
+                await Task.Delay(delay);
+            }
+        }
+
+        public void StopListener()
+        {
+            listening = false;
+            Task.Delay(600);
         }
 
         public void SendInvitation(string userID, string senderAddress, string recipientAddress, string evidenceURL)

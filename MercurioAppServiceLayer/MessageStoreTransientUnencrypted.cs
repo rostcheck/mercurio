@@ -62,15 +62,31 @@ namespace MercurioAppServiceLayer
         public void Store(IMercurioMessage message, string identifier)
         {
             List<IMercurioMessage> messageList;
+            bool found = false;
             if (messageStore.ContainsKey(identifier))
             {
                 messageList = messageStore[identifier];
+                // Replace an existing message
+                for (int i = 0; i < messageList.Count; i++)
+                {
+                    if (messageList[i].ContentID == message.ContentID)
+                    {
+                        found = true;
+                        messageList[i] = message;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    messageList.Add(message);
+                }
             }
             else
             {
                 messageList = new List<IMercurioMessage>();
+                messageList.Add(message);
             }
-            messageList.Add(message);
+
             messageStore[identifier] = messageList;
         }  
     }

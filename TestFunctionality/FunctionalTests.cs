@@ -85,6 +85,24 @@ namespace TestFunctionality
             Assert.IsTrue(userInterface.LastDisplayedMessage == bobMessage);
         }
 
+        //[TestMethod]
+        //public void MakeBobQueue()
+        //{
+        //    const string sender = "bob@maker.net";
+        //    const string recipient = "alice@maker.net";
+        //    string[] messages = { "Hi Alice, are you there?", "I'm Bob, how are you?",
+        //                        "Are you going to the party on Saturday?",
+        //                        "I'm not bothering you, am I?", "I'm going, I think it will be fun."};
+        //    Setup();
+        //    TestUtils.SwitchUser(bobName, aliceName);
+        //    foreach (string messageText in messages)
+        //    {
+        //        SimpleTextMessage message = new SimpleTextMessage(sender, recipient, messageText);
+        //        bobMessageService.Send(message);
+        //    }
+
+        //}
+
         private void Setup()
         {
             foreach (string file in Directory.GetFiles(".", "*maker.net"))

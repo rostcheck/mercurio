@@ -26,9 +26,16 @@ namespace Entities
         public EnvelopedMercurioMessage GetNext(string address)
         {
             Queue<EnvelopedMercurioMessage> messages = OpenQueue(address);
-            EnvelopedMercurioMessage message = messages.Dequeue();
-            serializer.Serialize(address, messages);
-            return message;
+            if (messages.Count == 0)
+            {
+                return null; // queue empty
+            }
+            else
+            {
+                EnvelopedMercurioMessage message = messages.Dequeue();
+                serializer.Serialize(address, messages);
+                return message;
+            }
         }
 
         public int Length(string address)

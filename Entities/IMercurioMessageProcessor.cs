@@ -18,6 +18,6 @@ namespace Entities
         /// <param name="cryptoManager">Crypto manager</param>
         /// <param name="ui">Reference to UI</param>
         /// <returns>A repsonse message or null</returns>
-        IMercurioMessage ProcessMessage(IMercurioMessage message, ICryptoManager cryptoManager, IMercurioUserAgent ui);
+        IMercurioMessage ProcessMessage(IMercurioMessage message, ICryptoManager cryptoManager, IMercurioUserAgent ui, Serializer serializer);
     }
 }

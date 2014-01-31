@@ -7,6 +7,7 @@ using Messages;
 using Entities;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 
 namespace MercurioAppServiceLayer
 {
@@ -38,7 +39,7 @@ namespace MercurioAppServiceLayer
             EnvelopedMercurioMessage envelopedMessage = rawMessage as EnvelopedMercurioMessage;
             if (envelopedMessage == null)
             {
-                ui.InvalidMessageReceived(rawMessage);
+                //ui.InvalidMessageReceived(rawMessage);
                 return null;
             }
             else
@@ -46,7 +47,7 @@ namespace MercurioAppServiceLayer
                 IMercurioMessage message = envelopedMessage.PayloadAsMessage(serializer);
                 if (message.GetType() == typeof(EncryptedMercurioMessage))
                 {
-                    return ((EncryptedMercurioMessage)message).Decrypt(cryptoManager, serializer);
+                    return (EncryptedMercurioMessage)message;
                 }
                 else return message;
             }
@@ -71,6 +72,8 @@ namespace MercurioAppServiceLayer
             processors[typeof(ConnectInvitationAcceptedMessage).ToString()] = new ConnectInvitationAcceptedMessageProcessor();
             processors[typeof(SignedKeyMessage).ToString()] = new SignedKeyMessageProcessor();
             processors[typeof(SimpleTextMessage).ToString()] = new SimpleTextMessageProcessor();
+            processors[typeof(EncryptedMercurioMessage).ToString()] = new EncryptedMessageProcessor();
+            processors[typeof(DelayedMessage).ToString()] = new DelayedMessageProcessor();
             return processors;
         }
 
@@ -79,7 +82,7 @@ namespace MercurioAppServiceLayer
             string messageType = message.GetType().ToString();
             if (messageProcessors.ContainsKey(messageType))
             {
-                return messageProcessors[messageType].ProcessMessage(message, cryptoManager, ui);
+                return messageProcessors[messageType].ProcessMessage(message, cryptoManager, ui, serializer);
             }
             else
             {

@@ -17,8 +17,17 @@ namespace Entities
         private const string PublicKeyName = "public_key";
         private const string SignaturesName = "signatures";
         private const string EvidenceURLName = "evidence_url";
+        private const string ContentIDName = "content_id";
+        private Guid contentID;
 
-        [ProtoMember(1)]
+        public Guid ContentID
+        {
+            get
+            {
+                return contentID;
+            }
+        }
+
         public string PublicKey
         {
             get
@@ -40,7 +49,6 @@ namespace Entities
             }
         }
 
-        //[ProtoMember(2)]
         //public string[] Signatures
         //{
         //    get
@@ -49,7 +57,6 @@ namespace Entities
         //    }
         //}
 
-        [ProtoMember(3)]
         public string Evidence
         {
             get
@@ -63,7 +70,6 @@ namespace Entities
             }
         }
 
-        [ProtoMember(4)]
         public string RecipientAddress
         {
             get
@@ -77,7 +83,6 @@ namespace Entities
             }
         }
 
-        [ProtoMember(5)]
         public string SenderAddress
         {
             get
@@ -91,7 +96,6 @@ namespace Entities
             }
         }
 
-        [ProtoMember(6)]
         public bool Encryptable
         {
             get
@@ -117,6 +121,7 @@ namespace Entities
             this.publicKey = publicKey;
             this.signatures = signatures;
             this.evidence = evidence;
+            this.contentID = Guid.NewGuid();
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -126,6 +131,7 @@ namespace Entities
             info.AddValue(PublicKeyName, publicKey);
             info.AddValue(SignaturesName, signatures);
             info.AddValue(EvidenceURLName, evidence);
+            info.AddValue(ContentIDName, contentID);
         }
 
         public ConnectInvitationMessage(SerializationInfo info, StreamingContext ctxt)
@@ -135,6 +141,7 @@ namespace Entities
             this.publicKey = info.GetString(PublicKeyName);
             this.signatures = (string[]) info.GetValue(SignaturesName, typeof(string[]));
             this.evidence = info.GetString(EvidenceURLName);
+            this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
         }
     }
 }

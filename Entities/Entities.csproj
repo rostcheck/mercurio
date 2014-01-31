@@ -47,6 +47,7 @@
     <Compile Include="ConfigurationKeyEnum.cs" />
     <Compile Include="CryptoManagerFactory.cs" />
     <Compile Include="CryptoManagerType.cs" />
+    <Compile Include="DelayedTextMessage.cs" />
     <Compile Include="DummyMessage.cs" />
     <Compile Include="EncryptedMercurioMessage.cs" />
     <Compile Include="EnvelopedMercurioMessage.cs" />

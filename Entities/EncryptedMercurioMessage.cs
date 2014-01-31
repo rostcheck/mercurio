@@ -14,9 +14,19 @@ namespace Entities
         private const string SenderAddressName = "sender_address";
         private const string RecipientAddressName = "recipient_address";
         private const string ContentName = "content";
+        private const string ContentIDName = "content_id";
         private string senderAddress;
         private string recipientAddress;
         private string content;
+        private Guid contentID;
+
+        public Guid ContentID
+        {
+            get
+            {
+                return contentID;
+            }
+        }
 
         public string SenderAddress
         {
@@ -38,7 +48,8 @@ namespace Entities
         {
             get
             {
-                return content;
+                return TextRepresentation().ToString();
+                //return content;
             }
         }
 
@@ -54,6 +65,7 @@ namespace Entities
         {
             this.senderAddress = message.SenderAddress;
             this.recipientAddress = message.RecipientAddress;
+            this.contentID = message.ContentID;
 
             // Serialize the message to a Stream
             MemoryStream stream = new MemoryStream();
@@ -66,6 +78,13 @@ namespace Entities
             encryptedStream.Position = 0;
             StreamReader reader = new StreamReader(encryptedStream);
             content = reader.ReadToEnd();
+        }
+
+        // Returns a simple text message representing the (still encrypted) message
+        public SimpleTextMessage TextRepresentation()
+        {
+            // Show a piece of the encrypted message
+            return new SimpleTextMessage(senderAddress, recipientAddress, content.Substring(71, 170));
         }
 
         public IMercurioMessage Decrypt(ICryptoManager cryptoManager, Serializer serializer)
@@ -87,11 +106,18 @@ namespace Entities
             return serializer.Deserialize<IMercurioMessage>(decryptedStream);
         }
 
-        public EncryptedMercurioMessage(string senderAddress, string recipientAddress, string content)
+        public override string ToString()
+        {
+            //return content;
+            return TextRepresentation().ToString();
+        }
+
+        public EncryptedMercurioMessage(string senderAddress, string recipientAddress, string content, Guid contentID)
         {
             this.senderAddress = senderAddress;
             this.recipientAddress = recipientAddress;
             this.content = content;
+            this.contentID = contentID;
         }
 
         public EncryptedMercurioMessage(SerializationInfo info, StreamingContext ctxt)
@@ -99,6 +125,7 @@ namespace Entities
             this.senderAddress = info.GetString(SenderAddressName);
             this.recipientAddress = info.GetString(RecipientAddressName);
             this.content = info.GetString(ContentName);
+            this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
         }
 
         public void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
@@ -106,6 +133,7 @@ namespace Entities
             info.AddValue(RecipientAddressName, recipientAddress);
             info.AddValue(SenderAddressName, senderAddress);
             info.AddValue(ContentName, content);
+            info.AddValue(ContentIDName, contentID);
         }
     }
 }

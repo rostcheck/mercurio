@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -54,13 +55,16 @@ namespace Mercurio
                     }
                 }
             }
-            await InjectTestMessages();
+
+            //TODO: Ask for passphrase in dialog
+            string passphrase = @"Of all the queens, Alice is the highest!";
+            string selectedAddress = GetSelectedAddress();
+            await appServiceLayer.StartListener(selectedAddress, passphrase);
         }
 
         private void Setup()
         {
             appServiceLayer = new AppServiceLayer(AppCryptoManagerType.GPG, this);
-
         }
 
         private void btnInvite_Click(object sender, RoutedEventArgs e)
@@ -92,6 +96,19 @@ namespace Mercurio
             }
         }
 
+        public string GetSelectedAddress()
+        {
+            User selectedIdentity = cmbOperatingUser.SelectedItem as User;
+            if (selectedIdentity != null)
+            {
+                return selectedIdentity.Address;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint)
         {
             throw new NotImplementedException();
@@ -110,6 +127,7 @@ namespace Mercurio
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             User selectedUser = dgUsers.SelectedItem as User;
+            User currentUser = cmbOperatingUser.SelectedItem as User;
             if (selectedUser != null)
             {
                 dgMessages.DataContext = appServiceLayer.GetMessages(selectedUser.Address);
@@ -125,19 +143,9 @@ namespace Mercurio
             }
         }
 
-        private async Task InjectTestMessages()
+        private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            const int delay = 5000;
-            const string sender = "bob@maker.net";
-            const string recipient = "alice@maker.net";
-            string[] messages = {"Hi Alice, are you there?", "I'm Bob, how are you?", "Are you going to the party on Saturday?",
-                                "I'm not bothering you, am I?", "I'm going, I think it will be fun."};
-            foreach (string messageText in messages)
-            {
-                await Task.Delay(delay);
-                SimpleTextMessage message = new SimpleTextMessage(sender, recipient, messageText);
-                appServiceLayer.DisplayMessage(message, sender);
-            }
+            appServiceLayer.StopListener();
         }
     }
 }

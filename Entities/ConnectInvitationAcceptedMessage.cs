@@ -18,6 +18,20 @@ namespace Entities
         private const string RecipientAddressName = "recipient_address";
         private const string SignedPublicKeyName = "signed_public_key";
         private const string SenderKeyIDName = "sender_key_id";
+        private const string ContentIDName = "content_id";
+        private string signedPublicKey;
+        private string senderKeyID;
+        private string senderAddress;
+        private string recipientAddress;
+        private Guid contentID;
+
+        public Guid ContentID
+        {
+            get
+            {
+                return contentID;
+            }
+        }
 
         public ConnectInvitationAcceptedMessage(string senderAddress, string recipientAddress, string senderKeyID, string signedPublicKey)
         {
@@ -25,6 +39,7 @@ namespace Entities
             this.recipientAddress = recipientAddress;
             this.senderKeyID = senderKeyID;
             this.signedPublicKey = signedPublicKey;
+            this.contentID = Guid.NewGuid();
         }
 
         public string SenderKeyID
@@ -59,11 +74,6 @@ namespace Entities
             }
         }
 
-        private string signedPublicKey;
-        private string senderKeyID;
-        private string senderAddress;
-        private string recipientAddress;
-
         public string SenderAddress
         {
             get
@@ -86,6 +96,7 @@ namespace Entities
             info.AddValue(SenderAddressName, senderAddress);
             info.AddValue(SenderKeyIDName, senderKeyID);
             info.AddValue(SignedPublicKeyName, signedPublicKey);
+            info.AddValue(ContentIDName, contentID);
         }
 
         public ConnectInvitationAcceptedMessage(SerializationInfo info, StreamingContext context)
@@ -94,6 +105,7 @@ namespace Entities
             this.senderAddress = info.GetString(SenderAddressName);
             this.senderKeyID = info.GetString(SenderKeyIDName);
             this.signedPublicKey = info.GetString(SignedPublicKeyName);
+            this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
         }
     }
 }
