@@ -71,18 +71,20 @@ namespace TestFunctionality
 
             // Then receive message, reply
             receivedMessage = bobMessageService.GetNext(bobAddress);
-            Assert.IsTrue(receivedMessage.GetType() == typeof(SimpleTextMessage));
-            bobMessageService.ProcessMessage(receivedMessage);
-            Assert.IsTrue(userInterface.LastDisplayedMessage == aliceMessage);
+            Assert.IsTrue(receivedMessage.GetType() == typeof(EncryptedMercurioMessage));
+            Assert.IsFalse(receivedMessage.ToString() == aliceMessage.ToString());
+            IMercurioMessage timeDelayedMessage = bobMessageService.ProcessMessage(receivedMessage);
+            Assert.IsTrue(timeDelayedMessage.Content == aliceMessage.ToString());
             IMercurioMessage responseMessage = new SimpleTextMessage(bobAddress, aliceAddress, bobMessage);
             bobMessageService.Send(responseMessage);
 
             // Sign in as Alice, receive reply
             TestUtils.SwitchUser(bobName, aliceName);
             receivedMessage = aliceMessageService.GetNext(aliceAddress);
-            Assert.IsTrue(receivedMessage.GetType() == typeof(SimpleTextMessage));
-            aliceMessageService.ProcessMessage(receivedMessage);
-            Assert.IsTrue(userInterface.LastDisplayedMessage == bobMessage);
+            Assert.IsTrue(receivedMessage.GetType() == typeof(EncryptedMercurioMessage));
+            timeDelayedMessage = aliceMessageService.ProcessMessage(receivedMessage);
+            Assert.IsFalse(receivedMessage.ToString() == bobMessage.ToString());
+            Assert.IsTrue(timeDelayedMessage.Content == bobMessage);
         }
 
         //[TestMethod]
