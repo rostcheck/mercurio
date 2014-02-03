@@ -8,16 +8,34 @@ using Entities;
 
 namespace MercurioAppServiceLayer
 {
+    public delegate void NewMessage(IMercurioMessage message, string senderAddress);
+
+    /// <summary>
+    /// App service layer - provides all business logic, communicates in Entities. The app
+    /// service layer should be common across different UIs on different platforms.
+    /// </summary>
     public class AppServiceLayer : IMercurioUserAgent
     {
         private ICryptoManager cryptoManager;
         private MessageService messageService;
-        private IMercurioUI userInterface;
         private IMercurioLogger logger;
         private Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
         private IPersistentQueue queue;
         private MessageStoreTransientUnencrypted messageStore = new MessageStoreTransientUnencrypted();
         private bool listening = false;
+        private NewMessage newMessageEvent = null;
+
+        public NewMessage NewMessageEvent
+        {
+            get
+            {
+                return newMessageEvent;
+            }
+            set
+            {
+                newMessageEvent += value;
+            }
+        }
 
         public IPersistentQueue MessageQueue
         {
@@ -27,7 +45,7 @@ namespace MercurioAppServiceLayer
             }
         }
 
-        public AppServiceLayer(AppCryptoManagerType cryptoManagerType, IMercurioUI userInterface)
+        public AppServiceLayer(AppCryptoManagerType cryptoManagerType)
         {
             Dictionary<ConfigurationKeyEnum, string> configuration = SetupConfiguration(cryptoManagerType);
             List<string> errorList = ValidateConfiguration(cryptoManagerType, configuration);
@@ -36,7 +54,6 @@ namespace MercurioAppServiceLayer
                 throw new Exception(errorList.ToString());
             }
             this.cryptoManager = CryptoManagerFactory.Create(GetCryptoManagerType(cryptoManagerType), configuration);
-            this.userInterface = userInterface;
             this.logger = new FileLogger("mercurio_log.txt");
             queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer); // TODO: Make configurable
             this.messageService = new MessageService(queue, this, cryptoManager, serializer);
@@ -104,9 +121,18 @@ namespace MercurioAppServiceLayer
             return cryptoManager.GetAvailableUsers();
         }
 
+        /// <summary>
+        /// List of identities that the currently running user can operate as
+        /// </summary>
+        /// <returns>List of Users</returns>
         public List<User> GetAvailableIdentities()
         {
             return cryptoManager.GetAvailableIdentities();
+        }
+
+        public string GetFingerprint(string identifier)
+        {
+            return cryptoManager.GetFingerprint(identifier);
         }
 
         public List<IMercurioMessage> GetMessages(string withUser)
@@ -194,7 +220,8 @@ namespace MercurioAppServiceLayer
         public void DisplayMessage(IMercurioMessage message, string senderAddress)
         {
             messageStore.Store(message, senderAddress);
-            userInterface.NewMessage(message, senderAddress);
+            if (newMessageEvent != null)
+                NewMessageEvent(message, senderAddress);
         }
 
         public string GetSelectedIdentity(ICryptoManager cryptoManager)

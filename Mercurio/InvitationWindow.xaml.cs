@@ -29,6 +29,18 @@ namespace Mercurio
             InitializeComponent();
         }
 
+        public string FingerprintText
+        {
+            get
+            {
+                return lblFingerprintText.Content.ToString();
+            }
+            set
+            {
+                lblFingerprintText.Content = value;
+            }
+        }
+
         private void btnInvite__Click(object sender, RoutedEventArgs e)
         {
 

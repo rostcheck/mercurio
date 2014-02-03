@@ -40,6 +40,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -57,6 +59,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BoolToValueConverter.cs" />
+    <Compile Include="Converters.cs" />
+    <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="MessageViewModel.cs" />
+    <Compile Include="TogglePanelCommand.cs" />
+    <Compile Include="UnlockCommand.cs" />
+    <Compile Include="UserViewModel.cs" />
+    <Compile Include="ViewModelBase.cs" />
     <Page Include="InvitationWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -77,6 +87,7 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OverlayAdorner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -112,6 +123,10 @@
     <ProjectReference Include="..\MercurioAppServiceLayer\MercurioAppServiceLayer.csproj">
       <Project>{9f972ae2-7fe2-4d5b-9b2e-fb1bbfacb3b3}</Project>
       <Name>MercurioAppServiceLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MercurioUIControls\MercurioUIControls.csproj">
+      <Project>{d71c50a2-6fd5-4da5-a006-d784439a8e7c}</Project>
+      <Name>MercurioUIControls</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

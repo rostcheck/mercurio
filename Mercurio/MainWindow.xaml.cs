@@ -15,16 +15,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Entities;
 using MercurioAppServiceLayer;
+using MercurioUIControls;
 
 namespace Mercurio
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainWindow.xaml. Thin UI; should only do presentation.
     /// </summary>
-    public partial class MainWindow : Window, IMercurioUI
+    public partial class MainWindow : Window
     {
-        private AppServiceLayer appServiceLayer;
-        //private bool exiting;
         private const int messagePoolTimeInMS = 1000;
         private const string title = "Mercurio Secure Communicator";
 
@@ -35,52 +34,10 @@ namespace Mercurio
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            Setup();
-            cmbOperatingUser.ItemsSource = appServiceLayer.GetAvailableIdentities();
-            cmbOperatingUser.DisplayMemberPath = "Name";
-            if (cmbOperatingUser.Items.Count > 0)
-            {
-                cmbOperatingUser.SelectedIndex = 0;
-            }
-            dgUsers.DataContext = appServiceLayer.GetUsers();
-            User operatingUser = cmbOperatingUser.SelectedItem as User;
-            if (operatingUser != null && dgUsers.DataContext != null)
-            {
-                foreach (User thisUser in (List<User>)dgUsers.DataContext)
-                {
-                    if (thisUser.Address != operatingUser.Address)
-                    {
-                        dgUsers.SelectedItem = thisUser;
-                        break;
-                    }
-                }
-            }
-
             //TODO: Ask for passphrase in dialog
             string passphrase = @"Of all the queens, Alice is the highest!";
             string selectedAddress = GetSelectedAddress();
-            await appServiceLayer.StartListener(selectedAddress, passphrase);
-        }
-
-        private void Setup()
-        {
-            appServiceLayer = new AppServiceLayer(AppCryptoManagerType.GPG, this);
-        }
-
-        private void btnInvite_Click(object sender, RoutedEventArgs e)
-        {
-            Window inviteWindow = new InvitationWindow();
-            inviteWindow.Owner = this;
-            inviteWindow.ShowDialog();
-        }
-
-        public void NewMessage(IMercurioMessage message, string senderAddress)
-        {
-            User selectedUser = dgUsers.SelectedItem as User;
-            if (selectedUser != null)
-            {
-                dgMessages.DataContext = appServiceLayer.GetMessages(selectedUser.Address);
-            }
+            //await appServiceLayer.StartListener(selectedAddress, passphrase);
         }
 
         public string GetSelectedIdentity(ICryptoManager cryptoManager)
@@ -130,7 +87,7 @@ namespace Mercurio
             User currentUser = cmbOperatingUser.SelectedItem as User;
             if (selectedUser != null)
             {
-                dgMessages.DataContext = appServiceLayer.GetMessages(selectedUser.Address);
+                //dgMessages.DataContext = appServiceLayer.GetMessages(selectedUser.Address);
             }
         }
 
@@ -145,7 +102,7 @@ namespace Mercurio
 
         private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            appServiceLayer.StopListener();
+            //appServiceLayer.StopListener();
         }
     }
 }
