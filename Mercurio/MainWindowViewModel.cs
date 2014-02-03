@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,11 +24,13 @@ namespace Mercurio
         private UserViewModel selectedUser = null, selectedIdentity = null;
         private bool locked = true, invitationPanelVisible = false;
         private int invitationPanelHeight = 0, invitationPanelExpandedHeight = 200;
+        private NetworkCredential credential;
 
         public MainWindowViewModel(AppServiceLayer appService)
         {
             this.appService = appService;
             this.appService.NewMessageEvent += NewMessage;
+            this.appService.ReplacedMessageEvent += ReplacedMessage;
 
             users = new ObservableCollection<UserViewModel>(
                 (from user in appService.GetUsers()
@@ -67,6 +70,7 @@ namespace Mercurio
                             (from message in appService.GetMessages(selectedUser.Address)
                              select new MessageViewModel(message))
                             .ToList());
+                        selectedUser.NumberOfUnreadMessages = 0;
                     }
                     RaisePropertyChangedEvent("SelectedUser");
                 }
@@ -198,14 +202,46 @@ namespace Mercurio
         {
             UserViewModel user = users.FirstOrDefault<UserViewModel>(s => s.Address == senderAddress);
 
-            if (user != null && user != selectedUser)
+            if (user == null)
             {
-                user.NumberOfUnreadMessages++;
-                //messageCount++;
-                //BadgeControl badgeControl = new BadgeControl();
-                //badgeControl.SetText(messageCount.ToString());
+                // message received from unknown user
+            }
+            else 
+            {
+                if (user == selectedUser)
+                {
+                    Messages.Add(new MessageViewModel(message));
+                }
+                else
+                {
+                    user.NumberOfUnreadMessages++;
+                    //messageCount++;
+                    //BadgeControl badgeControl = new BadgeControl();
+                    //badgeControl.SetText(messageCount.ToString());
 
-                //OverlayAdorner<BadgeControl>.Overlay(dgMessages, badgeControl);                
+                    //OverlayAdorner<BadgeControl>.Overlay(dgMessages, badgeControl);                
+                }
+            }
+        }
+
+        public void ReplacedMessage(IMercurioMessage message, string senderAddress)
+        {
+            UserViewModel user = users.FirstOrDefault<UserViewModel>(s => s.Address == senderAddress);
+
+            if (user == null)
+            {
+                // message received from unknown user
+            }
+            else
+            {
+                if (user == selectedUser)
+                {
+                    var thisMessage = Messages.FirstOrDefault<MessageViewModel>(s => s.MessageID == message.ContentID);
+                    if (thisMessage != null)
+                    {
+                        Messages[Messages.IndexOf(thisMessage)] = new MessageViewModel(message);
+                    }
+                }
             }
         }        
 
@@ -219,6 +255,7 @@ namespace Mercurio
         public bool ValidatePassword(SecureString password)
         {
             Locked = false;
+            credential = new NetworkCredential(selectedIdentity.Identifier, password);
             return true; // TODO: Faked for now, connect up, see http://stackoverflow.com/questions/11381123/how-to-use-gpg-command-line-to-check-passphrase-is-correct
         }
 
@@ -228,9 +265,12 @@ namespace Mercurio
             InvitationPanelHeight = invitationPanelVisible ? invitationPanelExpandedHeight : 0;
         }
 
-        public void StartListener(SecureString password)
+        public void StartListener()
         {
-            //appService.StartListener(selectedIdentity.Address, password.
+            if (credential == null)
+                throw new Exception("Cannot start listener without having a password set");
+
+            appService.StartListener(selectedIdentity.Address, credential);
         }
     }
 }

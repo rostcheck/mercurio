@@ -24,7 +24,7 @@ namespace MercurioAppServiceLayer
         private IPersistentQueue queue;
         private MessageStoreTransientUnencrypted messageStore = new MessageStoreTransientUnencrypted();
         private bool listening = false;
-        private NewMessage newMessageEvent = null;
+        private NewMessage newMessageEvent = null, replacedMessageEvent = null;
 
         public NewMessage NewMessageEvent
         {
@@ -35,6 +35,18 @@ namespace MercurioAppServiceLayer
             set
             {
                 newMessageEvent += value;
+            }
+        }
+
+        public NewMessage ReplacedMessageEvent
+        {
+            get
+            {
+                return replacedMessageEvent;
+            }
+            set
+            {
+                replacedMessageEvent += value;
             }
         }
 
@@ -131,14 +143,14 @@ namespace MercurioAppServiceLayer
             return cryptoManager.GetAvailableIdentities();
         }
 
-        public string GetFingerprint(string identifier)
+        public string GetFingerprint(string userIdentifier)
         {
-            return cryptoManager.GetFingerprint(identifier);
+            return cryptoManager.GetFingerprint(userIdentifier);
         }
 
-        public List<IMercurioMessage> GetMessages(string withUser)
+        public List<IMercurioMessage> GetMessages(string userAddress)
         {
-            return messageStore.GetMessages(withUser);
+            return messageStore.GetMessages(userAddress);
         }
 
         private Dictionary<ConfigurationKeyEnum, string> SetupConfiguration(AppCryptoManagerType appCryptoManagerType)
@@ -220,9 +232,16 @@ namespace MercurioAppServiceLayer
 
         public void DisplayMessage(IMercurioMessage message, string senderAddress)
         {
-            messageStore.Store(message, senderAddress);
-            if (newMessageEvent != null)
-                NewMessageEvent(message, senderAddress);
+            if (messageStore.Store(message, senderAddress))
+            {
+                if (replacedMessageEvent != null)
+                    ReplacedMessageEvent(message, senderAddress);
+            }
+            else
+            {
+                if (newMessageEvent != null)
+                    NewMessageEvent(message, senderAddress);
+            }
         }
 
         public string GetSelectedIdentity(ICryptoManager cryptoManager)

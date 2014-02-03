@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Mercurio.MainWindow"
         xmlns:local="clr-namespace:Mercurio"
-        Title="Mercurio Secure Communicator" Height="435" Width="598" Loaded="OnLoaded" Closing="OnClosing">
+        Title="Mercurio Secure Communicator" Height="435" Width="598" Closing="OnClosing">
     <Window.Resources>       
         <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
         <local:BoolToStringConverter x:Key="PanelControlButtonText" FalseValue="Invite" TrueValue="Hide" />
@@ -21,12 +21,12 @@
         </Grid.RowDefinitions>
         <DataGrid x:Name="dgUsers" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Users}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedUser}"  SelectionChanged="OnSelectionChanged">
             <DataGrid.Columns>
-                <DataGridTextColumn x:Name="colUsers" Binding="{Binding Name, Mode=OneWay}" ClipboardContentBinding="{x:Null}" Width="110" Header="Contact Name"/>
+                <DataGridTextColumn x:Name="colUsers" Binding="{Binding NameAndNumberUnread, Mode=OneWay}" ClipboardContentBinding="{x:Null}" Width="110" Header="Contact Name"/>
             </DataGrid.Columns>
         </DataGrid>
         <DataGrid x:Name="dgMessages" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Messages}" AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Content}" ClipboardContentBinding="{x:Null}" Width="*" Header="Message"/>
+                <DataGridTextColumn Binding="{Binding Representation}" ClipboardContentBinding="{x:Null}" Width="*" Header="Message"/>
             </DataGrid.Columns>
         </DataGrid>
         <Grid Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Height="34" VerticalAlignment="Bottom">

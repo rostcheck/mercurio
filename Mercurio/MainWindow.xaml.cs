@@ -32,13 +32,13 @@ namespace Mercurio
             InitializeComponent();
         }
 
-        private async void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            //TODO: Ask for passphrase in dialog
-            string passphrase = @"Of all the queens, Alice is the highest!";
-            string selectedAddress = GetSelectedAddress();
-            //await appServiceLayer.StartListener(selectedAddress, passphrase);
-        }
+        //private async void OnLoaded(object sender, RoutedEventArgs e)
+        //{
+        //    //TODO: Ask for passphrase in dialog
+        //    string passphrase = @"Of all the queens, Alice is the highest!";
+        //    string selectedAddress = GetSelectedAddress();
+        //    //await appServiceLayer.StartListener(selectedAddress, passphrase);
+        //}
 
         public string GetSelectedIdentity(ICryptoManager cryptoManager)
         {

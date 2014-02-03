@@ -14,6 +14,7 @@ namespace MercurioAppServiceLayer
         bool Unlock(ICryptoManager cryptoManager, string passphrase);
         void Lock(ICryptoManager cryptoManager, string passphrase);
         List<IMercurioMessage> GetMessages(string identifier);
-        void Store(IMercurioMessage message, string identifier);
+        // Returns true if message was replaced
+        bool Store(IMercurioMessage message, string identifier);
     }
 }

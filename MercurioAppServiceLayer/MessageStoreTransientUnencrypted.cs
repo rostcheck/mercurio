@@ -59,7 +59,13 @@ namespace MercurioAppServiceLayer
             }
         }
 
-        public void Store(IMercurioMessage message, string identifier)
+        /// <summary>
+        /// Store (and potentially replace) a message
+        /// </summary>
+        /// <param name="message">Message</param>
+        /// <param name="identifier">User address</param>
+        /// <returns>True if the message was replaced</returns>
+        public bool Store(IMercurioMessage message, string identifier)
         {
             List<IMercurioMessage> messageList;
             bool found = false;
@@ -88,6 +94,7 @@ namespace MercurioAppServiceLayer
             }
 
             messageStore[identifier] = messageList;
+            return found;
         }  
     }
 }

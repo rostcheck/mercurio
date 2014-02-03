@@ -16,6 +16,7 @@ namespace Mercurio
         {
             //Note: images or other message types may require special representation
             representation = message.ToString();
+            messageID = message.ContentID;
         }
 
         public object Representation

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -38,9 +39,10 @@ namespace Mercurio
             if (passwordBox == null)
                 throw new ArgumentException("Invalid PasswordBox sent as parameter to UnlockCommand:Execute()");
 
-            viewModel.ValidatePassword(passwordBox.SecurePassword);
-            //if (viewModel.ValidatePassword(passwordBox.SecurePassword))
-            //    viewModel.
+            if (viewModel.ValidatePassword(passwordBox.SecurePassword))
+            {
+                viewModel.StartListener();
+            }
         }
     }
 }
