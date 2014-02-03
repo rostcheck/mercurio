@@ -28,6 +28,23 @@ namespace Entities
             gpg.Credential = credential;
         }
 
+        public bool ValidateCredential(NetworkCredential credential)
+        {
+            NetworkCredential savedCredential = gpg.Credential;
+            gpg.Credential = credential;
+            try
+            {
+                string result = ExecuteGPGStringOperation(gpg.Sign, "some nonsense message");
+                gpg.Credential = savedCredential;
+                return result != string.Empty;
+            }
+            catch (GnuPGException)
+            {
+                gpg.Credential = savedCredential;
+                return false;
+            }
+        }
+
         private Stream ExecuteGPGStreamOperation(GpgOperation operation, Stream messageStream)
         {
             MemoryStream outputStream = new MemoryStream();
@@ -41,7 +58,7 @@ namespace Entities
             MemoryStream messageStream = new MemoryStream(Encoding.ASCII.GetBytes(message));
             MemoryStream resultStream = new MemoryStream();
             MemoryStream metadataStream = new MemoryStream();
-            gpg.Encrypt(messageStream, resultStream, metadataStream);
+            operation(messageStream, resultStream, metadataStream);
             resultStream.Position = 0;
             StreamReader reader = new StreamReader(resultStream);
             return reader.ReadToEnd();

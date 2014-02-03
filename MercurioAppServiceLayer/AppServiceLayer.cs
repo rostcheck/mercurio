@@ -228,6 +228,11 @@ namespace MercurioAppServiceLayer
             return errorString;
         }
 
+        public bool ValidateCredential(NetworkCredential credential)
+        {
+            return cryptoManager.ValidateCredential(credential);
+        }
+
         #region IMercurioUserAgent
 
         public void DisplayMessage(IMercurioMessage message, string senderAddress)

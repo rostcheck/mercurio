@@ -254,9 +254,10 @@ namespace Mercurio
 
         public bool ValidatePassword(SecureString password)
         {
-            Locked = false;
             credential = new NetworkCredential(selectedIdentity.Identifier, password);
-            return true; // TODO: Faked for now, connect up, see http://stackoverflow.com/questions/11381123/how-to-use-gpg-command-line-to-check-passphrase-is-correct
+            bool isValid = appService.ValidateCredential(credential);
+            Locked = !isValid;
+            return isValid;
         }
 
         public void DoToggleInvitationPanel()

@@ -268,7 +268,7 @@ namespace Starksoft.Cryptography.OpenPGP
             set { _binaryPath = value; }
         }
 
-        private void VerifyCredential()
+        private void VerifyCredentialIsSet()
         {
             if (_credential == null || _credential.SecurePassword.Length == 0)
                 throw new GnuPGException("Credential must be set");
@@ -297,7 +297,7 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Argument outputStream must be writable.");
 
-            VerifyCredential();
+            VerifyCredentialIsSet();
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Encrypt, true);
             ExecuteGPG(options, inputStream, outputStream, metadataStream);
@@ -323,7 +323,7 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Argument outputStream must be writable.");
 
-            VerifyCredential();
+            VerifyCredentialIsSet();
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Decrypt, true);
             ExecuteGPG(options, inputStream, outputStream, metadataStream);
@@ -349,7 +349,7 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Argument outputStream must be writable.");
 
-            VerifyCredential();
+            VerifyCredentialIsSet();
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Sign, true);
             ExecuteGPG(options, inputStream, outputStream, metadataStream);
@@ -435,7 +435,7 @@ namespace Starksoft.Cryptography.OpenPGP
 
         public void SignKey(string keyID)
         {
-            VerifyCredential();
+            VerifyCredentialIsSet();
 
             StreamReader sr = GetCommand(string.Format("--yes --sign-key {0}", keyID), true);
             string output = sr.ReadToEnd();
