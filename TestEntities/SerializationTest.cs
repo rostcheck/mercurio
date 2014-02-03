@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtilities;
@@ -23,6 +24,7 @@ namespace TestEntities
         private const string bobMessage = "Hi Alice. Well, maybe. Can you send me some pics of you?";
         private IPersistentQueue queue;
         private Serializer serializer;
+        private NetworkCredential aliceCredential, bobCredential;
 
         private static FileLogger logger = new FileLogger("test.log");
         //private DummyMercurioUI userInterface = new DummyMercurioUI(logger);
@@ -98,9 +100,11 @@ namespace TestEntities
             TestUtils.SetupUserDir(bobName);
             aliceCryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, aliceConfig);
             //aliceMessageService = new MessageService(queue, userInterface, aliceCryptoManager);
-            aliceCryptoManager.SetPassphrase(alicePassphrase);
+            aliceCredential = new NetworkCredential(aliceKey, alicePassphrase);
+            aliceCryptoManager.SetCredential(aliceCredential);
             bobCryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, bobConfig);
-            bobCryptoManager.SetPassphrase(bobPassphrase);
+            bobCredential = new NetworkCredential(bobKey, bobPassphrase);
+            bobCryptoManager.SetCredential(bobCredential);
             //bobMessageService = new MessageService(queue, userInterface, bobCryptoManager);        
         }
     }

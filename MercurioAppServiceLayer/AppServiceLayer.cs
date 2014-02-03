@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
@@ -81,11 +82,11 @@ namespace MercurioAppServiceLayer
             }
         }
 
-        public async Task StartListener(string listeningAddress, string passphrase)
+        public async Task StartListener(string listeningAddress, NetworkCredential credential)
         {
             const int delay = 500;
             listening = true;
-            cryptoManager.SetPassphrase(passphrase);
+            cryptoManager.SetCredential(credential);
             Task.Run(() => InjectTestMessages());
             IMercurioMessage nextMessage = null;
             while (listening)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace Entities
     // Responsible for providing cryptographic functions (with a commmon interface)
     public interface ICryptoManager
     {
-        void SetPassphrase(string passphrase);
+        void SetCredential(NetworkCredential credential);
         Stream Encrypt(Stream messageStream, string identifier);
         string Encrypt(string message, string identifier);
         string EncryptSymmetric(string message, EncryptionAlgorithmEnum algorithm);

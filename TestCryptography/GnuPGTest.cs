@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Starksoft.Cryptography.OpenPGP;
@@ -86,7 +87,8 @@ LcrXlt1MbO1jFunrxKc3bwqez6ahvw==
         public void ImportGoodKeyTest()
         {
             GnuPG gpg = PrepareTest("mercurio");
-            gpg.Passphrase = hermesPassphrase;
+            NetworkCredential hermesCredential = new NetworkCredential(hermesPublicKeyID, hermesPassphrase);
+            gpg.Credential = hermesCredential;
 
             // If the key is on the ring, delete it
             GnuPGKey key = gpg.GetKeys().FirstOrDefault(s => s.KeyID == puttyPublicKeyID);
@@ -116,13 +118,14 @@ LcrXlt1MbO1jFunrxKc3bwqez6ahvw==
         public void EncryptDecryptTest()
         {
             GnuPG gpg = PrepareTest("mercurio");
-            gpg.Passphrase = hermesPassphrase;
+            NetworkCredential credential = new NetworkCredential(hermesPublicKeyID, hermesPassphrase);
             gpg.Recipient = hermesPublicKeyID; // Encrypt to ourself
 
             // verify encryption
             MemoryStream inputStream = new MemoryStream(Encoding.ASCII.GetBytes(secretMessage));
             MemoryStream outputStream = new MemoryStream();
             MemoryStream metadataStream = new MemoryStream();
+            gpg.Credential = credential;
             gpg.Encrypt(inputStream, outputStream, metadataStream);
             outputStream.Position = 0;
             StreamReader reader = new StreamReader(outputStream);

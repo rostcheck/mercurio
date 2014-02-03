@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using TestUtilities;
 using TestEntities;
 using MercurioAppServiceLayer;
+using System.Net;
 
 namespace TestFunctionality
 {
@@ -31,6 +32,7 @@ namespace TestFunctionality
         private Dictionary<ConfigurationKeyEnum, string> aliceConfig, bobConfig;
         private ICryptoManager aliceCryptoManager, bobCryptoManager;
         private MessageService aliceMessageService, bobMessageService;
+        private NetworkCredential aliceCredential, bobCredential;
 
         [TestMethod]
         public void KeyExchange()
@@ -120,9 +122,11 @@ namespace TestFunctionality
             TestUtils.SetupUserDir(bobName);
             aliceCryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, aliceConfig);
             aliceMessageService = new MessageService(queue, userInterface, aliceCryptoManager, serializer);
-            aliceCryptoManager.SetPassphrase(alicePassphrase);
+            aliceCredential = new NetworkCredential(aliceKey, alicePassphrase);
+            aliceCryptoManager.SetCredential(aliceCredential);
             bobCryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, bobConfig);
-            bobCryptoManager.SetPassphrase(bobPassphrase);
+            bobCredential = new NetworkCredential(bobKey, bobPassphrase);
+            bobCryptoManager.SetCredential(bobCredential);
             bobMessageService = new MessageService(queue, userInterface, bobCryptoManager, serializer);
         }
 

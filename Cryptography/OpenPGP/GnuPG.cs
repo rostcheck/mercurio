@@ -34,6 +34,7 @@ using Microsoft.Win32;
 using System.Collections;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using System.Net;
 
 namespace Starksoft.Cryptography.OpenPGP
 {
@@ -102,8 +103,9 @@ namespace Starksoft.Cryptography.OpenPGP
     /// FileStream encryptedFile = new FileStream(@"c:\temp\output.txt", FileMode.Open);
     /// // create an IO.Stream object to a where you want the decrypted data to go
     /// FileStream unencryptedFile = new FileStream(@"c:\temp\unencrypted.txt", FileMode.Create);
-    /// // specify our secret passphrase (if we have one)
-    /// gpg.Passphrase = "secret passphrase";            
+    /// // specify our credentials (key id and secret passphrase)
+    /// NetworkCredential credential = new NetworkCredential("B20A4563", "secret passphrase");
+    /// gpg.Credential = credential;            
     /// // decrypt the data using IO Streams - any type of input and output IO Stream can be used
     /// // as long as the source (input) stream can be read and the destination (output) stream 
     /// // can be written to
@@ -116,7 +118,7 @@ namespace Starksoft.Cryptography.OpenPGP
     /// </remarks>
 	public class GnuPG : IDisposable 
 	{
-        private string _passphrase;
+        private NetworkCredential _credential;
         private string _recipient;
 		private string _homePath;
         private string _binaryPath;
@@ -222,12 +224,21 @@ namespace Starksoft.Cryptography.OpenPGP
         }
 
         /// <summary>
-        /// Secret passphrase text value.
+        /// Secret passphrase (exposes password to memory as plain text - avoid using this if you 
+        /// can use the Credential or its SecurePassword)
         /// </summary>
         public string Passphrase
         {
-            get { return _passphrase; }
-            set { _passphrase = value; }
+            get { return _credential.Password; }
+        }
+
+        /// <summary>
+        /// Secret credential (key id and passphrase)
+        /// </summary>
+        public NetworkCredential Credential
+        {
+            get { return _credential; }            
+            set { _credential = value; }
         }
 
         /// <summary>
@@ -257,6 +268,12 @@ namespace Starksoft.Cryptography.OpenPGP
             set { _binaryPath = value; }
         }
 
+        private void VerifyCredential()
+        {
+            if (_credential == null || _credential.SecurePassword.Length == 0)
+                throw new GnuPGException("Credential must be set");
+        }
+
         /// <summary>
         /// Encrypt OpenPGP data using IO Streams.
         /// </summary>
@@ -280,8 +297,7 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Argument outputStream must be writable.");
 
-            if (_passphrase == null || _passphrase == string.Empty)
-                throw new GnuPGException("Passphrase must be set");
+            VerifyCredential();
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Encrypt, true);
             ExecuteGPG(options, inputStream, outputStream, metadataStream);
@@ -307,8 +323,7 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Argument outputStream must be writable.");
 
-            if (_passphrase == null || _passphrase == string.Empty)
-                throw new GnuPGException("Passphrase must be set");
+            VerifyCredential();
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Decrypt, true);
             ExecuteGPG(options, inputStream, outputStream, metadataStream);
@@ -334,8 +349,7 @@ namespace Starksoft.Cryptography.OpenPGP
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Argument outputStream must be writable.");
 
-            if (_passphrase == null || _passphrase == string.Empty)
-                throw new GnuPGException("Passphrase must be set");
+            VerifyCredential();
 
             StringBuilder options = GetCmdLineSwitches(ActionTypes.Sign, true);
             ExecuteGPG(options, inputStream, outputStream, metadataStream);
@@ -421,8 +435,7 @@ namespace Starksoft.Cryptography.OpenPGP
 
         public void SignKey(string keyID)
         {
-            if (_passphrase == null || _passphrase == string.Empty)
-                throw new GnuPGException("Passphrase must be set");
+            VerifyCredential();
 
             StreamReader sr = GetCommand(string.Format("--yes --sign-key {0}", keyID), true);
             string output = sr.ReadToEnd();
@@ -485,7 +498,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 if (needsPassword)
                 {
                     //  push passphrase onto stdin with a CRLF                    
-                    _proc.StandardInput.WriteLine(_passphrase);
+                    _proc.StandardInput.WriteLine(_credential.Password);
                     _proc.StandardInput.Flush();
                 }
 
@@ -605,7 +618,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 if (needsPassword)
                 {
                     //  push passphrase onto stdin with a CRLF
-                    _proc.StandardInput.WriteLine(_passphrase);
+                    _proc.StandardInput.WriteLine(_credential.Password);
                     _proc.StandardInput.Flush();
                 }
                 
