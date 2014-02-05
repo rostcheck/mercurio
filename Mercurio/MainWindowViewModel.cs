@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using System.Resources;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Entities;
 using MercurioAppServiceLayer;
+using Mercurio.Properties;
 
 namespace Mercurio
 {
@@ -22,7 +24,7 @@ namespace Mercurio
         private ObservableCollection<MessageViewModel> messages;
         private AppServiceLayer appService;
         private UserViewModel selectedUser = null, selectedIdentity = null;
-        private bool locked = true, invitationPanelVisible = false;
+        private bool locked = true, invitationPanelVisible = false, passwordInvalid = false;
         private int invitationPanelHeight = 0, invitationPanelExpandedHeight = 200;
         private NetworkCredential credential;
 
@@ -157,6 +159,23 @@ namespace Mercurio
             }
         }
 
+        public bool PasswordInvalid
+        {
+            get
+            {
+                return passwordInvalid;             
+            }
+            set
+            {
+                if (value != passwordInvalid)
+                {
+                    passwordInvalid = value;
+                    RaisePropertyChangedEvent("PasswordInvalid");
+                    RaisePropertyChangedEvent("PasswordValidationMessage");
+                }
+            }
+        }
+
         public int InvitationPanelHeight
         {
             get
@@ -196,6 +215,15 @@ namespace Mercurio
                 return appService.GetFingerprint(selectedIdentity.Identifier);
             }
         }
+
+        public string PasswordValidationMessage
+        {
+            get 
+            {
+                return passwordInvalid ? Resources.InvalidPasswordMessage : Resources.ProvidePasswordMessage;                    
+            }
+        }
+
         #endregion
 
         public void NewMessage(IMercurioMessage message, string senderAddress)

@@ -29,7 +29,7 @@ namespace Mercurio
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public void Execute(object parameter)
+        public async void Execute(object parameter)
         {
             // We can't bind to the PasswordBox's SecurePassword; it's a security hole to expose the password
             // (even as a SecureString) through dependency binding, as that is centralized and essentially
@@ -42,6 +42,12 @@ namespace Mercurio
             if (viewModel.ValidatePassword(passwordBox.SecurePassword))
             {
                 viewModel.StartListener();
+            }
+            else
+            {
+                viewModel.PasswordInvalid = true;
+                await Task.Delay(1500);
+                viewModel.PasswordInvalid = false;
             }
         }
     }

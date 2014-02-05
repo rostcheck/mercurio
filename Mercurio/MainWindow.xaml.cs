@@ -32,77 +32,19 @@ namespace Mercurio
             InitializeComponent();
         }
 
-        //private async void OnLoaded(object sender, RoutedEventArgs e)
-        //{
-        //    //TODO: Ask for passphrase in dialog
-        //    string passphrase = @"Of all the queens, Alice is the highest!";
-        //    string selectedAddress = GetSelectedAddress();
-        //    //await appServiceLayer.StartListener(selectedAddress, passphrase);
-        //}
-
-        public string GetSelectedIdentity(ICryptoManager cryptoManager)
-        {
-            User selectedIdentity = cmbOperatingUser.SelectedItem as User;
-            if (selectedIdentity != null)
-            {
-                return selectedIdentity.Identifier;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public string GetSelectedAddress()
-        {
-            User selectedIdentity = cmbOperatingUser.SelectedItem as User;
-            if (selectedIdentity != null)
-            {
-                return selectedIdentity.Address;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool AcceptInvitationResponse(ConnectInvitationAcceptedMessage invitationAcceptedMessage, string fingerprint)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InvalidMessageReceived(object message)
-        {
-            tbStatus.Text = "Invalid message received (see log)";
-        }
-
-        private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            User selectedUser = dgUsers.SelectedItem as User;
-            User currentUser = cmbOperatingUser.SelectedItem as User;
-            if (selectedUser != null)
-            {
-                //dgMessages.DataContext = appServiceLayer.GetMessages(selectedUser.Address);
-            }
-        }
-
-        private void OnOperatingUserSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            User operatingUser = cmbOperatingUser.SelectedItem as User;
-            if (operatingUser != null)
-            {
-                this.Title = title + "    User: " + operatingUser.Name;
-            }
-        }
-
         private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //appServiceLayer.StopListener();
+        }
+
+        // Need to do this in the code-behind, can't bind it, because PasswordBox's SecurePassword
+        // is not a DependencyProperty
+        private void pbPassword_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (pbPassword.SecurePassword.Length > 0)
+                btnOk.IsEnabled = true;
+            else
+                btnOk.IsEnabled = false;
         }
     }
 }
