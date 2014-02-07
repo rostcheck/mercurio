@@ -23,12 +23,14 @@ namespace Mercurio
     {
         private ObservableCollection<UserViewModel> users, availableIdentities;
         private ObservableCollection<MessageViewModel> messages;
+        private ObservableCollection<MessageViewModel> invitations;
         private AppServiceLayer appService;
         private UserViewModel selectedUser = null, selectedIdentity = null;
         private bool locked = true, invitationPanelVisible = false, passwordInvalid = false;
         private int invitationPanelHeight = 0, invitationPanelExpandedHeight = 200;
         private NetworkCredential credential;
         private string evidenceURL, receipientAddress;
+        private MessageViewModel selectedInvitation;
        
         public MainWindowViewModel(AppServiceLayer appService)
         {
@@ -78,6 +80,22 @@ namespace Mercurio
                         selectedUser.NumberOfUnreadMessages = 0;
                     }
                     RaisePropertyChangedEvent("SelectedUser");
+                }
+            }
+        }
+
+        public MessageViewModel SelectedInvitation
+        {
+            get
+            {
+                return selectedInvitation;
+            }
+            set
+            {
+                if (value != selectedInvitation)
+                {
+                    selectedInvitation = value;
+                    RaisePropertyChangedEvent("SelectedInvitation");
                 }
             }
         }
@@ -142,6 +160,22 @@ namespace Mercurio
                 {
                     messages = value;
                     RaisePropertyChangedEvent("Messages");
+                }
+            }
+        }
+
+        public ObservableCollection<MessageViewModel> Invitations
+        {
+            get
+            {
+                return invitations;
+            }
+            set
+            {
+                if (value != invitations)
+                {
+                    invitations = value;
+                    RaisePropertyChangedEvent("Invitations");
                 }
             }
         }
@@ -268,8 +302,23 @@ namespace Mercurio
                 return (!String.IsNullOrEmpty(receipientAddress) && !String.IsNullOrEmpty(evidenceURL));
             }
         }
+
+        public bool HasInvitations
+        {
+            get
+            {
+                return (invitations != null && invitations.Count > 0);
+            }
+        }
         #endregion
 
+        #region Commands
+        public ICommand Unlock { get; set; }
+        public ICommand ToggleInvitationPanel { get; set; }
+        public ICommand SendInvitation { get; set; }
+        #endregion
+
+        #region Public Methods (hooked to AppService events)
         public void NewMessage(IMercurioMessage message, string senderAddress)
         {
             UserViewModel user = users.FirstOrDefault<UserViewModel>(s => s.Address == senderAddress);
@@ -315,17 +364,10 @@ namespace Mercurio
                     }
                 }
             }
-        }        
+        }
+#endregion
 
-        #region Commands
-
-        public ICommand Unlock { get; set; }
-        public ICommand ToggleInvitationPanel { get; set; }
-        public ICommand SendInvitation { get; set; }
-
-        #endregion
-
-        #region Public Methods
+        #region Public Methods (called by commands)
         public bool ValidatePassword(SecureString password)
         {
             credential = new NetworkCredential(selectedIdentity.Identifier, password);
