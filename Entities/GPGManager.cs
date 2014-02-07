@@ -120,7 +120,8 @@ namespace Entities
 
         public string[] GetSignatures()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return new string[0];
         }
 
         public string GetFingerprint(string identity)

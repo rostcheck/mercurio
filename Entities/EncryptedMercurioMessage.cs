@@ -63,6 +63,13 @@ namespace Entities
 
         public EncryptedMercurioMessage(ICryptoManager cryptoManager, Serializer serializer, IMercurioMessage message)
         {
+            if (cryptoManager == null)
+                throw new ArgumentException("Cannot initialize EncryptedMercurioMessage without cryptoManager");
+            if (serializer == null)
+                throw new ArgumentException("Cannot initialize EncryptedMercurioMessage without serializer");
+            if (message == null)
+                throw new ArgumentException("Cannot initialize EncryptedMercurioMessage without message");
+
             this.senderAddress = message.SenderAddress;
             this.recipientAddress = message.RecipientAddress;
             this.contentID = message.ContentID;

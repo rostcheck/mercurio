@@ -11,6 +11,7 @@ using System.Windows.Input;
 using Entities;
 using MercurioAppServiceLayer;
 using Mercurio.Properties;
+using System.Windows;
 
 namespace Mercurio
 {
@@ -27,7 +28,8 @@ namespace Mercurio
         private bool locked = true, invitationPanelVisible = false, passwordInvalid = false;
         private int invitationPanelHeight = 0, invitationPanelExpandedHeight = 200;
         private NetworkCredential credential;
-
+        private string evidenceURL, receipientAddress;
+       
         public MainWindowViewModel(AppServiceLayer appService)
         {
             this.appService = appService;
@@ -52,6 +54,7 @@ namespace Mercurio
 
             this.Unlock = new UnlockCommand(this);
             this.ToggleInvitationPanel = new TogglePanelCommand(this);
+            this.SendInvitation = new SendInvitationCommand(this);
         }
 
         #region Observable Properties
@@ -224,6 +227,47 @@ namespace Mercurio
             }
         }
 
+        public string EvidenceURL
+        {
+            get
+            {
+                return evidenceURL;
+            }
+            set
+            {
+                if (value != evidenceURL)
+                {
+                    evidenceURL = value;
+                    RaisePropertyChangedEvent("EvidenceURL");
+                    RaisePropertyChangedEvent("CanSendInvitation");
+                }
+            }
+        }
+
+        public string RecipientAddress
+        {
+            get
+            {
+                return receipientAddress;
+            }
+            set
+            {
+                if (value != receipientAddress)
+                {
+                    receipientAddress = value;
+                    RaisePropertyChangedEvent("RecipientAddress");
+                    RaisePropertyChangedEvent("CanSendInvitation");
+                }
+            }
+        }
+
+        public bool CanSendInvitation
+        {
+            get
+            {
+                return (!String.IsNullOrEmpty(receipientAddress) && !String.IsNullOrEmpty(evidenceURL));
+            }
+        }
         #endregion
 
         public void NewMessage(IMercurioMessage message, string senderAddress)
@@ -277,9 +321,11 @@ namespace Mercurio
 
         public ICommand Unlock { get; set; }
         public ICommand ToggleInvitationPanel { get; set; }
+        public ICommand SendInvitation { get; set; }
 
         #endregion
 
+        #region Public Methods
         public bool ValidatePassword(SecureString password)
         {
             credential = new NetworkCredential(selectedIdentity.Identifier, password);
@@ -301,5 +347,14 @@ namespace Mercurio
 
             appService.StartListener(selectedIdentity.Address, credential);
         }
+
+        public void DoSendInvitation()
+        {
+            appService.SendInvitation(selectedIdentity.Identifier, selectedIdentity.Address, receipientAddress, evidenceURL);
+            RecipientAddress = string.Empty;
+            EvidenceURL = string.Empty;
+            DoToggleInvitationPanel();
+        }
+        #endregion
     }
 }

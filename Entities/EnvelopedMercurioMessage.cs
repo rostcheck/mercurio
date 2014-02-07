@@ -112,6 +112,15 @@ namespace Entities
 
         public EnvelopedMercurioMessage(string senderAddress, string recipientAddress, IMercurioMessage payload, Serializer serializer)
         {
+            if (senderAddress == null || senderAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without senderAddress");
+            if (recipientAddress == null || recipientAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without recipientAddress");
+            if (payload == null)
+                throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without payload");
+            if (serializer == null)
+                throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without serializer");
+
             this.senderAddress = senderAddress;
             this.recipientAddress = recipientAddress;
             this.messageType = payload.GetType().ToString();

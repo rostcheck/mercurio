@@ -72,6 +72,13 @@ namespace Entities
 
         private void Initialize(string senderAddress, string recipientAddress, string content)
         {
+            if (senderAddress == null || senderAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize SimpleTextMessage without senderAddress");
+            if (recipientAddress == null || recipientAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize SimpleTextMessage without recipientAddress");
+            if (content == null || content == string.Empty)
+                throw new ArgumentException("Cannot initialize SimpleTextMessage without content");
+
             this.senderAddress = senderAddress;
             this.recipientAddress = recipientAddress;
             this.content = content;

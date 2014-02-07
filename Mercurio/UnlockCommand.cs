@@ -46,6 +46,7 @@ namespace Mercurio
             else
             {
                 viewModel.PasswordInvalid = true;
+                passwordBox.Clear();
                 await Task.Delay(1500);
                 viewModel.PasswordInvalid = false;
             }

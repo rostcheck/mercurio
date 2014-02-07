@@ -61,6 +61,11 @@ namespace Entities
 
         public DummyMessage(string senderAddress, string recipientAddress, string message)
         {
+            if (senderAddress == null || senderAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize DummyMessage without senderAddress");
+            if (recipientAddress == null || recipientAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize DummyMessage without recipientAddress");
+
             this.senderAddress = senderAddress;
             this.recipientAddress = recipientAddress;
             this.message = message;

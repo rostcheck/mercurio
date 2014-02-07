@@ -63,20 +63,14 @@
     <Compile Include="Converters.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="MessageViewModel.cs" />
+    <Compile Include="SendInvitationCommand.cs" />
     <Compile Include="TogglePanelCommand.cs" />
     <Compile Include="UnlockCommand.cs" />
     <Compile Include="UserViewModel.cs" />
     <Compile Include="ViewModelBase.cs" />
-    <Page Include="InvitationWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="InvitationWindow.xaml.cs">
-      <DependentUpon>InvitationWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>

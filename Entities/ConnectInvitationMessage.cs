@@ -116,6 +116,15 @@ namespace Entities
 
         public ConnectInvitationMessage(string senderAddress, string recipientAddress, string publicKey, string[] signatures, string evidence)
         {
+            if (senderAddress == null || senderAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize ConnectInvitationMessage without senderAddress");
+            if (recipientAddress == null || recipientAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize ConnectInvitationMessage without recipientAddress");
+            if (publicKey == null || publicKey == string.Empty)
+                throw new ArgumentException("Cannot initialize ConnectInvitationMessage without publicKey");
+            if (evidence == null || evidence == string.Empty)
+                throw new ArgumentException("Cannot initialize ConnectInvitationMessage without evidence");
+
             this.senderAddress = senderAddress;
             this.recipientAddress = recipientAddress;
             this.publicKey = publicKey;

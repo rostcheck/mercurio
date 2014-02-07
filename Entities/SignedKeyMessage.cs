@@ -72,6 +72,13 @@ namespace Entities
 
         public SignedKeyMessage(string recipientAddress, string senderAddress, string signedPublicKey, string evidence)
         {
+            if (senderAddress == null || senderAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize SignedKeyMessage without senderAddress");
+            if (recipientAddress == null || recipientAddress == string.Empty)
+                throw new ArgumentException("Cannot initialize SignedKeyMessage without recipientAddress");
+            if (signedPublicKey == null || signedPublicKey == string.Empty)
+                throw new ArgumentException("Cannot initialize SignedKeyMessage without signedPublicKey");
+
             this.senderAddress = senderAddress;
             this.recipientAddress = recipientAddress;
             this.signedPublicKey = signedPublicKey;
