@@ -9,7 +9,7 @@ using Entities;
 
 namespace MercurioAppServiceLayer
 {
-    public delegate void NewMessage(IMercurioMessage message, string senderAddress);
+    public delegate void NewMessage(IMercurioMessage message, string senderAddress);    
 
     /// <summary>
     /// App service layer - provides all business logic, communicates in Entities. The app
@@ -23,9 +23,23 @@ namespace MercurioAppServiceLayer
         private Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
         private IPersistentQueue queue;
         private MessageStoreTransientUnencrypted messageStore = new MessageStoreTransientUnencrypted();
+        //TODO: persist this list
+        private List<IMercurioMessage> invitations = new List<IMercurioMessage>();
         private bool listening = false;
-        private NewMessage newMessageEvent = null, replacedMessageEvent = null;
+        private NewMessage newMessageEvent, replacedMessageEvent, newInvitationEvent;
         private string selectedIdentity;
+
+        public NewMessage NewInvitationEvent
+        {
+            get
+            {
+                return newInvitationEvent;
+            }
+            set
+            {
+                newInvitationEvent += value;
+            }
+        }
 
         public NewMessage NewMessageEvent
         {
@@ -101,21 +115,25 @@ namespace MercurioAppServiceLayer
             listening = true;
             cryptoManager.SetCredential(credential);
             Task.Run(() => InjectTestMessages());
-            IMercurioMessage nextMessage = null, resultMessage = null;
+            IMercurioMessage nextMessage = null;
             while (listening)
             {
                 if (nextMessage == null)
                 {
                     nextMessage = messageService.GetNext(listeningAddress);
                 }
-                if (nextMessage != null)
+                else
                 {
-                    resultMessage = messageService.ProcessMessage(nextMessage, selectedIdentity);
                     // the result message may be intended for us (a chained message) or someone else
-                    if (resultMessage.RecipientAddress == listeningAddress)
-                        nextMessage = resultMessage;
+                    if (nextMessage.RecipientAddress == listeningAddress)
+                    {
+                        nextMessage.MessageIsDisplayableEvent += DisplayMessage;
+                        nextMessage = messageService.ProcessMessage(nextMessage, selectedIdentity);
+                    }
                     else
-                        messageService.Send(resultMessage); // Pass it on
+                    {
+                        messageService.Send(nextMessage); // Pass it on
+                    }
                 }
                 await Task.Delay(delay);
             }
@@ -157,6 +175,11 @@ namespace MercurioAppServiceLayer
         public List<IMercurioMessage> GetMessages(string userAddress)
         {
             return messageStore.GetMessages(userAddress);
+        }
+
+        public List<IMercurioMessage> GetInvitations()
+        {
+            return invitations;
         }
 
         public void SetSelectedIdentity(string identity)
@@ -247,6 +270,14 @@ namespace MercurioAppServiceLayer
 
         public void DisplayMessage(IMercurioMessage message)
         {
+            // Process invitations and accepted responses separately
+            if (message.GetType() == typeof(ConnectInvitationMessage))
+            {
+                invitations.Add(message); //TODO: allows duplicates
+                if (newInvitationEvent != null)
+                    NewInvitationEvent(message, message.SenderAddress);
+            }
+
             if (messageStore.Store(message, message.SenderAddress))
             {
                 if (replacedMessageEvent != null)

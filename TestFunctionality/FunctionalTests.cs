@@ -60,10 +60,11 @@ namespace TestFunctionality
             SwitchUser(alice, bob);
             IMercurioMessage receivedMessage = messageService.GetNext(user[bob].Address);
             Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationMessage));
-            receivedMessage = messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity());
+            receivedMessage.MessageIsDisplayableEvent += DisplayMessage;
             // Displaying the message will cause the dummy user agent to automatically
             // accept it and send a response
-            userAgent.DisplayMessage(receivedMessage);
+            receivedMessage = messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity());
+            Assert.IsTrue(receivedMessage == null);
 
             // Sign in as Alice, receive accepted invitation
             SwitchUser(bob, alice);
@@ -101,6 +102,11 @@ namespace TestFunctionality
             Assert.IsTrue(timeDelayedMessage.Content == bobMessage);
         }
 
+        void DisplayMessage(IMercurioMessage message)
+        {
+            userAgent.DisplayMessage(message);
+        }
+
         [TestMethod]
         public void MakeTestQueue()
         {
@@ -121,8 +127,8 @@ namespace TestFunctionality
             SwitchUser(alice, bob);
             IMercurioMessage receivedMessage = messageService.GetNext(user[bob].Address);
             Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationMessage));
-            IMercurioMessage response = messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity());
-            messageService.Send(response);
+            // DummyUserAgent will automatically accept it and send a response
+            messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity());
 
             // Send many messages
             foreach (string messageText in messages)

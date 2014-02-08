@@ -67,6 +67,7 @@ namespace Entities
         public SimpleTextMessage(string senderAddress, string recipientAddress, string content)
         {
             Initialize(senderAddress, recipientAddress, content);
+            contentID = Guid.NewGuid();
         }
 
         private void Initialize(string senderAddress, string recipientAddress, string content)

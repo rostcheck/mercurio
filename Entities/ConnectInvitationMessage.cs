@@ -158,7 +158,8 @@ namespace Entities
         public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
         {
             KeyID = cryptoManager.ImportKey(PublicKey);
-            return (IMercurioMessage)this;
+            RaiseMessageIsDisplayable(this);
+            return null;
         }
     }
 }

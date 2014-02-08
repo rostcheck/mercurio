@@ -37,6 +37,7 @@ namespace Mercurio
             this.appService = appService;
             this.appService.NewMessageEvent += NewMessage;
             this.appService.ReplacedMessageEvent += ReplacedMessage;
+            this.appService.NewInvitationEvent += NewInvitation;
 
             users = new ObservableCollection<UserViewModel>(
                 (from user in appService.GetUsers()
@@ -54,9 +55,21 @@ namespace Mercurio
             if (users.Count > 0)
                 SelectedUser = users[0];
 
+            Invitations = new ObservableCollection<MessageViewModel>(
+                (from invitation in appService.GetInvitations()
+                 select new MessageViewModel(invitation))
+                .ToList());
+
             this.Unlock = new UnlockCommand(this);
             this.ToggleInvitationPanel = new TogglePanelCommand(this);
             this.SendInvitation = new SendInvitationCommand(this);
+        }
+
+        private void NewInvitation(IMercurioMessage message, string senderAddress)
+        {
+            Invitations.Add(new MessageViewModel(message));
+            RaisePropertyChangedEvent("Invitations");
+            RaisePropertyChangedEvent("HasInvitations");
         }
 
         #region Observable Properties
@@ -177,6 +190,7 @@ namespace Mercurio
                 {
                     invitations = value;
                     RaisePropertyChangedEvent("Invitations");
+                    RaisePropertyChangedEvent("HasInvitations");
                 }
             }
         }
@@ -366,7 +380,7 @@ namespace Mercurio
                 }
             }
         }
-#endregion
+        #endregion
 
         #region Public Methods (called by commands)
         public bool ValidatePassword(SecureString password)
