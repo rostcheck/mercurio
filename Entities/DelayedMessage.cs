@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 namespace Entities
 {
-    public class DelayedMessage : IMercurioMessage
+    public class DelayedMessage : MercurioMessageBase, IMercurioMessage
     {
         private int delayInMS;
         private IMercurioMessage message;
@@ -68,6 +68,11 @@ namespace Entities
         public void GetObjectData(SerializationInfo info,StreamingContext context)
         {
             message.GetObjectData(info, context);
+        }
+
+        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        {
+            return Message;
         }
     }
 }

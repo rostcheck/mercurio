@@ -54,7 +54,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="DummyMercurioUI.cs" />
+    <Compile Include="DummyUserAgent.cs" />
     <Compile Include="FunctionalTests.cs" />
     <Compile Include="IMessageStore.cs" />
     <Compile Include="MessageServiceTest.cs" />

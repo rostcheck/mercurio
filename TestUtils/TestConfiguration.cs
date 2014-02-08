@@ -10,17 +10,17 @@ namespace TestUtilities
 {
     public static class TestConfig
     {
-        public static Dictionary<ConfigurationKeyEnum, string> Create()
+        public static CryptoManagerConfiguration Create()
         {
-            Dictionary<ConfigurationKeyEnum, string> configuration = new Dictionary<ConfigurationKeyEnum, string>();
+            CryptoManagerConfiguration configuration = new CryptoManagerConfiguration();
             configuration[ConfigurationKeyEnum.UserHome] = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\gnupg";
             configuration[ConfigurationKeyEnum.GPGBinaryPath] = Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) + "\\GNU\\GnuPG\\gpg2.exe";
             return configuration;
         }
 
-        public static Dictionary<ConfigurationKeyEnum, string> GetTestConfiguration(string userName)
+        public static CryptoManagerConfiguration GetTestConfiguration(string userName)
         {
-            Dictionary<ConfigurationKeyEnum, string> configuration = TestConfig.Create();
+            CryptoManagerConfiguration configuration = TestConfig.Create();
             //configuration[ConfigurationKeyEnum.UserHome] = TestUtils.GetUserDir(userName);
             return configuration;
         }

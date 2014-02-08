@@ -25,6 +25,7 @@ namespace MercurioAppServiceLayer
         private MessageStoreTransientUnencrypted messageStore = new MessageStoreTransientUnencrypted();
         private bool listening = false;
         private NewMessage newMessageEvent = null, replacedMessageEvent = null;
+        private string selectedIdentity;
 
         public NewMessage NewMessageEvent
         {
@@ -60,7 +61,7 @@ namespace MercurioAppServiceLayer
 
         public AppServiceLayer(AppCryptoManagerType cryptoManagerType)
         {
-            Dictionary<ConfigurationKeyEnum, string> configuration = SetupConfiguration(cryptoManagerType);
+            CryptoManagerConfiguration configuration = SetupConfiguration(cryptoManagerType);
             List<string> errorList = ValidateConfiguration(cryptoManagerType, configuration);
             if (errorList != null && errorList.Count > 0)
             {
@@ -69,7 +70,7 @@ namespace MercurioAppServiceLayer
             this.cryptoManager = CryptoManagerFactory.Create(GetCryptoManagerType(cryptoManagerType), configuration);
             this.logger = new FileLogger("mercurio_log.txt");
             queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer); // TODO: Make configurable
-            this.messageService = new MessageService(queue, this, cryptoManager, serializer);
+            this.messageService = new MessageService(queue, cryptoManager, serializer);
         }
 
         public async Task InjectTestMessages()
@@ -100,7 +101,7 @@ namespace MercurioAppServiceLayer
             listening = true;
             cryptoManager.SetCredential(credential);
             Task.Run(() => InjectTestMessages());
-            IMercurioMessage nextMessage = null;
+            IMercurioMessage nextMessage = null, resultMessage = null;
             while (listening)
             {
                 if (nextMessage == null)
@@ -109,7 +110,12 @@ namespace MercurioAppServiceLayer
                 }
                 if (nextMessage != null)
                 {
-                    nextMessage = messageService.ProcessMessage(nextMessage);
+                    resultMessage = messageService.ProcessMessage(nextMessage, selectedIdentity);
+                    // the result message may be intended for us (a chained message) or someone else
+                    if (resultMessage.RecipientAddress == listeningAddress)
+                        nextMessage = resultMessage;
+                    else
+                        messageService.Send(resultMessage); // Pass it on
                 }
                 await Task.Delay(delay);
             }
@@ -153,7 +159,12 @@ namespace MercurioAppServiceLayer
             return messageStore.GetMessages(userAddress);
         }
 
-        private Dictionary<ConfigurationKeyEnum, string> SetupConfiguration(AppCryptoManagerType appCryptoManagerType)
+        public void SetSelectedIdentity(string identity)
+        {
+            selectedIdentity = identity;
+        }
+
+        private CryptoManagerConfiguration SetupConfiguration(AppCryptoManagerType appCryptoManagerType)
         {
             switch (appCryptoManagerType)
             {
@@ -164,9 +175,9 @@ namespace MercurioAppServiceLayer
             }
         }
 
-        private Dictionary<ConfigurationKeyEnum, string> SetupGPGConfiguration()
+        private CryptoManagerConfiguration SetupGPGConfiguration()
         {
-            Dictionary<ConfigurationKeyEnum, string> configuration = new Dictionary<ConfigurationKeyEnum, string>();
+            CryptoManagerConfiguration configuration = new CryptoManagerConfiguration();
             configuration[ConfigurationKeyEnum.UserHome] = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\gnupg";
             configuration[ConfigurationKeyEnum.GPGBinaryPath] = Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) + "\\GNU\\GnuPG\\gpg2.exe";
             return configuration;
@@ -182,8 +193,8 @@ namespace MercurioAppServiceLayer
                     throw new NotImplementedException("Unknown crypto manager type " + appCryptoManagerType.ToString() + " specified");
             }
         }
-        
-        private List<string> ValidateConfiguration(AppCryptoManagerType appCryptoManagerType, Dictionary<ConfigurationKeyEnum, string> config)
+
+        private List<string> ValidateConfiguration(AppCryptoManagerType appCryptoManagerType, CryptoManagerConfiguration config)
         {
             switch (appCryptoManagerType)
             {
@@ -194,7 +205,7 @@ namespace MercurioAppServiceLayer
             }
         }
 
-        private List<string> ValidateGPGConfiguration(Dictionary<ConfigurationKeyEnum, string> config)
+        private List<string> ValidateGPGConfiguration(CryptoManagerConfiguration config)
         {
             List<string> errorList = new List<string>();
             ConfigurationKeyEnum[] requiredKeys = { ConfigurationKeyEnum.UserHome, ConfigurationKeyEnum.UserHome };
@@ -207,9 +218,8 @@ namespace MercurioAppServiceLayer
             return errorList;
         }
 
-        private string ValidateConfigurationKey(AppCryptoManagerType appCryptoManagerType, 
-            Dictionary<ConfigurationKeyEnum, string> config, 
-            ConfigurationKeyEnum key)
+        private string ValidateConfigurationKey(AppCryptoManagerType appCryptoManagerType,
+            CryptoManagerConfiguration config, ConfigurationKeyEnum key)
         {
             string missingRequiredKey = "Configuration must contain key {0} for specified crypto manager type {1}";
             string missingRequiredValue = "Configuration key {0} does not contain a value - required for specified crypto manager type {1}";
@@ -235,33 +245,23 @@ namespace MercurioAppServiceLayer
 
         #region IMercurioUserAgent
 
-        public void DisplayMessage(IMercurioMessage message, string senderAddress)
+        public void DisplayMessage(IMercurioMessage message)
         {
-            if (messageStore.Store(message, senderAddress))
+            if (messageStore.Store(message, message.SenderAddress))
             {
                 if (replacedMessageEvent != null)
-                    ReplacedMessageEvent(message, senderAddress);
+                    ReplacedMessageEvent(message, message.SenderAddress);
             }
             else
             {
                 if (newMessageEvent != null)
-                    NewMessageEvent(message, senderAddress);
+                    NewMessageEvent(message, message.SenderAddress);
             }
         }
 
-        public string GetSelectedIdentity(ICryptoManager cryptoManager)
+        public string GetSelectedIdentity()
         {
-            throw new NotImplementedException();
-        }
-
-        public bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool AcceptInvitationResponse(ConnectInvitationAcceptedMessage invitationAcceptedMessage, string fingerprint)
-        {
-            throw new NotImplementedException();
+            return selectedIdentity;
         }
 
         public void InvalidMessageReceived(object message)

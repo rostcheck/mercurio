@@ -10,7 +10,7 @@ namespace Entities
 {
     [ProtoContract]
     [Serializable]
-    public class ConnectInvitationMessage : IMercurioMessage
+    public class ConnectInvitationMessage : MercurioMessageBase, IMercurioMessage
     {
         private const string SenderAddressName = "sender_address";
         private const string RecipientAddressName = "recipient_address";
@@ -108,6 +108,8 @@ namespace Entities
             }
         }
 
+        public string KeyID { get; set; }
+
         private string publicKey;
         private string[] signatures;
         private string evidence;
@@ -151,6 +153,12 @@ namespace Entities
             this.signatures = (string[]) info.GetValue(SignaturesName, typeof(string[]));
             this.evidence = info.GetString(EvidenceURLName);
             this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
+        }
+
+        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        {
+            KeyID = cryptoManager.ImportKey(PublicKey);
+            return (IMercurioMessage)this;
         }
     }
 }

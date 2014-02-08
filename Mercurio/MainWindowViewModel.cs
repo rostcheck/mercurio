@@ -111,6 +111,7 @@ namespace Mercurio
                 if (value != selectedIdentity)
                 {
                     selectedIdentity = value;
+                    appService.SetSelectedIdentity(value.Identifier);
                     RaisePropertyChangedEvent("SelectedIdentity");
                 }
             }

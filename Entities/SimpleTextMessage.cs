@@ -8,9 +8,8 @@ using System.Runtime.Serialization;
 namespace Entities
 {
     [Serializable]
-    public class SimpleTextMessage : IMercurioMessage
+    public class SimpleTextMessage : MercurioMessageBase, IMercurioMessage
     {
-        protected Guid contentID;
         private const string SenderAddressName = "sender_address";
         private const string RecipientAddressName = "recipient_address";
         private const string ContentName = "content";
@@ -18,6 +17,7 @@ namespace Entities
         protected string senderAddress;
         protected string recipientAddress;
         protected string content;
+        protected Guid contentID;
 
         public Guid ContentID
         {
@@ -67,7 +67,6 @@ namespace Entities
         public SimpleTextMessage(string senderAddress, string recipientAddress, string content)
         {
             Initialize(senderAddress, recipientAddress, content);
-            this.contentID = Guid.NewGuid();
         }
 
         private void Initialize(string senderAddress, string recipientAddress, string content)
@@ -104,6 +103,12 @@ namespace Entities
             info.AddValue(SenderAddressName, senderAddress);
             info.AddValue(ContentName, content);
             info.AddValue(ContentIDName, contentID);
+        }
+
+        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        {
+            RaiseMessageIsDisplayable(this);
+            return null;
         }
     }
 }

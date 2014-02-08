@@ -32,7 +32,6 @@ namespace TestUtilities
 
             CopyGPGFiles(KeyChainDirectory, KeyChainBackupDirectory);
             CopyGPGFiles(userSourceDir, userWorkingDir);
-            CopyGPGFiles(userSourceDir, KeyChainDirectory);           
         }
 
         public static void SwitchUser(string fromUser, string toUser)
@@ -57,6 +56,8 @@ namespace TestUtilities
 
         private static void CopyFile(string fileName, string sourceDirectory, string destinationDirectory)
         {
+            if (!Directory.Exists(destinationDirectory))
+                Directory.CreateDirectory(destinationDirectory);
             string sourcePath = sourceDirectory + "\\" + fileName;
             string destinationPath = destinationDirectory + "\\" + fileName;
             File.Copy(sourcePath, destinationPath, true); // overwrite

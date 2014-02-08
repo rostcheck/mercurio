@@ -12,7 +12,7 @@ namespace Entities
     /// the inviter (recipient) being returned to it by to the invitee (sender)
     /// </summary>
     [Serializable]
-    public class ConnectInvitationAcceptedMessage : IMercurioMessage
+    public class ConnectInvitationAcceptedMessage : MercurioMessageBase, IMercurioMessage
     {
         private const string SenderAddressName = "sender_address";
         private const string RecipientAddressName = "recipient_address";
@@ -115,6 +115,24 @@ namespace Entities
             this.senderKeyID = info.GetString(SenderKeyIDName);
             this.signedPublicKey = info.GetString(SignedPublicKeyName);
             this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
+        }
+
+        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        {
+            // TODO: Is this message expected? Secure protocol more
+
+            string keyID = cryptoManager.ImportKey(SignedPublicKey);
+            string fingerprint = cryptoManager.GetFingerprint(keyID);
+
+            // Countersign the key and send it back
+            cryptoManager.SignKey(keyID);
+            string signedKey = cryptoManager.GetPublicKey(keyID);
+            // Reverse sender and recipient
+            string sender = RecipientAddress;
+            string recipient = SenderAddress;
+            var signedKeyMessage = new SignedKeyMessage(recipient, sender, 
+                cryptoManager.GetPublicKey(userIdentity), string.Empty);
+            return signedKeyMessage;
         }
     }
 }

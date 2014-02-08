@@ -55,7 +55,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CryptoManagerTest.cs" />
-    <Compile Include="DummyMessage.cs" />
     <Compile Include="PersistentQueueTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializationTest.cs" />

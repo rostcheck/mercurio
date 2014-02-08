@@ -42,12 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectInvitationAcceptedMessageProcessor.cs" />
-    <Compile Include="ConnectInvitationMessageProcessor.cs" />
-    <Compile Include="DelayedMessageProcessor.cs" />
-    <Compile Include="EncryptedMessageProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SignedKeyMessageProcessor.cs" />
     <Compile Include="SimpleTextMessageProcessor.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace Entities
 {
     [Serializable()]
-    public class DummyMessage : IMercurioMessage
+    public class DummyMessage : MercurioMessageBase, IMercurioMessage
     {
         private string message;
         private string senderAddress;
@@ -91,6 +91,12 @@ namespace Entities
             this.recipientAddress = info.GetString(RecipientAddressName);
             this.message = info.GetString(MessageName);
             this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
+        }
+
+        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        {
+            RaiseMessageIsDisplayable(this);
+            return null;
         }
     }
 }

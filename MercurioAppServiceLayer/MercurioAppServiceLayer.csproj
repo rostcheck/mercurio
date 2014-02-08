@@ -57,10 +57,6 @@
       <Project>{ce737374-d61e-4d4c-8796-580ec758a00c}</Project>
       <Name>Entities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Messages\MessageProcessors.csproj">
-      <Project>{e83101fb-4ecd-498b-9e04-ac8b02948ad1}</Project>
-      <Name>MessageProcessors</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

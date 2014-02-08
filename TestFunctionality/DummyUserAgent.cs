@@ -4,22 +4,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using MercurioAppServiceLayer;
 
 namespace TestFunctionality
 {
-    public class DummyMercurioUI : IMercurioUserAgent
+    public class DummyUserAgent : IMercurioUserAgent
     {
         private List<string> outstandingInvitations;
         private string lastDisplayedMessage;
         private IMercurioLogger logger;
+        private MessageService messageService;
+        private ICryptoManager cryptoManager;
 
-        public DummyMercurioUI(IMercurioLogger logger)
+        public DummyUserAgent(IMercurioLogger logger, MessageService messageService, ICryptoManager cryptoManager)
         {
             if (logger == null)
                 throw new ArgumentException("Must supply a valid logger");
 
             this.logger = logger;
+            this.messageService = messageService;
+            this.cryptoManager = cryptoManager;
             outstandingInvitations = new List<string>();
+        }
+
+        public void SetConfiguration(CryptoManagerConfiguration configuration)
+        {
+            cryptoManager.SetConfiguration(configuration);
+            messageService.SetConfiguration(configuration);
         }
 
         public string LastDisplayedMessage
@@ -30,31 +41,25 @@ namespace TestFunctionality
             }
         }
 
-        public string GetSelectedIdentity(ICryptoManager cryptoManager)
+        public string GetSelectedIdentity()
         {
            List<User> identityList = cryptoManager.GetAvailableIdentities();
-            if (identityList.Count == 1)
-                return identityList[0].Identifier;
-            else if (identityList.Count > 1)
+            if (identityList.Count >= 1)
                 return identityList[0].Identifier;
             else
                 throw new Exception("No identities available");
         }
 
-        public bool AcceptInvitation(ConnectInvitationMessage invitationMessage, string fingerprint)
-        {
-            return true;
-        }
-
-        public bool AcceptInvitationResponse(ConnectInvitationAcceptedMessage invitationAcceptedMessage, string fingerprint)
-        {
-            return true;
-        }
-
-        public void DisplayMessage(IMercurioMessage message, string recipientAddress)
+        public void DisplayMessage(IMercurioMessage message)
         {
             logger.Log(LogMessageLevelEnum.Normal, message.ToString());
             lastDisplayedMessage = message.ToString();
+            // Automatically accept invitations
+            Type messageType = message.GetType();
+            if (messageType == typeof(ConnectInvitationMessage))
+            {
+                messageService.AcceptInvitation((ConnectInvitationMessage)message, GetSelectedIdentity());
+            }
         }
 
         public void InvalidMessageReceived(object message)

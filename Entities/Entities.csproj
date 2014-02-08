@@ -45,6 +45,7 @@
     <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="ConnectInvitationAcceptedMessage.cs" />
     <Compile Include="ConfigurationKeyEnum.cs" />
+    <Compile Include="CryptoManagerConfiguration.cs" />
     <Compile Include="CryptoManagerFactory.cs" />
     <Compile Include="CryptoManagerType.cs" />
     <Compile Include="DelayedMessage.cs" />
@@ -53,10 +54,10 @@
     <Compile Include="EnvelopedMercurioMessage.cs" />
     <Compile Include="FileLogger.cs" />
     <Compile Include="IMercurioLogger.cs" />
-    <Compile Include="IMercurioMessageProcessor.cs" />
     <Compile Include="ISerializerCore.cs" />
     <Compile Include="IMercurioUserAgent.cs" />
     <Compile Include="LogMessageLevelEnum.cs" />
+    <Compile Include="MercurioMessageBase.cs" />
     <Compile Include="PersistentQueueType.cs" />
     <Compile Include="ConnectInvitationMessage.cs" />
     <Compile Include="EncryptionAlgorithmEnum.cs" />

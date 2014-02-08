@@ -418,6 +418,9 @@ namespace Starksoft.Cryptography.OpenPGP
         /// <param name="keyID">Key ID to delete</param>
         public void DeleteKey(string keyID)
         {
+            if (keyID == null || keyID == string.Empty)
+                throw new ArgumentException("Argument keyID can not be null or empty");
+
             StreamReader sr = GetCommand(string.Format("--batch --yes --delete-key {0}", keyID));
             string output = sr.ReadToEnd();
         }
@@ -429,12 +432,18 @@ namespace Starksoft.Cryptography.OpenPGP
         /// <returns>String representation of the key</returns>
         public string GetActualKey(string keyID)
         {
+            if (keyID == null || keyID == string.Empty)
+                throw new ArgumentException("Argument keyID can not be null or empty");
+
             StreamReader sr = GetCommand(string.Format("--export -a {0}", keyID));
             return sr.ReadToEnd();
         }
 
         public void SignKey(string keyID)
         {
+            if (keyID == null || keyID == string.Empty)
+                throw new ArgumentException("Argument keyID can not be null or empty");
+
             VerifyCredentialIsSet();
 
             StreamReader sr = GetCommand(string.Format("--yes --sign-key {0}", keyID), true);
@@ -448,6 +457,9 @@ namespace Starksoft.Cryptography.OpenPGP
         /// <returns>String representation of the fingerprint, including spaces (ex. "9DC5 4DB6 ...")</returns>
         public string GetFingerprint(string keyID)
         {
+            if (keyID == null || keyID == string.Empty)
+                throw new ArgumentException("Argument keyID can not be null or empty");
+
             StreamReader sr = GetCommand(string.Format("--fingerprint {0}", keyID));
             string output = sr.ReadToEnd();
             Match match = Regex.Match(output, @"Key fingerprint = ([\w\d ]+)", RegexOptions.Multiline);

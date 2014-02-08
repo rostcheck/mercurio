@@ -23,6 +23,12 @@ namespace Entities
                 configuration[ConfigurationKeyEnum.GPGBinaryPath]);
         }
 
+        public void SetConfiguration(CryptoManagerConfiguration configuration)
+        {
+            this.configuration = configuration;
+            gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
+               configuration[ConfigurationKeyEnum.GPGBinaryPath]); ;
+        }
         public void SetCredential(NetworkCredential credential)
         {
             gpg.Credential = credential;

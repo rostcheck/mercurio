@@ -9,7 +9,7 @@ using Entities;
 namespace Entities
 {
     [Serializable]
-    public class SignedKeyMessage : IMercurioMessage
+    public class SignedKeyMessage : MercurioMessageBase, IMercurioMessage
     {
         private Guid contentID;
         private const string SenderAddressName = "sender_address";
@@ -102,6 +102,15 @@ namespace Entities
             info.AddValue(SignedPublicKeyName, SignedPublicKey);
             info.AddValue(EvidenceURLName, evidence);
             info.AddValue(ContentIDName, contentID);
+        }
+
+        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        {
+            string keyID = cryptoManager.ImportKey(SignedPublicKey);
+            //string fingerprint = cryptoManager.GetFingerprint(keyID);
+
+            //TODO: further secure this protocol; insure message is expected
+            return null;
         }
     }
 }

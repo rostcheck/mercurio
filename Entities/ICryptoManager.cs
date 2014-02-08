@@ -12,6 +12,7 @@ namespace Entities
     public interface ICryptoManager
     {
         void SetCredential(NetworkCredential credential);
+        void SetConfiguration(CryptoManagerConfiguration configuration);
         bool ValidateCredential(NetworkCredential credential);
         Stream Encrypt(Stream messageStream, string identifier);
         string Encrypt(string message, string identifier);
@@ -21,7 +22,7 @@ namespace Entities
         bool Validate(string message);
         string GetPublicKey(string identifier); // for a single key
         string ImportKey(string key); // returns imported key id
-        void SignKey(string key);
+        void SignKey(string identifier);
         string[] GetSignatures();
         string GetFingerprint(string identifier);
         void DeleteKey(string identifier);

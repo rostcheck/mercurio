@@ -23,8 +23,8 @@ namespace TestFunctionality
             Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
             FileLogger logger = new FileLogger("test.log");
-            IMercurioUserAgent userInterface = new DummyMercurioUI(logger); 
-            MessageService messageService = new MessageService(queue, userInterface, cryptoManager, serializer);
+            MessageService messageService = new MessageService(queue, cryptoManager, serializer);
+            IMercurioUserAgent userInterface = new DummyUserAgent(logger, messageService, cryptoManager);
             string[] signatures = new string[0];
             IMercurioMessage connectInvitationMessage = new ConnectInvitationMessage(senderAddress, recipientAddress, cryptoManager.GetPublicKey(senderKey), signatures, evidenceURL);
             messageService.Send(connectInvitationMessage);

@@ -7,7 +7,7 @@ using Entities;
 
 namespace Messages
 {
-    public class SimpleTextMessageProcessor : IMercurioMessageProcessor
+    public class SimpleTextMessageProcessor : MercurioMessageBase, IMercurioMessageProcessor
     {
 
         public string MessageTypeName
@@ -26,7 +26,7 @@ namespace Messages
                 throw new Exception("Unknown message type " + message + " passed to SimpleTextMessageProcessor:ProcessMessage");
             }
             SimpleTextMessage thisMessage = message as SimpleTextMessage;
-            ui.DisplayMessage(thisMessage, message.SenderAddress);
+            ui.DisplayMessage(thisMessage);
             return null;
         }
     }

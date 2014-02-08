@@ -9,7 +9,7 @@ using System.IO;
 namespace Entities
 {
     [Serializable]
-    public class EncryptedMercurioMessage : IMercurioMessage
+    public class EncryptedMercurioMessage : MercurioMessageBase, IMercurioMessage
     {
         private const string SenderAddressName = "sender_address";
         private const string RecipientAddressName = "recipient_address";
@@ -19,6 +19,7 @@ namespace Entities
         private string recipientAddress;
         private string content;
         private Guid contentID;
+
 
         public Guid ContentID
         {
@@ -141,6 +142,14 @@ namespace Entities
             info.AddValue(SenderAddressName, senderAddress);
             info.AddValue(ContentName, content);
             info.AddValue(ContentIDName, contentID);
+        }
+
+        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        {
+            RaiseMessageIsDisplayable(this); // Listeners may display encrypted message
+
+            IMercurioMessage decryptedMessage = Decrypt(cryptoManager, serializer);
+            return new DelayedMessage(700, decryptedMessage);
         }
     }
 }
