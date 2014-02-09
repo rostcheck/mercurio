@@ -11,12 +11,22 @@ namespace Mercurio
     {
         private object representation = null;
         private Guid messageID = Guid.Empty;
+        private string address = string.Empty;
 
         public MessageViewModel(IMercurioMessage message)
         {
             //Note: images or other message types may require special representation
             representation = message.ToString();
             messageID = message.ContentID;
+            address = message.SenderAddress;
+        }
+
+        public string Address
+        {
+            get
+            {
+                return address;
+            }
         }
 
         public object Representation
@@ -34,7 +44,7 @@ namespace Mercurio
                 }
             }
         }
-
+        
         public Guid MessageID
         {
             get 

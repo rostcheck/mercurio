@@ -10,7 +10,8 @@
         <local:BoolToStringConverter x:Key="PanelControlButtonText" FalseValue="Invite" TrueValue="Hide"/>
         <local:BoolToStringConverter x:Key="PasswordValidationWeight" FalseValue="Normal" TrueValue="Bold"/>
         <local:BoolToStringConverter x:Key="PasswordValidationColor" FalseValue="Black" TrueValue="Red"/>
-        <local:BoolToStringConverter x:Key="InvitationGridHeight" FalseValue="0" TrueValue="60"/>
+        <local:BoolToStringConverter x:Key="InvitationGridHeight" FalseValue="0" TrueValue="*"/>
+        <local:BoolToStringConverter x:Key="InvitationGridMinHeight" FalseValue="0" TrueValue="50"/>
     </Window.Resources>
     <Grid Name="grdBase" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid Name="grdMessagerUI" IsEnabled="{Binding Locked, Converter={StaticResource BoolToInverse}}"
@@ -28,7 +29,7 @@
             <Grid x:Name="grdContactsAndInvitations" Grid.Row="0" Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="{Binding HasInvitations, Converter={StaticResource InvitationGridHeight}}"></RowDefinition>                    
+                    <RowDefinition Height="{Binding HasInvitations, Converter={StaticResource InvitationGridHeight}}" MinHeight="{Binding HasInvitations, Converter={StaticResource InvitationGridMinHeight}}"></RowDefinition>
                 </Grid.RowDefinitions>
                 <DataGrid x:Name="dgUsers" Grid.Column="0" Grid.Row="0" ItemsSource="{Binding Users}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedUser}">
                     <DataGrid.Columns>
@@ -40,7 +41,7 @@
                         <DataGridTextColumn x:Name="colInvitations" Binding="{Binding Address, Mode=OneWay}" Width="*" Header="Invitations"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <GridSplitter Grid.Row="0" Grid.Column="0" Height="2" VerticalAlignment="Bottom"/>
+                <GridSplitter Grid.Column="0" Height="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
             </Grid>
             <DataGrid x:Name="dgMessages" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Messages}" AutoGenerateColumns="False">
                 <DataGrid.Columns>
