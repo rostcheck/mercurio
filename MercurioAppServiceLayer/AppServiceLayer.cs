@@ -96,7 +96,7 @@ namespace MercurioAppServiceLayer
                 File.Delete(testMessageQueue);
             File.Copy(testMessageQueuePath, testMessageQueue);
             
-            const int delay = 5000;
+            const int delay = 2000;
             bool bExit = false;
             while (!bExit)
             {

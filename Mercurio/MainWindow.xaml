@@ -7,6 +7,7 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
         <local:BoolToStringConverter x:Key="BoolToInverse" FalseValue="True" TrueValue="False"/>
+        <local:BoolToStringConverter x:Key="BoolToInverseVisibility" FalseValue="Visible" TrueValue="Hidden"/>
         <local:BoolToStringConverter x:Key="PanelControlButtonText" FalseValue="Invite" TrueValue="Hide"/>
         <local:BoolToStringConverter x:Key="PasswordValidationWeight" FalseValue="Normal" TrueValue="Bold"/>
         <local:BoolToStringConverter x:Key="PasswordValidationColor" FalseValue="Black" TrueValue="Red"/>
@@ -43,7 +44,34 @@
                 </DataGrid>
                 <GridSplitter Grid.Column="0" Height="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
             </Grid>
-            <DataGrid x:Name="dgMessages" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Messages}" AutoGenerateColumns="False">
+            <Grid Name="grdInvitationDisplay" Grid.Row="0" Grid.Column="1" Visibility="{Binding HasInvitationSelected, Converter={StaticResource BoolToVisibility}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>                    
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition MinHeight="70"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Name="tbInvitationReviewInstructions" Grid.ColumnSpan="2" TextWrapping="Wrap" Margin="10,10,10,10" FontWeight="Medium">
+                    <Run>Review the evidence from the invitation.</Run>
+                    <Run FontWeight="Bold" Foreground="Red">Only accept it if you are absolutely convinced the invitation comes from who it says it does and you want to communicate with them.</Run>
+                </TextBlock>
+                <Label Name="lblInvitationLabel" Grid.Column="0" Grid.Row="1">Address:</Label>
+                <Label Name="lblInvationAddress" Grid.Column="1" Grid.Row="1" Content="{Binding SelectedInvitation.Address}"/>
+                <Label Name="lblInvitationFingerprintLabel" Grid.Column="0" Grid.Row="2">Fingerprint:</Label>
+                <Label Name="lblInvitationFingerprint" Grid.Column="1" Grid.Row="2" Content="{Binding SelectedInvitationFingerprint}"/>
+                <Label Name="lblInvitationEvidenceURLLabel" Grid.Column="0" Grid.Row="3">Evidence Link:</Label>
+                <TextBlock Name="lblInvitationEvidenceURL" Grid.Column="1" Grid.Row="3"><Hyperlink NavigateUri="{Binding SelectedInvitation.EvidenceURL}"><Run Text="{Binding SelectedInvitation.EvidenceURL}"/></Hyperlink></TextBlock>
+                <StackPanel Name="spReviewInvitationButtons" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                    <Button Name="btnAcceptInvitation" Height="23" Padding="10,0,10,0" Margin="0,0,10,0">Accept</Button>
+                    <Button Name="btnRejectInvitation" Height="23" Padding="10,0,10,0">Reject</Button>
+                </StackPanel>
+            </Grid>
+            <DataGrid x:Name="dgMessages" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Messages}" AutoGenerateColumns="False" d:IsHidden="True" Visibility="{Binding HasInvitationSelected, Converter={StaticResource BoolToInverseVisibility}}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Representation}" ClipboardContentBinding="{x:Null}" Width="*" Header="Message"/>
                 </DataGrid.Columns>
@@ -70,12 +98,12 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="0" TextWrapping="Wrap" Margin="10,7,10,7" MinHeight="30" FontWeight="Medium"><Run Text="Your invitation must include a link to an evidence video. This should be a video of you speaking your key fingerprint, so that the recipient can confirm it's really you."/></TextBlock>
+                <TextBlock Name="tbInvitationInstructions" Grid.Row="0" Grid.ColumnSpan="3" Grid.Column="0" TextWrapping="Wrap" Margin="10,7,10,7" MinHeight="30" FontWeight="Medium"><Run Text="Your invitation must include a link to an evidence video. This should be a video of you speaking your key fingerprint, so that the recipient can confirm it's really you."/></TextBlock>
                 <Label x:Name="lblFingerprint" Grid.Row="1" Grid.Column="0" Margin="5,0,0,0" Content="Your fingerprint is:" HorizontalAlignment="Left" VerticalAlignment="Center" Width="Auto"/>
                 <Label x:Name="lblFingerprintText" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Foreground="Green" HorizontalAlignment="Stretch" Margin="5,0,10,0" VerticalAlignment="Center" Width="Auto" FontWeight="Bold" Content="{Binding FingerprintText}"/>
                 <Label x:Name="lblAddress" Grid.Row="2" Grid.Column="0" Margin="5,0,0,0" Content="Address to invite:" HorizontalAlignment="Left" VerticalAlignment="Center" Width="Auto"/>
                 <TextBox x:Name="txtAddress1" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="5,0,10,0" VerticalAlignment="Center" Width="Auto" Text="{Binding RecipientAddress, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
-                <Label x:Name="lblEvidence" Grid.Row="3" Grid.Column="0" Margin="5,0,0,0" Content="Evidence URL:" HorizontalAlignment="Left" VerticalAlignment="Center" Width="Auto"/>
+                <Label x:Name="lblEvidence" Grid.Row="3" Grid.Column="0" Margin="5,0,0,0" Content="Evidence Link:" HorizontalAlignment="Left" VerticalAlignment="Center" Width="Auto"/>
                 <TextBox x:Name="txtEvidence" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="5,0,10,0" VerticalAlignment="Center" Width="Auto" Text="{Binding EvidenceURL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" MinHeight="35">
                     <Button x:Name="btnSendInvite" Content="Send Invitation" Height="22" Margin="0,0,10,10" Padding="10,0,10,0" VerticalAlignment="Bottom" Width="Auto" IsDefault="{Binding InvitationPanelVisible}" IsEnabled="{Binding CanSendInvitation}" Command="{Binding SendInvitation}"/>

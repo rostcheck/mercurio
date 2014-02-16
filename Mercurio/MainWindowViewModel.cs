@@ -93,6 +93,7 @@ namespace Mercurio
                         selectedUser.NumberOfUnreadMessages = 0;
                     }
                     RaisePropertyChangedEvent("SelectedUser");
+                    SelectedInvitation = null; 
                 }
             }
         }
@@ -109,7 +110,16 @@ namespace Mercurio
                 {
                     selectedInvitation = value;
                     RaisePropertyChangedEvent("SelectedInvitation");
+                    RaisePropertyChangedEvent("HasInvitationSelected");
                 }
+            }
+        }
+
+        public bool HasInvitationSelected
+        {
+            get
+            {
+                return (selectedInvitation != null);
             }
         }
 
