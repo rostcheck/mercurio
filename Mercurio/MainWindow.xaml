@@ -11,8 +11,8 @@
         <local:BoolToStringConverter x:Key="PanelControlButtonText" FalseValue="Invite" TrueValue="Hide"/>
         <local:BoolToStringConverter x:Key="PasswordValidationWeight" FalseValue="Normal" TrueValue="Bold"/>
         <local:BoolToStringConverter x:Key="PasswordValidationColor" FalseValue="Black" TrueValue="Red"/>
-        <local:BoolToStringConverter x:Key="InvitationGridHeight" FalseValue="0" TrueValue="*"/>
-        <local:BoolToStringConverter x:Key="InvitationGridMinHeight" FalseValue="0" TrueValue="50"/>
+        <local:BoolToStringConverter x:Key="InvitationGridHeight" FalseValue="1" TrueValue="*"/>
+        <local:BoolToStringConverter x:Key="InvitationGridMinHeight" FalseValue="1" TrueValue="50"/>
     </Window.Resources>
     <Grid Name="grdBase" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid Name="grdMessagerUI" IsEnabled="{Binding Locked, Converter={StaticResource BoolToInverse}}"
@@ -39,36 +39,36 @@
                 </DataGrid>
                 <DataGrid x:Name="dgInvitations" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Invitations}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedInvitation}">
                     <DataGrid.Columns>
-                        <DataGridTextColumn x:Name="colInvitations" Binding="{Binding Address, Mode=OneWay}" Width="*" Header="Invitations"/>
+                        <DataGridTextColumn x:Name="colInvitations" Binding="{Binding SenderAddress, Mode=OneWay}" Width="*" Header="Invitations"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 <GridSplitter Grid.Column="0" Height="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
             </Grid>
             <Grid Name="grdInvitationDisplay" Grid.Row="0" Grid.Column="1" Visibility="{Binding HasInvitationSelected, Converter={StaticResource BoolToVisibility}}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="90"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>                    
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition MinHeight="70"></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
+                    <RowDefinition MinHeight="68"></RowDefinition>
+                    <RowDefinition MinHeight="25" Height="25"></RowDefinition>
+                    <RowDefinition MinHeight="25" Height="25"></RowDefinition>
+                    <RowDefinition MinHeight="25" Height="*"></RowDefinition>
+                    <RowDefinition MinHeight="25" Height="25"></RowDefinition>
                 </Grid.RowDefinitions>
                 <TextBlock Name="tbInvitationReviewInstructions" Grid.ColumnSpan="2" TextWrapping="Wrap" Margin="10,10,10,10" FontWeight="Medium">
                     <Run>Review the evidence from the invitation.</Run>
                     <Run FontWeight="Bold" Foreground="Red">Only accept it if you are absolutely convinced the invitation comes from who it says it does and you want to communicate with them.</Run>
                 </TextBlock>
                 <Label Name="lblInvitationLabel" Grid.Column="0" Grid.Row="1">Address:</Label>
-                <Label Name="lblInvationAddress" Grid.Column="1" Grid.Row="1" Content="{Binding SelectedInvitation.Address}"/>
+                <Label Name="lblInvationAddress" Grid.Column="1" Grid.Row="1" Content="{Binding SelectedInvitation.SenderAddress, Mode=OneWay}"/>
                 <Label Name="lblInvitationFingerprintLabel" Grid.Column="0" Grid.Row="2">Fingerprint:</Label>
-                <Label Name="lblInvitationFingerprint" Grid.Column="1" Grid.Row="2" Content="{Binding SelectedInvitationFingerprint}"/>
+                <Label Name="lblInvitationFingerprint" Grid.Column="1" Grid.Row="2" Content="{Binding SelectedInvitation.Fingerprint, Mode=OneWay}"/>
                 <Label Name="lblInvitationEvidenceURLLabel" Grid.Column="0" Grid.Row="3">Evidence Link:</Label>
-                <TextBlock Name="lblInvitationEvidenceURL" Grid.Column="1" Grid.Row="3"><Hyperlink NavigateUri="{Binding SelectedInvitation.EvidenceURL}"><Run Text="{Binding SelectedInvitation.EvidenceURL}"/></Hyperlink></TextBlock>
+                <TextBlock Name="lblInvitationEvidenceURL" Grid.Column="1" Grid.Row="3"><Hyperlink NavigateUri="{Binding SelectedInvitation.EvidenceURL, Mode=OneWay}"><Run Text="{Binding SelectedInvitation.EvidenceURL, Mode=OneWay}"/></Hyperlink></TextBlock>
                 <StackPanel Name="spReviewInvitationButtons" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
-                    <Button Name="btnAcceptInvitation" Height="23" Padding="10,0,10,0" Margin="0,0,10,0">Accept</Button>
-                    <Button Name="btnRejectInvitation" Height="23" Padding="10,0,10,0">Reject</Button>
+                    <Button Name="btnAcceptInvitation" Height="23" Padding="10,0,10,0" Margin="0,0,10,0" Command="{Binding AcceptInvitation}">Accept</Button>
+                    <Button Name="btnRejectInvitation" Height="23" Padding="10,0,10,0" Command="{Binding RejectInvitation}">Reject</Button>
                 </StackPanel>
             </Grid>
             <DataGrid x:Name="dgMessages" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Messages}" AutoGenerateColumns="False" d:IsHidden="True" Visibility="{Binding HasInvitationSelected, Converter={StaticResource BoolToInverseVisibility}}">

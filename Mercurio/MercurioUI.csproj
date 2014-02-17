@@ -59,10 +59,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AcceptInvitationCommand.cs" />
     <Compile Include="BoolToValueConverter.cs" />
+    <Compile Include="ConnectInvitationMessageViewModel.cs" />
     <Compile Include="Converters.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="MessageViewModel.cs" />
+    <Compile Include="RejectInvitationCommand.cs" />
     <Compile Include="SendInvitationCommand.cs" />
     <Compile Include="TogglePanelCommand.cs" />
     <Compile Include="UnlockCommand.cs" />

@@ -23,14 +23,14 @@ namespace Mercurio
     {
         private ObservableCollection<UserViewModel> users, availableIdentities;
         private ObservableCollection<MessageViewModel> messages;
-        private ObservableCollection<MessageViewModel> invitations;
+        private ObservableCollection<ConnectInvitationMessageViewModel> invitations;
         private AppServiceLayer appService;
         private UserViewModel selectedUser = null, selectedIdentity = null;
         private bool locked = true, invitationPanelVisible = false, passwordInvalid = false;
         private int invitationPanelHeight = 0, invitationPanelExpandedHeight = 200;
         private NetworkCredential credential;
         private string evidenceURL, receipientAddress;
-        private MessageViewModel selectedInvitation;
+        private ConnectInvitationMessageViewModel selectedInvitation;
        
         public MainWindowViewModel(AppServiceLayer appService)
         {
@@ -55,21 +55,17 @@ namespace Mercurio
             if (users.Count > 0)
                 SelectedUser = users[0];
 
-            Invitations = new ObservableCollection<MessageViewModel>(
+            Invitations = new ObservableCollection<ConnectInvitationMessageViewModel>(
                 (from invitation in appService.GetInvitations()
-                 select new MessageViewModel(invitation))
+                 select new ConnectInvitationMessageViewModel(invitation, 
+                    appService.GetFingerprint(invitation.KeyID)))
                 .ToList());
 
             this.Unlock = new UnlockCommand(this);
             this.ToggleInvitationPanel = new TogglePanelCommand(this);
             this.SendInvitation = new SendInvitationCommand(this);
-        }
-
-        private void NewInvitation(IMercurioMessage message, string senderAddress)
-        {
-            Invitations.Add(new MessageViewModel(message));
-            RaisePropertyChangedEvent("Invitations");
-            RaisePropertyChangedEvent("HasInvitations");
+            this.AcceptInvitation = new AcceptInvitationCommand(this);
+            this.RejectInvitation = new RejectInvitationCommand(this);
         }
 
         #region Observable Properties
@@ -98,7 +94,7 @@ namespace Mercurio
             }
         }
 
-        public MessageViewModel SelectedInvitation
+        public ConnectInvitationMessageViewModel SelectedInvitation
         {
             get
             {
@@ -188,7 +184,7 @@ namespace Mercurio
             }
         }
 
-        public ObservableCollection<MessageViewModel> Invitations
+        public ObservableCollection<ConnectInvitationMessageViewModel> Invitations
         {
             get
             {
@@ -341,9 +337,18 @@ namespace Mercurio
         public ICommand Unlock { get; set; }
         public ICommand ToggleInvitationPanel { get; set; }
         public ICommand SendInvitation { get; set; }
+        public ICommand AcceptInvitation { get; set; }
+        public ICommand RejectInvitation { get; set; }
         #endregion
 
         #region Public Methods (hooked to AppService events)
+        private void NewInvitation(ConnectInvitationMessage message, string senderAddress)
+        {
+            Invitations.Add(new ConnectInvitationMessageViewModel(message, appService.GetFingerprint(message.KeyID)));
+            RaisePropertyChangedEvent("Invitations");
+            RaisePropertyChangedEvent("HasInvitations");
+        }
+
         public void NewMessage(IMercurioMessage message, string senderAddress)
         {
             UserViewModel user = users.FirstOrDefault<UserViewModel>(s => s.Address == senderAddress);
@@ -421,6 +426,24 @@ namespace Mercurio
             RecipientAddress = string.Empty;
             EvidenceURL = string.Empty;
             DoToggleInvitationPanel();
+        }
+
+        public void DoAcceptInvitation()
+        {
+            appService.AcceptInvitation(selectedIdentity.Identifier, selectedInvitation.Message);
+            Invitations.Remove(selectedInvitation);
+            SelectedInvitation = null;
+            RaisePropertyChangedEvent("Invitations");
+            RaisePropertyChangedEvent("HasInvitations");
+        }
+
+        public void DoRejectInvitation()
+        {
+            appService.RejectInvitation(selectedInvitation.Message);
+            Invitations.Remove(selectedInvitation);
+            SelectedInvitation = null;
+            RaisePropertyChangedEvent("Invitations");
+            RaisePropertyChangedEvent("HasInvitations");
         }
         #endregion
     }

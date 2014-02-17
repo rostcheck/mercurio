@@ -9,7 +9,8 @@ using Entities;
 
 namespace MercurioAppServiceLayer
 {
-    public delegate void NewMessage(IMercurioMessage message, string senderAddress);    
+    public delegate void NewMessage(IMercurioMessage message, string senderAddress);
+    public delegate void NewInvitation(ConnectInvitationMessage message, string senderAddress);
 
     /// <summary>
     /// App service layer - provides all business logic, communicates in Entities. The app
@@ -24,12 +25,13 @@ namespace MercurioAppServiceLayer
         private IPersistentQueue queue;
         private MessageStoreTransientUnencrypted messageStore = new MessageStoreTransientUnencrypted();
         //TODO: persist this list
-        private List<IMercurioMessage> invitations = new List<IMercurioMessage>();
+        private List<ConnectInvitationMessage> invitations = new List<ConnectInvitationMessage>();
         private bool listening = false;
-        private NewMessage newMessageEvent, replacedMessageEvent, newInvitationEvent;
+        private NewMessage newMessageEvent, replacedMessageEvent;
+        private NewInvitation newInvitationEvent;
         private string selectedIdentity;
 
-        public NewMessage NewInvitationEvent
+        public NewInvitation NewInvitationEvent
         {
             get
             {
@@ -153,6 +155,16 @@ namespace MercurioAppServiceLayer
             messageService.Send(message);
         }
 
+        public void AcceptInvitation(string userID, ConnectInvitationMessage invitation)
+        {
+            messageService.AcceptInvitation(invitation, userID);
+        }
+
+        public void RejectInvitation(ConnectInvitationMessage invitation)
+        {
+            messageService.RejectInvitation(invitation);
+        }
+
         public List<User> GetUsers()
         {
             return cryptoManager.GetAvailableUsers();
@@ -177,7 +189,7 @@ namespace MercurioAppServiceLayer
             return messageStore.GetMessages(userAddress);
         }
 
-        public List<IMercurioMessage> GetInvitations()
+        public List<ConnectInvitationMessage> GetInvitations()
         {
             return invitations;
         }
@@ -273,9 +285,9 @@ namespace MercurioAppServiceLayer
             // Process invitations and accepted responses separately
             if (message.GetType() == typeof(ConnectInvitationMessage))
             {
-                invitations.Add(message); //TODO: allows duplicates
+                invitations.Add((ConnectInvitationMessage)message); //TODO: allows duplicates
                 if (newInvitationEvent != null)
-                    NewInvitationEvent(message, message.SenderAddress);
+                    NewInvitationEvent((ConnectInvitationMessage)message, message.SenderAddress);
             }
 
             if (messageStore.Store(message, message.SenderAddress))
