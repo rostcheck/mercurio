@@ -121,10 +121,6 @@
       <Project>{9f972ae2-7fe2-4d5b-9b2e-fb1bbfacb3b3}</Project>
       <Name>MercurioAppServiceLayer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MercurioUIControls\MercurioUIControls.csproj">
-      <Project>{d71c50a2-6fd5-4da5-a006-d784439a8e7c}</Project>
-      <Name>MercurioUIControls</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

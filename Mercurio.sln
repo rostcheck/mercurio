@@ -45,8 +45,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mercurio", "mercurio", "{0C
 		TestKeyRings\mercurio\trustdb.gpg = TestKeyRings\mercurio\trustdb.gpg
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercurioUIControls", "MercurioUIControls\MercurioUIControls.csproj", "{D71C50A2-6FD5-4DA5-A006-D784439A8E7C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,10 +83,6 @@ Global
 		{8E90EEAA-8440-456F-B682-AE0E35C8095D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E90EEAA-8440-456F-B682-AE0E35C8095D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E90EEAA-8440-456F-B682-AE0E35C8095D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D71C50A2-6FD5-4DA5-A006-D784439A8E7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D71C50A2-6FD5-4DA5-A006-D784439A8E7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D71C50A2-6FD5-4DA5-A006-D784439A8E7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D71C50A2-6FD5-4DA5-A006-D784439A8E7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
