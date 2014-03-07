@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Mercurio.MainWindow"
         xmlns:local="clr-namespace:Mercurio"
-        Title="Mercurio Secure Communicator" Height="435" Width="598" Closing="OnClosing">
+        Title="Mercurio Secure Communicator" Height="435" Width="598" Closing="OnClosing" Icon="padlock-blue.ico">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
         <local:BoolToStringConverter x:Key="BoolToInverse" FalseValue="True" TrueValue="False"/>
