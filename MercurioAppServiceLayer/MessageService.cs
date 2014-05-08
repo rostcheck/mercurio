@@ -10,10 +10,12 @@ using System.Threading;
 
 namespace MercurioAppServiceLayer
 {
+    /// <summary>
+    /// Handles interactions with messages
+    /// </summary>
     public class MessageService
     {
         private IPersistentQueue queue;
-        //private IMercurioUserAgent ui;
         private ICryptoManager cryptoManager;
         private Serializer serializer;
        
@@ -54,7 +56,6 @@ namespace MercurioAppServiceLayer
         public MessageService(IPersistentQueue queue, ICryptoManager cryptoManager, Serializer serializer)
         {
             this.queue = queue;
-            //this.ui = userInterface;
             this.cryptoManager = cryptoManager;
             this.serializer = serializer;
         }

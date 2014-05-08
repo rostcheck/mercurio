@@ -70,6 +70,7 @@
     <Compile Include="MessageViewModel.cs" />
     <Compile Include="RejectInvitationCommand.cs" />
     <Compile Include="SendInvitationCommand.cs" />
+    <Compile Include="SendMessageCommand.cs" />
     <Compile Include="TogglePanelCommand.cs" />
     <Compile Include="UnlockCommand.cs" />
     <Compile Include="UserViewModel.cs" />

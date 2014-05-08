@@ -154,7 +154,8 @@ namespace TestFunctionality
             if (File.Exists(logFileName))
                 File.Delete(logFileName);
 
-            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
+            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
+            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
             TestUtils.SetupUserDir(alice);
             TestUtils.SetupUserDir(bob);
             TestUtils.SetupUserDir(carlos);

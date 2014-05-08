@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public enum PeristentQueueType
+    public interface IPersistentQueueConfiguration
     {
-        LocalFileStorage,
-        CloudQueueStorage
+        string ConfigurationString { get; set; }
     }
 }

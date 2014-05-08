@@ -11,8 +11,9 @@ namespace Entities
     {
         private Serializer serializer;
 
-        public PersistentQueueWithLocalFileStorage(Serializer serializer)
+        public PersistentQueueWithLocalFileStorage(IPersistentQueueConfiguration configuration, Serializer serializer)
         {
+            // Configuration isn't used for anything in this class
             this.serializer = serializer;
         }
 

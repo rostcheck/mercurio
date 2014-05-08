@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -85,7 +86,10 @@ namespace MercurioAppServiceLayer
             }
             this.cryptoManager = CryptoManagerFactory.Create(GetCryptoManagerType(cryptoManagerType), configuration);
             this.logger = new FileLogger("mercurio_log.txt");
-            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer); // TODO: Make configurable
+            
+            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration(ConfigurationManager.AppSettings["StorageConnectionString"]);
+            queue = PersistentQueueFactory.Create(PeristentQueueType.CloudQueueStorage, 
+                queueConfiguration, serializer);
             this.messageService = new MessageService(queue, cryptoManager, serializer);
         }
 
@@ -93,7 +97,8 @@ namespace MercurioAppServiceLayer
         {
             const string testMessageQueue = "messages_for_alice@maker.net";
             const string testMessageQueuePath = @"..\..\..\TestKeyRings\" + testMessageQueue;
-            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
+            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
+            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
             if (File.Exists(testMessageQueue))
                 File.Delete(testMessageQueue);
             File.Copy(testMessageQueuePath, testMessageQueue);
@@ -163,6 +168,13 @@ namespace MercurioAppServiceLayer
         public void RejectInvitation(ConnectInvitationMessage invitation)
         {
             messageService.RejectInvitation(invitation);
+        }
+
+
+        public void SendMessage(string senderAddress, string recipientAddress, string messageText)
+        {
+            SimpleTextMessage textMessage = new SimpleTextMessage(senderAddress, recipientAddress, messageText);
+            messageService.Send(textMessage);
         }
 
         public List<User> GetUsers()

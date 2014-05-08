@@ -21,7 +21,8 @@ namespace TestFunctionality
             Dictionary <ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create();
             ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, configuration);
             Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
+            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
+            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
             FileLogger logger = new FileLogger("test.log");
             MessageService messageService = new MessageService(queue, cryptoManager, serializer);
             IMercurioUserAgent userInterface = new DummyUserAgent(logger, messageService, cryptoManager);

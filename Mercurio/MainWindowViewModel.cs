@@ -29,7 +29,7 @@ namespace Mercurio
         private bool locked = true, invitationPanelVisible = false, passwordInvalid = false;
         private int invitationPanelHeight = 0, invitationPanelExpandedHeight = 200;
         private NetworkCredential credential;
-        private string evidenceURL, receipientAddress;
+        private string evidenceURL, receipientAddress, messageToSend;
         private ConnectInvitationMessageViewModel selectedInvitation;
        
         public MainWindowViewModel(AppServiceLayer appService)
@@ -66,6 +66,7 @@ namespace Mercurio
             this.SendInvitation = new SendInvitationCommand(this);
             this.AcceptInvitation = new AcceptInvitationCommand(this);
             this.RejectInvitation = new RejectInvitationCommand(this);
+            this.SendMessage = new SendMessageCommand(this);
         }
 
         #region Observable Properties
@@ -89,6 +90,7 @@ namespace Mercurio
                         selectedUser.NumberOfUnreadMessages = 0;
                     }
                     RaisePropertyChangedEvent("SelectedUser");
+                    RaisePropertyChangedEvent("MessageIsSendable");
                     SelectedInvitation = null; 
                 }
             }
@@ -116,6 +118,31 @@ namespace Mercurio
             get
             {
                 return (selectedInvitation != null);
+            }
+        }
+
+        public bool MessageIsSendable
+        {
+            get
+            {
+                return (messageToSend != null && messageToSend.Length > 0 && selectedUser != null);
+            }
+        }
+
+        public string MessageToSend
+        {
+            get
+            {
+                return messageToSend;
+            }
+            set
+            {
+                if (value != messageToSend)
+                {
+                    messageToSend = value;
+                    RaisePropertyChangedEvent("MessageToSend");
+                    RaisePropertyChangedEvent("MessageIsSendable");
+                }
             }
         }
 
@@ -339,6 +366,7 @@ namespace Mercurio
         public ICommand SendInvitation { get; set; }
         public ICommand AcceptInvitation { get; set; }
         public ICommand RejectInvitation { get; set; }
+        public ICommand SendMessage { get; set; }
         #endregion
 
         #region Public Methods (hooked to AppService events)
@@ -444,6 +472,12 @@ namespace Mercurio
             SelectedInvitation = null;
             RaisePropertyChangedEvent("Invitations");
             RaisePropertyChangedEvent("HasInvitations");
+        }
+
+        public void DoSendMessage()
+        {
+            appService.SendMessage(selectedIdentity.Address, selectedUser.Address, messageToSend);
+            MessageToSend = string.Empty;
         }
         #endregion
     }

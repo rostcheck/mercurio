@@ -30,11 +30,34 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=3.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WindowsAzure.Storage.3.2.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net">
       <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Spatial, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.6.0\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,10 +77,14 @@
     <Compile Include="EnvelopedMercurioMessage.cs" />
     <Compile Include="FileLogger.cs" />
     <Compile Include="IMercurioLogger.cs" />
+    <Compile Include="InvalidQueueNameException.cs" />
     <Compile Include="ISerializerCore.cs" />
     <Compile Include="IMercurioUserAgent.cs" />
     <Compile Include="LogMessageLevelEnum.cs" />
+    <Compile Include="MercurioException.cs" />
     <Compile Include="MercurioMessageBase.cs" />
+    <Compile Include="IPersistentQueueConfiguration.cs" />
+    <Compile Include="PersistentQueueConfiguration.cs" />
     <Compile Include="PersistentQueueType.cs" />
     <Compile Include="ConnectInvitationMessage.cs" />
     <Compile Include="EncryptionAlgorithmEnum.cs" />
@@ -66,6 +93,7 @@
     <Compile Include="IMercurioMessage.cs" />
     <Compile Include="IPersistentQueue.cs" />
     <Compile Include="PersistentQueueFactory.cs" />
+    <Compile Include="PersistentQueueWithCloudStorage.cs" />
     <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
     <Compile Include="Serializer.cs" />
     <Compile Include="SerializerFactory.cs" />

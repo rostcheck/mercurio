@@ -15,7 +15,8 @@ namespace TestEntities
             string firstMessage = "first dummy message";
             string secondMessage = "second dummy message";
             Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
+            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
+            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
             while (queue.Length(recipientAddress) > 0) { queue.GetNext(recipientAddress); } // clear queue
 
             IMercurioMessage message = new DummyMessage(senderAddress, recipientAddress, firstMessage);
@@ -26,7 +27,7 @@ namespace TestEntities
             queue.Add(envelopedMessage);
 
             // Create a new queue - should read the persisted file
-            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
+            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
             envelopedMessage = queue.GetNext(recipientAddress);
             message = envelopedMessage.PayloadAsMessage(serializer);
             Assert.IsTrue(message.ToString() == firstMessage);

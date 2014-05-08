@@ -88,12 +88,12 @@ namespace TestEntities
         private void Setup()
         {
             serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
+            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
+            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
 
             foreach (string file in Directory.GetFiles(".", "*maker.net"))
                 File.Delete(file);
 
-            queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, serializer);
             aliceConfig = TestConfig.GetTestConfiguration(aliceName);
             bobConfig = TestConfig.GetTestConfiguration(bobName);
             TestUtils.SetupUserDir(aliceName);
