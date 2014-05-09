@@ -37,14 +37,14 @@
                         <DataGridTextColumn x:Name="colUsers" Binding="{Binding NameAndNumberUnread, Mode=OneWay}" ClipboardContentBinding="{x:Null}" Width="*" Header="Contact Name"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <DataGrid x:Name="dgInvitations" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Invitations}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedInvitation}">
+                <DataGrid x:Name="dgInvitations" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Invitations}" IsEnabled="{Binding HasInvitations}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedInvitation}">
                     <DataGrid.Columns>
                         <DataGridTextColumn x:Name="colInvitations" Binding="{Binding SenderAddress, Mode=OneWay}" Width="*" Header="Invitations"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 <GridSplitter Grid.Column="0" Height="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" IsEnabled="{Binding HasInvitations}"/>
             </Grid>
-            <Grid Name="grdInvitationDisplay" Grid.Row="0" Grid.Column="1" Visibility="{Binding HasInvitationSelected, Converter={StaticResource BoolToVisibility}}">
+            <Grid Name="grdInvitationDisplay" Grid.Row="0" Grid.Column="1" Visibility="{Binding HasInvitationSelected, Converter={StaticResource BoolToVisibility}}" d:IsHidden="True">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="90"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>                    
@@ -71,7 +71,7 @@
                     <Button Name="btnRejectInvitation" Height="23" Padding="10,0,10,0" Command="{Binding RejectInvitation}">Reject</Button>
                 </StackPanel>
             </Grid>
-            <DataGrid x:Name="dgMessages" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Messages}" AutoGenerateColumns="False" d:IsHidden="True" Visibility="{Binding HasInvitationSelected, Converter={StaticResource BoolToInverseVisibility}}">
+            <DataGrid x:Name="dgMessages" Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Messages}" AutoGenerateColumns="False" Visibility="{Binding HasInvitationSelected, Converter={StaticResource BoolToInverseVisibility}}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Representation}" ClipboardContentBinding="{x:Null}" Width="*" Header="Message"/>
                 </DataGrid.Columns>
@@ -85,7 +85,7 @@
                     <ComboBox x:Name="cmbOperatingUser" HorizontalAlignment="Right" VerticalAlignment="Top" Width="185" Height="24" SelectedItem="{Binding SelectedIdentity}" ItemsSource="{Binding AvailableIdentities}" DisplayMemberPath="Name" SelectedValuePath="Name"/>
                 </StackPanel>
             </Grid>
-            <Grid x:Name="grdInvitationPane" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0" FocusManager.FocusedElement="{Binding ElementName=txtAddress}">
+            <Grid x:Name="grdInvitationPane" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,0" IsEnabled="{Binding InvitationPanelVisible}" FocusManager.FocusedElement="{Binding ElementName=txtAddress}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="110" MinWidth="110"/>
                     <ColumnDefinition Width="*"/>
@@ -109,17 +109,16 @@
                     <Button x:Name="btnSendInvite" Content="Send Invitation" Height="22" Margin="0,0,10,10" Padding="10,0,10,0" VerticalAlignment="Bottom" Width="Auto" IsDefault="{Binding InvitationPanelVisible}" IsEnabled="{Binding CanSendInvitation}" Command="{Binding SendInvitation}"/>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0">
+            <Grid x:Name="grdMessagePanel" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" FocusManager.FocusedElement="{Binding ElementName=tbMessage}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="60"/>
                 </Grid.ColumnDefinitions>
-
-                <TextBox Grid.Column="0" x:Name="tbStatus" Height="26" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="590" Text="{Binding MessageToSend, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Grid.Column="0" x:Name="tbMessage" Height="26" TextWrapping="Wrap" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="590" Text="{Binding MessageToSend, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Button Grid.Column="1" x:Name="btnSendMessage" Content="Send" Height="22" Margin="5,5,5,5" Padding="0,0,0,0" VerticalAlignment="Bottom" Width="Auto" IsDefault="True" IsEnabled="{Binding MessageIsSendable}" Command="{Binding SendMessage}"/>
             </Grid>
         </Grid>
-        <Grid x:Name="grdPassword" Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding Locked, Converter={StaticResource BoolToVisibility}}" d:IsHidden="True">
+        <Grid x:Name="grdPassword" Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Visibility="{Binding Locked, Converter={StaticResource BoolToVisibility}}" d:IsHidden="True" IsVisibleChanged="OnUnlocked">
             <Rectangle x:Name="recOverlay" Fill="#FFF4F4F5" Stroke="Black" Opacity="85"/>
             <Grid x:Name="grdPasswordEntry" Height="140" MinHeight="120" Width="400" MinWidth="200" FocusManager.FocusedElement="{Binding ElementName=pbPassword}">
                 <Grid.ColumnDefinitions>

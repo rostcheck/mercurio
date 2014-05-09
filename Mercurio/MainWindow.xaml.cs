@@ -45,5 +45,10 @@ namespace Mercurio
             else
                 btnOk.IsEnabled = false;
         }
+
+        private void OnUnlocked(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            Keyboard.Focus(tbMessage);
+        }
     }
 }
