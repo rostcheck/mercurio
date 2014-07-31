@@ -13,6 +13,12 @@ namespace TestUtilities
         public static readonly string KeyChainDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\gnupg";
         private static readonly string KeyChainBackupDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\gnupg\\test-backup";
         private static readonly string KeyChainWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\TestKeyChains";
+        private static readonly string TestKeyChainBaseDirectory = KeyChainWorkingDirectory;
+
+        public static string GetUserDir(string userName)
+        {
+            return TestKeyChainBaseDirectory + "\\" + userName;
+        }
 
         public static string GetUserWorkingDir(string userName)
         {
@@ -36,11 +42,11 @@ namespace TestUtilities
 
         public static void SwitchUser(string fromUser, string toUser)
         {
-            if (fromUser != null && fromUser != string.Empty)
-            {
-                CopyGPGFiles(KeyChainDirectory, GetUserWorkingDir(fromUser));
-            }
-            CopyGPGFiles(GetUserWorkingDir(toUser), KeyChainDirectory);
+            //if (fromUser != null && fromUser != string.Empty)
+            //{
+            //    CopyGPGFiles(KeyChainDirectory, GetUserWorkingDir(fromUser));
+            //}
+            //CopyGPGFiles(GetUserWorkingDir(toUser), KeyChainDirectory);
         }
 
         private static void CopyGPGFiles(string sourceDir, string destinationDir)

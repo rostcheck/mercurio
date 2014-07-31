@@ -19,6 +19,11 @@ namespace MercurioAppServiceLayer
         private ICryptoManager cryptoManager;
         private Serializer serializer;
        
+        public string GetPublicKey(string identifier)
+        {
+            return cryptoManager.GetPublicKey(identifier);
+        }
+
         public void Send(IMercurioMessage message)
         {
             IMercurioMessage sendableMessage = message;

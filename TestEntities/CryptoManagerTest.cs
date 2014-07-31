@@ -16,8 +16,8 @@ namespace TestEntities
         [TestMethod]
         public void GPGCryptoManagerTest()
         {
-            PrepareTest("mercurio");
-            Dictionary<ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create();
+            //PrepareTest("mercurio");
+            Dictionary<ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create("mercurio");
             ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, configuration);
             string publicKey = cryptoManager.GetPublicKey(string.Empty);
             Assert.IsTrue(publicKey.Length != 0);

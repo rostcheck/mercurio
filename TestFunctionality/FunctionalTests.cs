@@ -18,6 +18,42 @@ namespace TestFunctionality
         public string Passphrase;
     }
 
+    public class UserServices
+    {
+        public MessageService MessageService { get; set; }
+        public IMercurioUserAgent UserAgent { get; set; }
+
+        public string GetPublicKey(string identifier)
+        {
+            return MessageService.GetPublicKey(identifier);
+        }
+
+        public void SendMessage(IMercurioMessage message)
+        {
+            MessageService.Send(message);
+        }
+
+        public IMercurioMessage GetNextMessage(string address)
+        {
+            return MessageService.GetNext(address);
+        }
+
+        public IMercurioMessage ProcessMessage(IMercurioMessage message)
+        {
+            return MessageService.ProcessMessage(message, UserAgent.GetSelectedIdentity());
+        }
+
+        public string GetSelectedIdentity()
+        {
+            return UserAgent.GetSelectedIdentity();
+        }
+
+        public void DisplayMessage(IMercurioMessage message)
+        {
+            UserAgent.DisplayMessage(message);
+        }
+    }
+
     [TestClass]
     public class FunctionalTests
     {
@@ -39,72 +75,66 @@ namespace TestFunctionality
         private IPersistentQueue queue;
         private const string logFileName = "test.log";
         private static FileLogger logger = new FileLogger("test.log");
-        private ICryptoManager cryptoManager;
-        private MessageService messageService;
+        private Dictionary<string, UserServices> userServiceCache = new Dictionary<string, UserServices>();
         private NetworkCredential aliceCredential, bobCredential;
-        DummyUserAgent userAgent;
 
         [TestMethod]
         public void KeyExchange()
-        {
-            Setup(alice);
-
+        {            
+            UserServices aliceServices = Setup(alice);
+            
             // Sign in as Alice and send an invitation to Bob
             ClearQueue(user[bob].Address);
 
             string[] signatures = new string[0];
-            IMercurioMessage connectInvitationMessage = new ConnectInvitationMessage(user[alice].Address, user[bob].Address, cryptoManager.GetPublicKey(user[alice].Key), signatures, evidenceURL);
-            messageService.Send(connectInvitationMessage);
+            IMercurioMessage connectInvitationMessage = new ConnectInvitationMessage(user[alice].Address, user[bob].Address, 
+                aliceServices.GetPublicKey(user[alice].Key), signatures, evidenceURL);
+            aliceServices.SendMessage(connectInvitationMessage);
 
             // Sign in as Bob, accept invitation
-            SwitchUser(alice, bob);
-            IMercurioMessage receivedMessage = messageService.GetNext(user[bob].Address);
+            UserServices bobServices = SwitchUser(alice, bob);
+            IMercurioMessage receivedMessage = bobServices.GetNextMessage(user[bob].Address);
             Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationMessage));
-            receivedMessage.MessageIsDisplayableEvent += DisplayMessage;
+            receivedMessage.MessageIsDisplayableEvent += bobServices.DisplayMessage;
             // Displaying the message will cause the dummy user agent to automatically
             // accept it and send a response
-            receivedMessage = messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity());
+            receivedMessage = bobServices.ProcessMessage(receivedMessage);
             Assert.IsTrue(receivedMessage == null);
 
             // Sign in as Alice, receive accepted invitation
             SwitchUser(bob, alice);
-            receivedMessage = messageService.GetNext(user[alice].Address);
+            receivedMessage = aliceServices.GetNextMessage(user[alice].Address);
             Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationAcceptedMessage));
             // Returns a signed copy of Bob's public key
-            var signedKeyMessage = messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity()); 
-            messageService.Send(signedKeyMessage); // Send signed key 
+            var signedKeyMessage = aliceServices.ProcessMessage(receivedMessage); 
+            aliceServices.SendMessage(signedKeyMessage); // Send signed key 
            
             // Alice also sends a message to Bob
             IMercurioMessage helloMessage = new SimpleTextMessage(user[alice].Address, user[bob].Address, aliceMessage);
-            messageService.Send(helloMessage);
+            aliceServices.SendMessage(helloMessage);
 
             // Sign in as Bob, receive signed key
             SwitchUser(alice, bob);
-            receivedMessage = messageService.GetNext(user[bob].Address);
+            receivedMessage = bobServices.GetNextMessage(user[bob].Address);
             Assert.IsTrue(receivedMessage.GetType() == typeof(SignedKeyMessage));
-            messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity());
+            bobServices.ProcessMessage(receivedMessage);
 
             // Then receive message, reply
-            receivedMessage = messageService.GetNext(user[bob].Address);
+            receivedMessage = bobServices.GetNextMessage(user[bob].Address);
             Assert.IsTrue(receivedMessage.GetType() == typeof(EncryptedMercurioMessage));
             Assert.IsFalse(receivedMessage.ToString() == aliceMessage.ToString());
-            IMercurioMessage timeDelayedMessage = messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity());
+            IMercurioMessage timeDelayedMessage = bobServices.ProcessMessage(receivedMessage);
             Assert.IsTrue(timeDelayedMessage.Content == aliceMessage.ToString());
             IMercurioMessage responseMessage = new SimpleTextMessage(user[bob].Address, user[alice].Address, bobMessage);
-            messageService.Send(responseMessage);
+            bobServices.SendMessage(responseMessage);
 
             // Sign in as Alice, receive reply
             SwitchUser(bob, alice);
-            receivedMessage = messageService.GetNext(user[alice].Address);
+            receivedMessage = aliceServices.GetNextMessage(user[alice].Address);
             Assert.IsTrue(receivedMessage.GetType() == typeof(EncryptedMercurioMessage));
-            timeDelayedMessage = messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity());
+            timeDelayedMessage = aliceServices.ProcessMessage(receivedMessage);
             Assert.IsFalse(receivedMessage.ToString() == bobMessage.ToString());
             Assert.IsTrue(timeDelayedMessage.Content == bobMessage);
-        }
-
-        void DisplayMessage(IMercurioMessage message)
-        {
-            userAgent.DisplayMessage(message);
         }
 
         [TestMethod]
@@ -116,37 +146,38 @@ namespace TestFunctionality
                                 "Are you going to the party on Saturday?",
                                 "I'm not bothering you, am I?", "I'm going, I think it will be fun."};
             // Sign in as Alice and send an invitation to Bob
-            Setup(alice);
+            UserServices aliceServices = Setup(alice);
             ClearQueue(user[bob].Address);
 
             string[] signatures = new string[0];
-            IMercurioMessage connectInvitationMessage = new ConnectInvitationMessage(user[alice].Address, user[bob].Address, cryptoManager.GetPublicKey(user[alice].Key), signatures, evidenceURL);
-            messageService.Send(connectInvitationMessage);
+            IMercurioMessage connectInvitationMessage = new ConnectInvitationMessage(user[alice].Address, user[bob].Address, 
+                aliceServices.GetPublicKey(user[alice].Key), signatures, evidenceURL);
+            aliceServices.SendMessage(connectInvitationMessage);
 
             // Sign in as Bob, accept invitation
-            SwitchUser(alice, bob);
-            IMercurioMessage receivedMessage = messageService.GetNext(user[bob].Address);
+            UserServices bobServices = SwitchUser(alice, bob);
+            IMercurioMessage receivedMessage = bobServices.GetNextMessage(user[bob].Address);
             Assert.IsTrue(receivedMessage.GetType() == typeof(ConnectInvitationMessage));
             // DummyUserAgent will automatically accept it and send a response
-            messageService.ProcessMessage(receivedMessage, userAgent.GetSelectedIdentity());
+            bobServices.ProcessMessage(receivedMessage);
 
             // Send many messages
             foreach (string messageText in messages)
             {
                 SimpleTextMessage message = new SimpleTextMessage(sender, recipient, messageText);
-                messageService.Send(message);
+                bobServices.SendMessage(message);
             }
 
             // Queue up more invitations for Alice from Carlos and Danielle
-            SwitchUser(bob, carlos);
-            connectInvitationMessage = new ConnectInvitationMessage(user[carlos].Address, user[alice].Address, cryptoManager.GetPublicKey(user[alice].Key), signatures, evidenceURL);
-            messageService.Send(connectInvitationMessage);
-            SwitchUser(carlos, danielle);
-            connectInvitationMessage = new ConnectInvitationMessage(user[danielle].Address, user[alice].Address, cryptoManager.GetPublicKey(user[alice].Key), signatures, evidenceURL);
-            messageService.Send(connectInvitationMessage);
+            UserServices carlosService = SwitchUser(bob, carlos);
+            connectInvitationMessage = new ConnectInvitationMessage(user[carlos].Address, user[alice].Address, carlosService.GetPublicKey(user[alice].Key), signatures, evidenceURL);
+            carlosService.SendMessage(connectInvitationMessage);
+            UserServices danielleeService = SwitchUser(carlos, danielle);
+            connectInvitationMessage = new ConnectInvitationMessage(user[danielle].Address, user[alice].Address, danielleeService.GetPublicKey(user[alice].Key), signatures, evidenceURL);
+            danielleeService.SendMessage(connectInvitationMessage);
         }
 
-        private void Setup(string userName)
+        private UserServices Setup(string userName)
         {
             foreach (string file in Directory.GetFiles(".", "*.net"))
                 File.Delete(file);
@@ -163,12 +194,7 @@ namespace TestFunctionality
 
             aliceCredential = new NetworkCredential(user[alice].Key, user[alice].Passphrase);
             bobCredential = new NetworkCredential(user[bob].Key, user[bob].Passphrase);
-            cryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager,
-                TestConfig.GetTestConfiguration(userName));
-            cryptoManager.SetCredential(GetCredential(userName));
-            messageService = new MessageService(queue, cryptoManager, serializer);
-            userAgent = new DummyUserAgent(logger, messageService, cryptoManager);
-            SwitchUser(null, userName);
+            return SwitchUser(null, userName);
         }
 
         private void ClearQueue(string address)
@@ -181,13 +207,19 @@ namespace TestFunctionality
             return new NetworkCredential(username, user[username].Passphrase);
         }
 
-        private void SwitchUser(string fromUser, string toUser)
+        private UserServices SwitchUser(string fromUser, string toUser)
         {
             TestUtils.SwitchUser(fromUser, toUser);
-            CryptoManagerConfiguration configuration = TestConfig.GetTestConfiguration(toUser);
-            messageService.SetConfiguration(configuration);
-            cryptoManager.SetConfiguration(configuration);
-            cryptoManager.SetCredential(GetCredential(toUser));
+            if (!userServiceCache.ContainsKey(toUser))
+            {
+                ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager,
+                    TestConfig.GetTestConfiguration(toUser));
+                cryptoManager.SetCredential(GetCredential(toUser));
+                MessageService messageService = new MessageService(queue, cryptoManager, serializer);
+                IMercurioUserAgent userAgent = new DummyUserAgent(logger, messageService, cryptoManager);
+                userServiceCache[toUser] = new UserServices() { MessageService = messageService, UserAgent = userAgent };
+            }
+            return userServiceCache[toUser];
         }
     }
 }

@@ -18,7 +18,7 @@ namespace TestFunctionality
         [TestMethod]
         public void ConnectInvitationTest()
         {
-            Dictionary <ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create();
+            Dictionary <ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create("Bob");
             ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, configuration);
             Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();

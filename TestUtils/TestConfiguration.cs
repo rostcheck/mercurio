@@ -10,7 +10,7 @@ namespace TestUtilities
 {
     public static class TestConfig
     {
-        public static CryptoManagerConfiguration Create()
+        public static CryptoManagerConfiguration Create(string userName)
         {
             CryptoManagerConfiguration configuration = new CryptoManagerConfiguration();
             configuration[ConfigurationKeyEnum.UserHome] = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\gnupg";
@@ -20,8 +20,8 @@ namespace TestUtilities
 
         public static CryptoManagerConfiguration GetTestConfiguration(string userName)
         {
-            CryptoManagerConfiguration configuration = TestConfig.Create();
-            //configuration[ConfigurationKeyEnum.UserHome] = TestUtils.GetUserDir(userName);
+            CryptoManagerConfiguration configuration = TestConfig.Create(userName);
+            configuration[ConfigurationKeyEnum.UserHome] = TestUtils.GetUserDir(userName);
             return configuration;
         }
     }
