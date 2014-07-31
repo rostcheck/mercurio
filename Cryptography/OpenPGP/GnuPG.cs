@@ -387,7 +387,7 @@ namespace Starksoft.Cryptography.OpenPGP
             MemoryStream outputStream = new MemoryStream();
             MemoryStream metadataStream = new MemoryStream();
 
-            StringBuilder options = new StringBuilder("--import");
+            StringBuilder options = GetCmdLineSwitches(ActionTypes.Import, false);
             ExecuteGPG(options, inputStream, outputStream, metadataStream, false);
             StreamReader reader = new StreamReader(metadataStream);
             reader.BaseStream.Position = 0;
