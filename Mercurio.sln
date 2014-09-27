@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entities.csproj", "{CE737374-D61E-4D4C-8796-580EC758A00C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FD98019A-8DE5-4E79-8711-D54279A48DDB}"
@@ -43,6 +45,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mercurio", "mercurio", "{0C
 		TestKeyRings\mercurio\pubring.gpg = TestKeyRings\mercurio\pubring.gpg
 		TestKeyRings\mercurio\secring.gpg = TestKeyRings\mercurio\secring.gpg
 		TestKeyRings\mercurio\trustdb.gpg = TestKeyRings\mercurio\trustdb.gpg
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{A9059213-BB02-4392-B7DB-22238A1B29B7}"
+	ProjectSection(SolutionItems) = preProject
+		ResearchNotes.txt = ResearchNotes.txt
 	EndProjectSection
 EndProject
 Global
