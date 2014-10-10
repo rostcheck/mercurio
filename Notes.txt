@@ -1,0 +1,11 @@
+To create a portable GPG install, do 
+
+[from the GnuPG directory, usually c:\Program Files (x86)\GNU\GnuPG]
+
+.\mkportable.exe C:\Users\drostcheck\Documents\port-gpg-test
+
+(the directory name provided must exist)
+
+copy libgcrypt-20.dll C:\Users\drostcheck\Documents\port-gpg-test
+
+at this point, gpg2.exe in the portable directory will run.
