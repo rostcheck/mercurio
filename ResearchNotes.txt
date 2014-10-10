@@ -1,5 +1,5 @@
 GPG windows install:
 - Written by Werner Koch, g10 systems (GPG maintainer)
 - Written in Nullsoft Install System (.nsi files), compiles to an .exe
-- GPG can be made into a portable version using mkportable.exe, see http://gpg4win.org/download.html
+- GPG can be made into a portable version using mkportable.exe, see http://gpg4win.org/download.html (needs libcrypt-20.dll added)
 - Install can be made silent, see http://lists.gnupg.org/pipermail/gnupg-users/2008-February/032713.html

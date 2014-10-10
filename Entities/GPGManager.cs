@@ -187,6 +187,11 @@ namespace Entities
             {
                 name = key.UserName;
             }
+            match = Regex.Match(name, @"\[(.+)\]\s+(.+)", RegexOptions.None);
+            if (match.Success)
+            {
+                name = match.Groups[2].Value;
+            }
 
             return new User(key.KeyID, name, key.UserId, description);
         }
