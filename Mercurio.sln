@@ -55,6 +55,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercurioUIMockup", "MercurioUIMockup\MercurioUIMockup.csproj", "{D06E9FF1-FED4-4A75-B83E-D7E5A164F353}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyRingService", "KeyRingService\KeyRingService.csproj", "{4E39EBCA-1036-4C57-8743-951CD364D3FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestKeyRingService", "TestKeyRingService\TestKeyRingService.csproj", "{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +101,14 @@ Global
 		{D06E9FF1-FED4-4A75-B83E-D7E5A164F353}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D06E9FF1-FED4-4A75-B83E-D7E5A164F353}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D06E9FF1-FED4-4A75-B83E-D7E5A164F353}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E39EBCA-1036-4C57-8743-951CD364D3FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E39EBCA-1036-4C57-8743-951CD364D3FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E39EBCA-1036-4C57-8743-951CD364D3FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E39EBCA-1036-4C57-8743-951CD364D3FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
