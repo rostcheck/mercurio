@@ -20,7 +20,7 @@ namespace MercurioUIMockup
             set { name = value; }
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return name;
         }

@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyRingService", "KeyRingSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestKeyRingService", "TestKeyRingService\TestKeyRingService.csproj", "{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyRingService.Local", "KeyRingService.Local\KeyRingService.Local.csproj", "{82170455-0B2C-402F-8ED5-8248CE22C8BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,10 @@ Global
 		{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82170455-0B2C-402F-8ED5-8248CE22C8BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82170455-0B2C-402F-8ED5-8248CE22C8BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82170455-0B2C-402F-8ED5-8248CE22C8BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82170455-0B2C-402F-8ED5-8248CE22C8BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
