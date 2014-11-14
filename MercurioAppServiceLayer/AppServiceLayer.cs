@@ -96,7 +96,7 @@ namespace MercurioAppServiceLayer
         public async Task InjectTestMessages()
         {
             const string testMessageQueue = "messages_for_alice@maker.net";
-            const string testMessageQueuePath = @"..\..\..\TestKeyRings\" + testMessageQueue;
+            string testMessageQueuePath = Path.Combine(@"..", @"..", @"..", "TestKeyRings", testMessageQueue);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
             IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
             if (File.Exists(testMessageQueue))
@@ -225,8 +225,8 @@ namespace MercurioAppServiceLayer
         private CryptoManagerConfiguration SetupGPGConfiguration()
         {
             CryptoManagerConfiguration configuration = new CryptoManagerConfiguration();
-            configuration[ConfigurationKeyEnum.UserHome] = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\gnupg";
-            configuration[ConfigurationKeyEnum.GPGBinaryPath] = Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) + "\\GNU\\GnuPG\\gpg2.exe";
+            configuration[ConfigurationKeyEnum.UserHome] = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "gnupg");
+            configuration[ConfigurationKeyEnum.GPGBinaryPath] = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86), "GNU", "GnuPG", "gpg2.exe");
             return configuration;
         }
 
