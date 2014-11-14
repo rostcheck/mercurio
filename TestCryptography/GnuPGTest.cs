@@ -17,23 +17,28 @@ namespace TestCryptography
         private const string hermesPublicSubKeyID = "44AE5384";
         private const string hermesPassphrase = @"Our technology has been TurneD AGAINST US :(";
         private const string secretMessage = "This is my secret message. There are many like it, but this one is mine.";
-        private const string puttyPublicKeyID = "B41CAE29";
-        private const string puttyPublicKeyFingerprint = "AE 65 D3 F7 85 D3 18 E0  3B 0C 9B 02 FF 3A 81 FE";
-        private const string puttyPublicKey = @"-----BEGIN PGP PUBLIC KEY BLOCK-----
-Version: GnuPG v2.0.22 (MingW32)
+        // Test key passphrase: This$is$the$test$key
+        private const string testPublicKeyID = "3EF9BE07";
+        private const string testPublicKeyFingerprint = "5037 6136 157B 7E02 D26E  D2AF 00DB 8CA0 3EF9 BE07";
+        private const string testPublicKey = @"-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v2
 
-mQCNAzpA2ZYAAAEEAKxRyqIqZxKktdbrPo/OUj/4ij+yNIC8oBTVNgt3+NcAgFKI
-lPxjRKkrNFMrmXPaKRLp8/TS5Z46nSgG44d58G/5clu7IVge2YlCpvoIfo3ute2U
-UbBvXCJFVK5ePhNzQX8nGibmejxo8wF5CShyifhmoyfd96cf9u85zMC0HK4pAAUR
-tDRQdVRUWSBSZWxlYXNlcyAoUlNBKSA8cHV0dHktYnVnc0BsaXN0cy50YXJ0YXJ1
-cy5vcmc+iQCVAwUQOkDZlu85zMC0HK4pAQG7XQP6AlJiPCmN7PMz92LhqNbK4B1Y
-WtNCcDKz1wZZow2OrQW79SZ+I6RqWC/z/1YKIgYY30aE2UtY9OMUYlQ+I08rsYC4
-hNxNY4JvyyP9AT7wiJlpvdWtD590Z5DYwdSTeZg8w0N3NvCJ6m3ivFHiEZuJcZjd
-cfPQziUxGjQi6HzG+seJAJUDBRA6QNrinVh3vx40rEEBAfM0A/9vCcf0Kj5ebQ6d
-1oJmvOvp85jCy0Kwq4laatx8u9EhuKr0cSIFYLs64u3nwvTH2kRrlKRTqbdglA/D
-yYBSdHwSzJ1LoQFARMVD7rxc8VIwNhZSwze3Tafp3iToiG/wTb6GE8rnPS+ExAja
-LcrXlt1MbO1jFunrxKc3bwqez6ahvw==
-=t5QN
+mI0EVGV2BgEEAKP9Yx2KIa5/6ro38/caw8UoiatrCmHJ+tDeRa0ibsYAafYQ6gIj
+myhxA7xe8k7ZEddZmwlKe4jCehC9oSCFWLdgrXRg0CI6SfrOZxj5m7MT6QtUI5op
+sG6ElB/ZZte0/DbUNJncRgws1cG6gnoZicf76H9/WSQZ+zANBSVgTvypABEBAAG0
+OVRlc3QgS2V5IChHUEcga2V5IGZvciBNZXJjdXJpbyB1bml0IHRlc3RzKSA8dGVz
+dEBrZXkuY29tPoi5BBMBAgAjBQJUZXYGAhsDBwsJCAcDAgEGFQgCCQoLBBYCAwEC
+HgECF4AACgkQANuMoD75vgd0tgP8CkUMvDoMt6gCMxJuDP5A3FXY9JsxPNQcUQyR
+gg4aIQCRFJlNCVe3IOAqdhJYlqc9+QajSffMtDzZyyFEL2h5WPR94m7CVo0HOiIp
+jEHW99NhMgj/TV0RVdWWhHGz6HRlINxDqxHh36+EQHhpKdmkqvedhr2Sl9O7goMx
+AJIwHXO4jQRUZXYGAQQAy28wpX/+1hrqRqXYFpNxYnCaLnqFTDRw2Gas5CgTgnjT
++3SFCuDaVKHJIh7Z8Fmupcq6t6cyo7hLbhLvvW0OOEaQALLyReb0r0M+Piccmqk9
+ldE1qI04q4Ecdh/0DwUMQ4kTVd65Pn5i7a0SLLMh0uwmcfH4j2vum111ug2nVq8A
+EQEAAYifBBgBAgAJBQJUZXYGAhsMAAoJEADbjKA++b4He90EAJXEmgfdP4QARZ5O
+kWEvYKqQbh7cZTqfLYehR03esM1M6BgdkiWzdB6RD56CjoEWt7D6tKS7xmYv7d+s
+1J8Uug4lLSPYEnimAOnuBJDqSNdofB4w16PnQaqv6cCx6JZgmw45sgmoS/2ZGR34
+dI/J+ka6IXbxS/1QzYPaRrGiaun0
+=i5DD
 -----END PGP PUBLIC KEY BLOCK-----";
 
         [TestMethod]
@@ -42,12 +47,12 @@ LcrXlt1MbO1jFunrxKc3bwqez6ahvw==
             GnuPG gpg = PrepareTest("mercurio");
             GnuPGKeyCollection keys = gpg.GetKeys();
             Assert.IsTrue(keys.Count >= 2);
-            GnuPGKey puttyKey = keys.FirstOrDefault<GnuPGKey>(s => s.KeyID == puttyPublicKeyID);
-            Assert.IsNotNull(puttyKey);
-            Assert.IsTrue(puttyKey.KeyLength == 1024);
-            Assert.IsTrue(puttyKey.Algorithm == GnuPGAlgorithmType.RSA);
-            Assert.IsTrue(puttyKey.CreationDate == new DateTime(2000, 12, 20));
-            Assert.IsNull(puttyKey.KeyExpiration);
+            GnuPGKey testKey = keys.FirstOrDefault<GnuPGKey>(s => s.KeyID == testPublicKeyID);
+            Assert.IsNotNull(testKey);
+            Assert.IsTrue(testKey.KeyLength == 1024);
+            Assert.IsTrue(testKey.Algorithm == GnuPGAlgorithmType.RSA);
+            Assert.IsTrue(testKey.CreationDate == new DateTime(2014, 11, 14));
+            Assert.IsNull(testKey.KeyExpiration);
             GnuPGKey hermesKey = keys.FirstOrDefault<GnuPGKey>(s => s.KeyID == hermesPublicKeyID);
             Assert.IsNotNull(hermesKey);
             Assert.IsTrue(hermesKey.KeyLength == 4096);
@@ -91,21 +96,21 @@ LcrXlt1MbO1jFunrxKc3bwqez6ahvw==
             gpg.Credential = hermesCredential;
 
             // If the key is on the ring, delete it
-            GnuPGKey key = gpg.GetKeys().FirstOrDefault(s => s.KeyID == puttyPublicKeyID);
+            GnuPGKey key = gpg.GetKeys().FirstOrDefault(s => s.KeyID == testPublicKeyID);
             if (key != null)
             {
                 gpg.DeleteKey(key.KeyID);
                 // Verify it isn't there
-                key = gpg.GetKeys().FirstOrDefault(s => s.KeyID == puttyPublicKeyID);
+                key = gpg.GetKeys().FirstOrDefault(s => s.KeyID == testPublicKeyID);
                 Assert.IsNull(key);
             }
 
-            gpg.Import(new MemoryStream(Encoding.ASCII.GetBytes(puttyPublicKey)));
-            key = gpg.GetKeys().FirstOrDefault(s => s.KeyID == puttyPublicKeyID);
+            gpg.Import(new MemoryStream(Encoding.ASCII.GetBytes(testPublicKey)));
+            key = gpg.GetKeys().FirstOrDefault(s => s.KeyID == testPublicKeyID);
             Assert.IsNotNull(key);
 
             string fingerprint = gpg.GetFingerprint(key.KeyID);
-            Assert.IsTrue(fingerprint == puttyPublicKeyFingerprint);
+            Assert.IsTrue(fingerprint == testPublicKeyFingerprint);
 
             // Sign the key
             gpg.SignKey(key.KeyID);
