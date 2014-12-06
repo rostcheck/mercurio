@@ -50,7 +50,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mercurio", "mercurio", "{0C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{A9059213-BB02-4392-B7DB-22238A1B29B7}"
 	ProjectSection(SolutionItems) = preProject
-		Narrativestxt.txt = Narrativestxt.txt
+		Narratives.txt = Narratives.txt
 		ResearchNotes.txt = ResearchNotes.txt
 	EndProjectSection
 EndProject
@@ -61,6 +61,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestKeyRingService", "TestKeyRingService\TestKeyRingService.csproj", "{50BD856E-41DA-44EC-B7E7-BBD4312EEEFB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyRingService.Local", "KeyRingService.Local\KeyRingService.Local.csproj", "{82170455-0B2C-402F-8ED5-8248CE22C8BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{783F530F-80D8-4664-AEB5-4C15B877BAEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,6 +118,10 @@ Global
 		{82170455-0B2C-402F-8ED5-8248CE22C8BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82170455-0B2C-402F-8ED5-8248CE22C8BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82170455-0B2C-402F-8ED5-8248CE22C8BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{783F530F-80D8-4664-AEB5-4C15B877BAEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{783F530F-80D8-4664-AEB5-4C15B877BAEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{783F530F-80D8-4664-AEB5-4C15B877BAEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{783F530F-80D8-4664-AEB5-4C15B877BAEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

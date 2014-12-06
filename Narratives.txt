@@ -18,11 +18,11 @@ Mercurio is but around collections of replicated items
 
 Domain Ubiquitous Language:
 
-- Atomic data element - a string, integrer, or binary record
+- Atomic data element - a basic data element with a Name, Value, and Type (string, integrer, or binary data)
 - Record - an unique association of atomic data elements. Each Record contains a chain of Revisions.
 - Revision - a change to a Record. Revisions are immutable; changing a Record produces a new Revision.
 - Document - a single computer file (ex. sound file, word processor file) that we treat as a single integral Record
-- Container - a collection of records
+- Container - a collection of Records
 - User - a person who uses Mercurio. A user may have multiple Identities
 - Identity - a unique cryptographic key. Contains a Public Part and a Private Part. 
 - Change - an access permission that allows the specified Identity to change Records (add Revisions to) a Container
