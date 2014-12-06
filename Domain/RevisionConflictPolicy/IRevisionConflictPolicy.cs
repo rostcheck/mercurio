@@ -8,6 +8,6 @@ namespace Domain.RevisionConflictPolicy
 {
     public interface IRevisionConflictPolicy
     {
-        Revision GetAuthoritativeRevision(Record record, List<Revision> conflictingRevisions);
+        Revision ResolveConflicingRevisions(Record record, List<Revision> conflictingRevisions);
     }
 }
