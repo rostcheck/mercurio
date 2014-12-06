@@ -536,6 +536,10 @@ namespace Starksoft.Cryptography.OpenPGP
 
                 CopyStream(_proc.StandardOutput.BaseStream, outputStream);
             }
+            catch (GnuPGException exp)
+            {
+                throw;
+            }
             catch (Exception exp)
             {
                 throw new GnuPGException(String.Format("An error occurred while trying to execute command {0}.", command, exp));

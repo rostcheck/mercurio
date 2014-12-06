@@ -212,7 +212,7 @@ namespace TestFunctionality
             TestUtils.SwitchUser(fromUser, toUser);
             if (!userServiceCache.ContainsKey(toUser))
             {
-                ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager,
+                ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG,
                     TestConfig.GetTestConfiguration(toUser));
                 cryptoManager.SetCredential(GetCredential(toUser));
                 MessageService messageService = new MessageService(queue, cryptoManager, serializer);

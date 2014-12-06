@@ -33,7 +33,7 @@ namespace TestKeyRingService
             string name = "testCreateKeyRing";
             var keyRingService = new MockKeyRingService();
             var priorRings = keyRingService.GetAvailableKeyRings();
-            var newKeyRing = keyRingService.CreateKeyRing(name);
+            var newKeyRing = keyRingService.CreateKeyRing(name, null);
             var newKeyRings = keyRingService.GetAvailableKeyRings();
             Assert.IsTrue(newKeyRings.Count == priorRings.Count + 1);
             CollectionAssert.Contains(newKeyRings, newKeyRing);

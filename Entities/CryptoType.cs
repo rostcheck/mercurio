@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public enum CryptoManagerType
+    public enum CryptoType
     {
-        GPGCryptoManager
+        GPG
     }
 }

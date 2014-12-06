@@ -11,8 +11,8 @@ namespace Entities
     /// </summary>
     public class MercurioException : Exception
     {
-        public MercurioException(string message)
-            : base(message)
+        public MercurioException(string message, Exception innerException = null)
+            : base(message, innerException)
         {
         }
     }

@@ -9,3 +9,7 @@ To create a portable GPG install, do
 copy libgcrypt-20.dll C:\Users\drostcheck\Documents\port-gpg-test
 
 at this point, gpg2.exe in the portable directory will run.
+
+====
+We want the solution to, at startup:
+- Discover what it has for crypto providers (managers)

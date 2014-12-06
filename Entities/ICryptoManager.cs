@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    // Responsible for providing cryptographic functions (with a commmon interface)
+    /// <summary>
+    /// Responsible for providing cryptographic functions (with a commmon interface)
+    /// </summary>
     public interface ICryptoManager
     {
         void SetCredential(NetworkCredential credential);
@@ -29,5 +31,6 @@ namespace Entities
         bool HasPublicKey(string key); // Public key exists in keychain
         List<User> GetAvailableIdentities();
         List<User> GetAvailableUsers(); // Other possible users to send to
+        void CreateKey(string identifier, NetworkCredential credential);
     }
 }

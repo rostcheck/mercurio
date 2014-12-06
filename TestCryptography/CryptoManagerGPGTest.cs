@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using TestUtilities;
 using System.Net;
 
-namespace TestEntities
+namespace TestCryptography
 {
     [TestClass]
-    public class CryptoManagerTest
+    public class CryptoManagerGPGTest
     {
         private const string hermesPublicKeyID = "6C628193";
         private const string hermesPassphrase = @"Our technology has been TurneD AGAINST US :(";
@@ -16,9 +16,8 @@ namespace TestEntities
         [TestMethod]
         public void GPGCryptoManagerTest()
         {
-            //PrepareTest("mercurio");
             Dictionary<ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create("mercurio");
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, configuration);
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG, configuration);
             string publicKey = cryptoManager.GetPublicKey(string.Empty);
             Assert.IsTrue(publicKey.Length != 0);
 

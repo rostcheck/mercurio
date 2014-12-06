@@ -8,14 +8,33 @@ namespace Entities
 {
     public static class CryptoManagerFactory
     {
-        public static ICryptoManager Create(CryptoManagerType managerType, Dictionary<ConfigurationKeyEnum, string> configuration)
+        private static Dictionary<string, Func<Dictionary<ConfigurationKeyEnum, string>, ICryptoManager>> registry;
+
+        public static ICryptoManager Create(CryptoType managerType, Dictionary<ConfigurationKeyEnum, string> configuration)
         {
-            switch (managerType)
+            if (registry == null)
             {
-                case CryptoManagerType.GPGCryptoManager:
-                    return new GPGManager(configuration);
-                default:
-                    throw new NotImplementedException();
+                throw new MercurioException("No CryptoManager types are registered with CryptoManagerFactory");
+            }
+            if (registry.ContainsKey(managerType.ToString()))
+            {
+                return registry[managerType.ToString()](configuration);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public static void Register(string managerType, Func<Dictionary<ConfigurationKeyEnum, string>, ICryptoManager> construct)
+        {
+            if (registry == null)
+            {
+                registry = new Dictionary<string, Func<Dictionary<ConfigurationKeyEnum, string>, ICryptoManager>>();
+            }
+            if (!registry.ContainsKey(managerType.ToLower()))
+            {
+                registry.Add(managerType, construct);
             }
         }
     }

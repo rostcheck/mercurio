@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace KeyRingService
 {
     /// <summary>
-    /// Configuration entries for a CryptoManager
+    /// Responsible for finding CryptographicProviders on the system 
     /// </summary>
-    public class CryptoManagerConfiguration : Dictionary<ConfigurationKeyEnum, string>
+    public class CryptographicProviderManager
     {
+        //public List<>
     }
 }

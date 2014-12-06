@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,11 +32,24 @@ namespace KeyRingService.Local
 
         public void AddKeyRing(KeyRing newKeyRing)
         {
-            throw new NotImplementedException();
+            try {
+                // Verify the crypto manager recognizes that key ring dir as a valid key ring
+                var identities = cryptoManager.GetAvailableIdentities();
+                if (identities == null)
+                {
+                    throw new MercurioException(string.Format("Key ring at {0} contains no identities", newKeyRing.Path));
+                }
+            }
+            catch (Exception e)
+            {
+                throw new MercurioException(string.Format("Error opening key ring at {0}", newKeyRing.Path), e);
+            }
         }
 
-        public KeyRing CreateKeyRing(string name)
+        public KeyRing CreateKeyRing(string name, NetworkCredential credential)
         {
+            //cryptoManager.CreateKey(name, credential);
+            //TODO: implement
             throw new NotImplementedException();
         }
     }

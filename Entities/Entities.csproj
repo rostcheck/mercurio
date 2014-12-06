@@ -68,14 +68,16 @@
     <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="ConnectInvitationAcceptedMessage.cs" />
     <Compile Include="ConfigurationKeyEnum.cs" />
+    <Compile Include="CryptographicServiceProviderFactory.cs" />
     <Compile Include="CryptoManagerConfiguration.cs" />
     <Compile Include="CryptoManagerFactory.cs" />
-    <Compile Include="CryptoManagerType.cs" />
+    <Compile Include="CryptoType.cs" />
     <Compile Include="DelayedMessage.cs" />
     <Compile Include="DummyMessage.cs" />
     <Compile Include="EncryptedMercurioMessage.cs" />
     <Compile Include="EnvelopedMercurioMessage.cs" />
     <Compile Include="FileLogger.cs" />
+    <Compile Include="ICryptographicServiceProvider.cs" />
     <Compile Include="IMercurioLogger.cs" />
     <Compile Include="InvalidQueueNameException.cs" />
     <Compile Include="ISerializerCore.cs" />
@@ -88,7 +90,6 @@
     <Compile Include="PersistentQueueType.cs" />
     <Compile Include="ConnectInvitationMessage.cs" />
     <Compile Include="EncryptionAlgorithmEnum.cs" />
-    <Compile Include="GPGManager.cs" />
     <Compile Include="ICryptoManager.cs" />
     <Compile Include="IMercurioMessage.cs" />
     <Compile Include="IPersistentQueue.cs" />
@@ -102,12 +103,6 @@
     <Compile Include="SimpleTextMessage.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Cryptography\Cryptography.csproj">
-      <Project>{eba5e064-56a7-409e-aba0-1882180e3678}</Project>
-      <Name>Cryptography</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

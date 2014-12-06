@@ -7,8 +7,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Starksoft.Cryptography.OpenPGP;
+using Entities;
 
-namespace Entities
+namespace Cryptography.GPG
 {
     public class GPGManager : ICryptoManager
     {
@@ -194,6 +195,12 @@ namespace Entities
             }
 
             return new User(key.KeyID, name, key.UserId, description);
+        }
+
+
+        public void CreateKey(string identifier, NetworkCredential credential)
+        {
+            throw new NotImplementedException();
         }
     }
 }

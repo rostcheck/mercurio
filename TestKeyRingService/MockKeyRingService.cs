@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace TestKeyRingService
             keyringList.Add(newKeyRing);
         }
 
-        public KeyRing CreateKeyRing(string name)
+        public KeyRing CreateKeyRing(string name, NetworkCredential credential)
         {
             var newKeyRing = new KeyRing() { Name = name, Path = string.Format(@"c:\TestKeyRings\{0}", name) };
             keyringList.Add(newKeyRing);

@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GPGManager.cs" />
     <Compile Include="OpenPGP\DecryptAsyncCompletedEventArgs.cs" />
     <Compile Include="OpenPGP\EncryptAsyncCompletedEventArgs.cs" />
     <Compile Include="OpenPGP\GnuPG.cs" />
@@ -55,7 +56,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CrypographicServiceProviderGPG.cs" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Entities\Entities.csproj">
+      <Project>{ce737374-d61e-4d4c-8796-580ec758a00c}</Project>
+      <Name>Entities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

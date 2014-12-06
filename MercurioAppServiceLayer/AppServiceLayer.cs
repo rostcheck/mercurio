@@ -230,12 +230,12 @@ namespace MercurioAppServiceLayer
             return configuration;
         }
 
-        private CryptoManagerType GetCryptoManagerType(AppCryptoManagerType appCryptoManagerType)
+        private CryptoType GetCryptoManagerType(AppCryptoManagerType appCryptoManagerType)
         {
             switch (appCryptoManagerType)
             {
                 case AppCryptoManagerType.GPG:
-                    return CryptoManagerType.GPGCryptoManager;
+                    return CryptoType.GPG;
                 default:
                     throw new NotImplementedException("Unknown crypto manager type " + appCryptoManagerType.ToString() + " specified");
             }

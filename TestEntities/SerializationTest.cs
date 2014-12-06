@@ -98,11 +98,11 @@ namespace TestEntities
             bobConfig = TestConfig.GetTestConfiguration(bobName);
             TestUtils.SetupUserDir(aliceName);
             TestUtils.SetupUserDir(bobName);
-            aliceCryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, aliceConfig);
+            aliceCryptoManager = CryptoManagerFactory.Create(CryptoType.GPG, aliceConfig);
             //aliceMessageService = new MessageService(queue, userInterface, aliceCryptoManager);
             aliceCredential = new NetworkCredential(aliceKey, alicePassphrase);
             aliceCryptoManager.SetCredential(aliceCredential);
-            bobCryptoManager = CryptoManagerFactory.Create(CryptoManagerType.GPGCryptoManager, bobConfig);
+            bobCryptoManager = CryptoManagerFactory.Create(CryptoType.GPG, bobConfig);
             bobCredential = new NetworkCredential(bobKey, bobPassphrase);
             bobCryptoManager.SetCredential(bobCredential);
             //bobMessageService = new MessageService(queue, userInterface, bobCryptoManager);        
