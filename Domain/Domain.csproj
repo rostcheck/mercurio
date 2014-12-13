@@ -42,18 +42,22 @@
     <Compile Include="AccessPermissionType.cs" />
     <Compile Include="AtomicDataElement.cs" />
     <Compile Include="AtomicDataElementChange.cs" />
+    <Compile Include="BinaryDocument.cs" />
     <Compile Include="ChangePolicy\ChangePolicyAllowAll.cs" />
     <Compile Include="ChangePolicy\ChangePolicyAllowSpecificIdentities.cs" />
     <Compile Include="ChangePolicy\IChangePolicy.cs" />
     <Compile Include="ChangeType.cs" />
     <Compile Include="Container.cs" />
+    <Compile Include="Database.cs" />
     <Compile Include="DataElementType.cs" />
     <Compile Include="DeletePolicy\DeletePolicyAllowAll.cs" />
     <Compile Include="DeletePolicy\DeletePolicyAllowNone.cs" />
     <Compile Include="DeletePolicy\DeletePolicyAllowSpecificEntities.cs" />
     <Compile Include="DeletePolicy\IDeletePolicy.cs" />
     <Compile Include="Document.cs" />
+    <Compile Include="DocumentType.cs" />
     <Compile Include="Identity.cs" />
+    <Compile Include="IDocument.cs" />
     <Compile Include="RecordChange.cs" />
     <Compile Include="RevisionConflictPolicy\IRevisionConflictPolicy.cs" />
     <Compile Include="RevisionConflictPolicy\RevisionConflictPolicyEarliestWins.cs" />
@@ -61,9 +65,11 @@
     <Compile Include="Record.cs" />
     <Compile Include="Revision.cs" />
     <Compile Include="RevisionRetentionPolicies\RevisionRententionPolicyKeepAll.cs" />
-    <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicyKeepNone.cs" />
+    <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicy.cs" />
     <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicyKeepOne.cs" />
+    <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicyType.cs" />
     <Compile Include="StringDataElement.cs" />
+    <Compile Include="TextDocument.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

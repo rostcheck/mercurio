@@ -4,31 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain
+namespace Mercurio.Domain
 {
     /// <summary>
     /// A collection of Records
     /// </summary>
     public class Container
     {
-        private string _name;
+        private IRevisionRetentionPolicy _retentionPolicy;
 
-        private Container(string name)
+        private Container(string name, RevisionRetentionPolicyType retentionPolicy)
         {
             Name = name;
+            _retentionPolicy = RevisionRetentionPolicy.Create(retentionPolicy);
         }
 
-        public static Container Create(string name)
+        public static Container Create(string name, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            return new Container(name);
+            return new Container(name, retentionPolicy);
         }
 
         public string Name { get; private set; }
 
-        public Record CreateDocument(string documentName)
+        public TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
         {
-            throw new NotImplementedException();
-           // return Record.Create(recordName, )
+            return TextDocument.Create(documentName, _retentionPolicy, creatorIdentity, initialData);
         }
 
         public void DeleteRecord(string recordId)
@@ -45,6 +45,5 @@ namespace Domain
         {
             throw new NotImplementedException();
         }
-
     }
 }

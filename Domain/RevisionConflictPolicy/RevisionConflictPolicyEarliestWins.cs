@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.RevisionConflictPolicy
+namespace Mercurio.Domain.RevisionConflictPolicy
 {
     public class RevisionConflictPolicyEarliestWins : IRevisionConflictPolicy
     {

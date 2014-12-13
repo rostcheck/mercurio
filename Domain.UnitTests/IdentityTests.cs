@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Domain.UnitTests
+namespace Mercurio.Domain.UnitTests
 {
     [TestClass]
     public class IdentityTests

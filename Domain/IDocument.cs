@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mercurio.Domain
 {
-    public enum ChangeType
+    public interface IDocument
     {
-        Set,
-        Delete
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
-namespace Domain.UnitTests
+namespace Mercurio.Domain.UnitTests
 {
     [TestClass]
     public class UserTests

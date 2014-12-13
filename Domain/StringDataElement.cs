@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain
+namespace Mercurio.Domain
 {
     /// <summary>
     /// Data element that stores a string

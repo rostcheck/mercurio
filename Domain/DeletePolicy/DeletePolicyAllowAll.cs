@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.DeletePolicy
+namespace Mercurio.Domain.DeletePolicy
 {
     public class DeletePolicyAllowAll : IDeletePolicy
     {

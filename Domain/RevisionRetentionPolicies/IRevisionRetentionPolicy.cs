@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain
+namespace Mercurio.Domain
 {
     /// <summary>
     /// Specifies whether old revisions are retained, and if so how many.

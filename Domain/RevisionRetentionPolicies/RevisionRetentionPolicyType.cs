@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Mercurio.Domain
 {
-    public enum ChangeType
+    public enum RevisionRetentionPolicyType
     {
-        Set,
-        Delete
+        KeepAll,
+        KeepOne
     }
 }

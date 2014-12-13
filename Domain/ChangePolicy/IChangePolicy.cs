@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.ChangePolicy
+namespace Mercurio.Domain.ChangePolicy
 {
     /// <summary>
     /// Specifies which Identities can change Records in the Container
