@@ -14,5 +14,10 @@ namespace Domain
         public string Name { get; set; }
         public virtual object Value { get; set; }
         public DataElementType ElementType { get; protected set;  }
+
+        public bool SameElementAs(AtomicDataElement otherElement)
+        {
+            return (this.Name == otherElement.Name && this.ElementType == otherElement.ElementType);
+        }
     }
 }

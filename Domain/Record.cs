@@ -13,35 +13,55 @@ namespace Domain
     {
         private List<Revision> _revisions;
         private List<AtomicDataElement> _dataElements;
+        private List<AtomicDataElementChange> _uncommittedRevisions;
+
+        public Guid Id { get; private set; }
+
+        public static Record Create(string name)
+        {
+            return new Record(name);
+        }
 
         public List<Revision> GetRevisions()
         {
-            throw new NotImplementedException();
+            return new List<Revision>(_revisions);
         }
 
-        public Record()
+        private Record(string name, List<AtomicDataElement> dataElements = null)
         {
             _revisions = new List<Revision>();
+            _dataElements = dataElements ?? new List<AtomicDataElement>();
+            _uncommittedRevisions = new List<AtomicDataElementChange>();
+            Id = Guid.NewGuid();
         }
-       
+
+        public string Name { get; private set; }
+
         public List<AtomicDataElement> GetDataElements()
         {
-            throw new NotImplementedException();
+            return new List<AtomicDataElement>(_dataElements);
         }
 
-        public void BeginRevision()
+        public void ChangeElement(AtomicDataElementChange dataElementChange)
         {
-            throw new NotImplementedException();
+            // delete any prior pending changes (sets or deletes) for this element
+            _uncommittedRevisions = _uncommittedRevisions.Where(s => !s.SameElementAs(dataElementChange)).ToList();
+
+            if (dataElementChange.ChangeType == ChangeType.Delete && _dataElements.Where(s => s.SameElementAs(dataElementChange)).SingleOrDefault() == null)
+            {
+                return; // Ignore deletes for non-existent records
+            }
+            _uncommittedRevisions.Add(dataElementChange);
         }
 
-        public void ChangeElement(AtomicDataElement dataElement)
+        public void CommitChanges(string revisorIdentityUniqueId)
         {
-            throw new NotImplementedException();
-        }
+            var priorRevision =  _revisions.Last();
+            var priorRevisionId = (priorRevision == null) ? Guid.Empty : priorRevision.Id;
 
-        public void DeleteElement(string name, DataElementType elementType)
-        {
-            throw new NotImplementedException();
+            _revisions.Add(Revision.Create(priorRevisionId, revisorIdentityUniqueId, _uncommittedRevisions));
+            _uncommittedRevisions = new List<AtomicDataElementChange>();
+            // TODO: publish change event (to container)
         }
     }
 }

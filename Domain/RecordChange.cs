@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Domain
+{
+    /// <summary>
+    /// Represents a change (add, change, or delete) to a record
+    /// </summary>
+    public class RecordChange
+    {
+        public ChangeType ChangeType { get; private set; }
+
+        public RecordChange()
+        {
+        }
+    }
+}

@@ -20,9 +20,10 @@ Domain Ubiquitous Language:
 
 - Atomic data element - a basic data element with a Name, Value, and Type (string, integrer, or binary data)
 - Record - an unique association of atomic data elements. Each Record contains a chain of Revisions.
+- Document - a collection of Records. Analagous to a file in operating systems. Each Document contains a chain of Revisions.
 - Revision - a change to a Record. Revisions are immutable; changing a Record produces a new Revision.
 - Document - a single computer file (ex. sound file, word processor file) that we treat as a single integral Record
-- Container - a collection of Records
+- Container - a collection of Documents. Analogous to a a "folder" in operating systems.
 - User - a person who uses Mercurio. A user may have multiple Identities
 - Identity - a unique cryptographic key. Contains a Public Part and a Private Part. 
 - Change - an access permission that allows the specified Identity to change Records (add Revisions to) a Container
@@ -50,3 +51,24 @@ There is no policy needed to view Records within a Container because only Identi
   Container has been shared actually ever have those records. Mercurio insures this cryptographically.
 A Revision Conflict Policy specifies what happens when multiple Identities have changed the same Revision
   of the same Record. Possible solutions include: Earliest Wins or Merge Changes.
+
+Can a Record exist outside of a Container? No. 
+
+Narrative:
+A User creates a text document. The User adds various lines of text to the document. The user later comes back and 
+changes some lines of text. 
+
+An Identity creates a Container. 
+The Identity creates a Document in the Container. 
+The Identity adds a Record to the Document. 
+The Record contains an Atomic Data Element of type Text
+Later, the Identity creates a new Revision of the Record. 
+
+Document types:
+- Binary: a single Record of Atomic Data Entity type binary
+- Text: a single Record, of Atomic Data Entity type text
+- Database: a set of Records, of varying atomic data types
+The Record consists of single sentence of text (string).
+
+Adding the Record produces a new RecordChange that updates the value of the 
+Document.

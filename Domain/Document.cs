@@ -7,20 +7,17 @@ using System.Threading.Tasks;
 namespace Domain
 {
     /// <summary>
-    ///  A single computer file (ex. sound file, word processor file) that we treat as a single integral Record
+    /// A collection of Records. Analagous to a file in operating systems.
     /// </summary>
-    public class Document : Record
+    public class Document
     {
-        private byte[] _data;
+        private List<Record> _recordList;
+        private List<Revision> _revisions;
+        private List<RecordChange> _uncommittedRevisions;
 
-        public byte[] GetData()
-        {
-            return _data;
-        }
 
-        public Document(byte[] data)
-        {
-            this._data = data;
+        public void ChangeRecord(RecordChange recordChange)
+        {              
         }
     }
 }

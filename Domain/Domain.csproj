@@ -45,6 +45,7 @@
     <Compile Include="ChangePolicy\ChangePolicyAllowAll.cs" />
     <Compile Include="ChangePolicy\ChangePolicyAllowSpecificIdentities.cs" />
     <Compile Include="ChangePolicy\IChangePolicy.cs" />
+    <Compile Include="ChangeType.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="DataElementType.cs" />
     <Compile Include="DeletePolicy\DeletePolicyAllowAll.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="DeletePolicy\IDeletePolicy.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="Identity.cs" />
+    <Compile Include="RecordChange.cs" />
     <Compile Include="RevisionConflictPolicy\IRevisionConflictPolicy.cs" />
     <Compile Include="RevisionConflictPolicy\RevisionConflictPolicyEarliestWins.cs" />
     <Compile Include="RevisionRetentionPolicies\IRevisionRetentionPolicy.cs" />

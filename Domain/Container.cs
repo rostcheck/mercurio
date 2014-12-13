@@ -11,9 +11,24 @@ namespace Domain
     /// </summary>
     public class Container
     {
-        public void AddRecord(Record newRecord)
+        private string _name;
+
+        private Container(string name)
+        {
+            Name = name;
+        }
+
+        public static Container Create(string name)
+        {
+            return new Container(name);
+        }
+
+        public string Name { get; private set; }
+
+        public Record CreateDocument(string documentName)
         {
             throw new NotImplementedException();
+           // return Record.Create(recordName, )
         }
 
         public void DeleteRecord(string recordId)

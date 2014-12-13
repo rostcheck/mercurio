@@ -6,8 +6,36 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
+    /// <summary>
+    /// Represents a change (set value, delete value) to an AtomicDataElement
+    /// </summary>
     public class AtomicDataElementChange : AtomicDataElement
-    {
-        public virtual object OldValue { get; set; }
+    {        
+        public ChangeType ChangeType { get; private set; }
+
+        private AtomicDataElementChange()
+        {
+        }
+
+        public static AtomicDataElementChange SetValue(string name, object value, DataElementType elementType)
+        {
+            return new AtomicDataElementChange()
+            {
+                Name = name,
+                Value = value,
+                ElementType = elementType,
+                ChangeType = ChangeType.Set
+            };
+        }
+
+        public static AtomicDataElementChange DeleteValue(string name, DataElementType elementType)
+        {
+            return new AtomicDataElementChange()
+            {
+                Name = name,
+                ElementType = elementType,
+                ChangeType = ChangeType.Delete
+            };
+        }
     }
 }
