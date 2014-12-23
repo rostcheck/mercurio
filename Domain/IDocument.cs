@@ -8,5 +8,6 @@ namespace Mercurio.Domain
 {
     public interface IDocument
     {
+        string Name { get; }
     }
 }

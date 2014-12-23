@@ -5,6 +5,7 @@ using System.Net;
 using Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtilities;
+using Cryptography.GPG;
 
 namespace TestEntities
 {
@@ -87,6 +88,8 @@ namespace TestEntities
 
         private void Setup()
         {
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), (x) => new GPGManager(x));
+
             serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
             queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);

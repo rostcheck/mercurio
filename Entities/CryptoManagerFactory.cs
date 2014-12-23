@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
+    /// <summary>
+    /// Registers available CryptoManagers on the system and creates them on command
+    /// </summary>
     public static class CryptoManagerFactory
     {
         private static Dictionary<string, Func<Dictionary<ConfigurationKeyEnum, string>, ICryptoManager>> registry;
@@ -16,9 +19,9 @@ namespace Entities
             {
                 throw new MercurioException("No CryptoManager types are registered with CryptoManagerFactory");
             }
-            if (registry.ContainsKey(managerType.ToString()))
+            if (registry.ContainsKey(managerType.ToString().ToLower()))
             {
-                return registry[managerType.ToString()](configuration);
+                return registry[managerType.ToString().ToLower()](configuration);
             }
             else
             {
@@ -34,7 +37,7 @@ namespace Entities
             }
             if (!registry.ContainsKey(managerType.ToLower()))
             {
-                registry.Add(managerType, construct);
+                registry.Add(managerType.ToLower(), construct);
             }
         }
     }

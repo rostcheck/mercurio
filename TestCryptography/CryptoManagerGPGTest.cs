@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using TestUtilities;
 using System.Net;
+using Cryptography.GPG;
 
 namespace TestCryptography
 {
@@ -17,6 +18,7 @@ namespace TestCryptography
         public void GPGCryptoManagerTest()
         {
             Dictionary<ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create("mercurio");
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(),  (x) => new GPGManager(x));
             ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG, configuration);
             string publicKey = cryptoManager.GetPublicKey(string.Empty);
             Assert.IsTrue(publicKey.Length != 0);

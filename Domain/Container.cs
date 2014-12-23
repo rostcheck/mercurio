@@ -12,11 +12,24 @@ namespace Mercurio.Domain
     public class Container
     {
         private IRevisionRetentionPolicy _retentionPolicy;
+        private List<IDocument> _documents;
+        public List<IDocument> Documents 
+        { 
+            get
+            {
+                return new List<IDocument>(_documents);
+            }
+            private set
+            {
+                _documents = value;
+            }
+        }
 
         private Container(string name, RevisionRetentionPolicyType retentionPolicy)
         {
             Name = name;
             _retentionPolicy = RevisionRetentionPolicy.Create(retentionPolicy);
+            _documents = new List<IDocument>();
         }
 
         public static Container Create(string name, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
@@ -28,7 +41,9 @@ namespace Mercurio.Domain
 
         public TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
         {
-            return TextDocument.Create(documentName, _retentionPolicy, creatorIdentity, initialData);
+            var document = TextDocument.Create(documentName, _retentionPolicy, creatorIdentity, initialData);
+            _documents.Add(document);
+            return document;
         }
 
         public void DeleteRecord(string recordId)

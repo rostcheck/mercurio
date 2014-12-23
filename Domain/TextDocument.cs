@@ -8,7 +8,7 @@ namespace Mercurio.Domain
     /// <summary>
     /// Represents a Document configured to hold a single (potentially large) block of text
     /// </summary>
-    public class TextDocument
+    public class TextDocument : IDocument
     {
         private IRevisionRetentionPolicy _revisionRetentionPolicy;
         private List<Revision> _revisions;
@@ -32,11 +32,11 @@ namespace Mercurio.Domain
             }
         }
 
-        public string DocumentName { get; private set; }
+        public string Name { get; private set; }
 
         private TextDocument(string documentName, IRevisionRetentionPolicy retentionPolicy, Identity creatorIdentity, string initialData)
         {
-            this.DocumentName = documentName;
+            this.Name = documentName;
             this._revisionRetentionPolicy = retentionPolicy;
             this.Revisions = new List<Revision>();
             SetContent(initialData, creatorIdentity);

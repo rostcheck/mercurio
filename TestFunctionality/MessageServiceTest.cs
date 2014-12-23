@@ -4,6 +4,7 @@ using Entities;
 using MercurioAppServiceLayer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtilities;
+using Cryptography.GPG;
 
 namespace TestFunctionality
 {
@@ -19,6 +20,7 @@ namespace TestFunctionality
         public void ConnectInvitationTest()
         {
             Dictionary <ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create("Bob");
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), (x) => new GPGManager(x));
             ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG, configuration);
             Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
