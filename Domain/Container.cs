@@ -12,7 +12,9 @@ namespace Mercurio.Domain
     public class Container
     {
         private IRevisionRetentionPolicy _retentionPolicy;
+        private IStoragePlan _storagePlan;
         private List<IDocument> _documents;
+
         public List<IDocument> Documents 
         { 
             get
@@ -25,16 +27,17 @@ namespace Mercurio.Domain
             }
         }
 
-        private Container(string name, RevisionRetentionPolicyType retentionPolicy)
+        private Container(string name, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy)
         {
             Name = name;
             _retentionPolicy = RevisionRetentionPolicy.Create(retentionPolicy);
+            _storagePlan = storagePlan;
             _documents = new List<IDocument>();
         }
 
-        public static Container Create(string name, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public static Container Create(string name, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            return new Container(name, retentionPolicy);
+            return new Container(name, storagePlan, retentionPolicy);
         }
 
         public string Name { get; private set; }

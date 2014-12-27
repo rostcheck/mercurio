@@ -536,7 +536,7 @@ namespace Starksoft.Cryptography.OpenPGP
 
                 CopyStream(_proc.StandardOutput.BaseStream, outputStream);
             }
-            catch (GnuPGException exp)
+            catch (GnuPGException)
             {
                 throw;
             }

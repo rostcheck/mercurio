@@ -49,11 +49,20 @@ namespace Mercurio.Domain.UnitTests
         }
     }
 
+    internal class MockStoragePlan : IStoragePlan
+    {
+        public string Name
+        {
+            get { return "MockStoragePlan"; }
+        }
+    }
+
     [TestClass]
-    public class ContainerTests
+    public class MercurioEnvironmentTests
     {
         private List<ICryptographicServiceProvider> _cryptoProviders;
         private List<IStorageSubstrate> _storageSubstrates;
+        private List<IStoragePlan> _storagePlans;
 
         [TestInitialize]
         public void ContainerTests_Initialize()
@@ -62,19 +71,45 @@ namespace Mercurio.Domain.UnitTests
             this._cryptoProviders.Add(new MockCryptographicServiceProvider());
             this._storageSubstrates = new List<IStorageSubstrate>();
             this._storageSubstrates.Add(new MockStorageSubstrate());
+            this._storagePlans = new List<IStoragePlan>();
+            this._storagePlans.Add(new MockStoragePlan());
         }
 
         [TestMethod]
-        public void MercurioEnvironment_Create_creates_successfully()
+        public void MercurioEnvironment_Create_creates_successfully_with_valid_arguments()
         {
-            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates);
+            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, _storagePlans);
+            Assert.IsNotNull(environment);
+        }
+
+        [TestMethod]        
+        [ExpectedException(typeof(ArgumentException))]
+        public void MercurioEnvironment_Create_throws_with_invalid_crypto_providers()
+        {
+            var environment = MercurioEnvironment.Create(new List<ICryptographicServiceProvider>(), _storageSubstrates, _storagePlans);
+            Assert.IsNotNull(environment);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MercurioEnvironment_Create_throws_with_invalid_storage_substrates()
+        {
+            var environment = MercurioEnvironment.Create(_cryptoProviders, new List<IStorageSubstrate>(), _storagePlans);
+            Assert.IsNotNull(environment);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MercurioEnvironment_Create_throws_with_invalid_storage_plans()
+        {
+            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, new List<IStoragePlan>());
             Assert.IsNotNull(environment);
         }
 
         [TestMethod]
         public void MercurioEnvironment_GetContainers_returns_successful_value()
         {
-            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates);
+            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, _storagePlans);
             var containers = environment.GetContainers();
             Assert.IsNotNull(containers);
             Assert.IsTrue(containers.Count >= 0);
@@ -83,7 +118,7 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void MercurioEnvironment_GetAvailableStorageSubstrates_returns_successful_value()
         {
-            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates);
+            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, _storagePlans);
             var substrates = environment.GetAvailableStorageSubstrateNames();
             Assert.IsNotNull(substrates);
             Assert.IsTrue(substrates.Count >= 0);
@@ -93,11 +128,11 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_CreateContainer_creates_container()
         {
             string newContainerName = "testContainer";
-            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates);
+            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, _storagePlans);
             var substrates = environment.GetAvailableStorageSubstrateNames();
-            Assert.IsTrue(substrates.Count > 0);
+            var storagePlans = environment.GetAvailableStoragePlanNames();
             var originalContainerList = environment.GetContainers();
-            var newContainer = environment.CreateContainer(newContainerName, substrates[0]);
+            var newContainer = environment.CreateContainer(newContainerName, substrates[0], storagePlans[0]);
             Assert.IsNotNull(newContainer);
             var newContainerList = environment.GetContainers();
             Assert.IsTrue(newContainerList.Count == originalContainerList.Count + 1);

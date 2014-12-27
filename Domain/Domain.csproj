@@ -59,6 +59,7 @@
     <Compile Include="ICryptographicServiceProvider.cs" />
     <Compile Include="Identity.cs" />
     <Compile Include="IDocument.cs" />
+    <Compile Include="IStoragePlan.cs" />
     <Compile Include="MercurioEnvironment.cs" />
     <Compile Include="RecordChange.cs" />
     <Compile Include="RevisionConflictPolicy\IRevisionConflictPolicy.cs" />
