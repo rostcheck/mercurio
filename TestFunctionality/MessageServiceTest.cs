@@ -21,7 +21,7 @@ namespace TestFunctionality
         {
             Dictionary <ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create("Bob");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), (x) => new GPGManager(x));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG, configuration);
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
             Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
             IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);

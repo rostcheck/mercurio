@@ -8,13 +8,13 @@ namespace Mercurio.Domain.IntegrationTests
     public class ContainerTests
     {
         private Identity _identity;
-        private User __user;
+        private User _user;
 
         [TestInitialize]
         public void ContainerTests_Initialize()
         {
             _identity = Identity.Create("davidr-1", "public-key", "private-key");
-            __user = User.Create("Test _user", _identity);
+            _user = User.Create("Test _user", _identity);
         }
 
         [TestMethod]

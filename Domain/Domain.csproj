@@ -56,8 +56,10 @@
     <Compile Include="DeletePolicy\IDeletePolicy.cs" />
     <Compile Include="Document.cs" />
     <Compile Include="DocumentType.cs" />
+    <Compile Include="ICryptographicServiceProvider.cs" />
     <Compile Include="Identity.cs" />
     <Compile Include="IDocument.cs" />
+    <Compile Include="MercurioEnvironment.cs" />
     <Compile Include="RecordChange.cs" />
     <Compile Include="RevisionConflictPolicy\IRevisionConflictPolicy.cs" />
     <Compile Include="RevisionConflictPolicy\RevisionConflictPolicyEarliestWins.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicy.cs" />
     <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicyKeepOne.cs" />
     <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicyType.cs" />
+    <Compile Include="IStorageSubstrate.cs" />
     <Compile Include="StringDataElement.cs" />
     <Compile Include="TextDocument.cs" />
     <Compile Include="User.cs" />

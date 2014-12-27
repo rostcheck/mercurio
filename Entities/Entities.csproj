@@ -77,7 +77,6 @@
     <Compile Include="EncryptedMercurioMessage.cs" />
     <Compile Include="EnvelopedMercurioMessage.cs" />
     <Compile Include="FileLogger.cs" />
-    <Compile Include="ICryptographicServiceProvider.cs" />
     <Compile Include="IMercurioLogger.cs" />
     <Compile Include="InvalidQueueNameException.cs" />
     <Compile Include="ISerializerCore.cs" />
@@ -106,6 +105,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

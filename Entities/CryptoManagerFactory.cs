@@ -13,15 +13,15 @@ namespace Entities
     {
         private static Dictionary<string, Func<Dictionary<ConfigurationKeyEnum, string>, ICryptoManager>> registry;
 
-        public static ICryptoManager Create(CryptoType managerType, Dictionary<ConfigurationKeyEnum, string> configuration)
+        public static ICryptoManager Create(string cryptoManagerType, Dictionary<ConfigurationKeyEnum, string> configuration)
         {
             if (registry == null)
             {
                 throw new MercurioException("No CryptoManager types are registered with CryptoManagerFactory");
             }
-            if (registry.ContainsKey(managerType.ToString().ToLower()))
+            if (registry.ContainsKey(cryptoManagerType.ToLower()))
             {
-                return registry[managerType.ToString().ToLower()](configuration);
+                return registry[cryptoManagerType.ToLower()](configuration);
             }
             else
             {

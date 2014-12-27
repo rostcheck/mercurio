@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Mercurio.Domain
 {
     /// <summary>
     /// A type of cryptographic software that, if installed, can provide cryptographic services (represented via an ICryptoManager)
     /// </summary>
     public interface ICryptographicServiceProvider
     {
-        CryptoType GetProviderType();
+        string GetProviderType();
         bool IsInstalled();
     }
 }

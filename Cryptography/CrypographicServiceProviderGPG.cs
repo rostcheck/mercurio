@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Mercurio.Domain;
 
 namespace Cryptography.GPG
 {
     public class CrypographicServiceProviderGPG : ICryptographicServiceProvider
     {
-        public CryptoType GetProviderType()
+        public string GetProviderType()
         {
-            return CryptoType.GPG;
+            return CryptoType.GPG.ToString();
         }
 
         public bool IsInstalled()
