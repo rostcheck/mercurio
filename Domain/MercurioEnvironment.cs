@@ -15,10 +15,12 @@ namespace Mercurio.Domain
         private List<IStorageSubstrate> _storageSubstrates;
         private List<IStoragePlan> _storagePlans;
 
-        public static MercurioEnvironment Create(IEnumerable<ICryptographicServiceProvider> cryptographicServiceProviders, 
-            IEnumerable<IStorageSubstrate> storageSubstrates, 
-            IEnumerable<IStoragePlan> storagePlans)
+        public static MercurioEnvironment Create(IEnvironmentScanner scanner)
         {
+            var cryptographicServiceProviders = scanner.GetCryptographicProviders();
+            var storageSubstrates = scanner.GetStorageSubstrates();
+            var storagePlans = scanner.GetStoragePlans();
+
             if (cryptographicServiceProviders == null || storageSubstrates == null || storagePlans == null)
                 throw new ArgumentNullException();
 

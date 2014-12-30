@@ -57,6 +57,37 @@ namespace Mercurio.Domain.UnitTests
         }
     }
 
+    internal class MockEnvironmentScanner : IEnvironmentScanner
+    {
+        private List<ICryptographicServiceProvider> _cryptoProviderList;
+        private List<IStorageSubstrate> _storageSubstrateList;
+        private List<IStoragePlan> _storagePlanList;
+
+        public MockEnvironmentScanner(List<ICryptographicServiceProvider> cryptoProviderList,  
+            List<IStorageSubstrate> storageSubstrateList,
+            List<IStoragePlan> storagePlanList)
+        {
+            _cryptoProviderList = cryptoProviderList;
+            _storageSubstrateList = storageSubstrateList;
+            _storagePlanList = storagePlanList;
+        }
+
+        public List<ICryptographicServiceProvider> GetCryptographicProviders()
+        {
+            return _cryptoProviderList;
+        }
+
+        public List<IStorageSubstrate> GetStorageSubstrates()
+        {
+            return _storageSubstrateList;
+        }
+
+        public List<IStoragePlan> GetStoragePlans()
+        {
+            return _storagePlanList;
+        }
+    }
+
     [TestClass]
     public class MercurioEnvironmentTests
     {
@@ -78,7 +109,8 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void MercurioEnvironment_Create_creates_successfully_with_valid_arguments()
         {
-            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, _storagePlans);
+            var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates, _storagePlans);
+            var environment = MercurioEnvironment.Create(environmentScanner);
             Assert.IsNotNull(environment);
         }
 
@@ -86,7 +118,8 @@ namespace Mercurio.Domain.UnitTests
         [ExpectedException(typeof(ArgumentException))]
         public void MercurioEnvironment_Create_throws_with_invalid_crypto_providers()
         {
-            var environment = MercurioEnvironment.Create(new List<ICryptographicServiceProvider>(), _storageSubstrates, _storagePlans);
+            var environmentScanner = new MockEnvironmentScanner(new List<ICryptographicServiceProvider>(), _storageSubstrates, _storagePlans);
+            var environment = MercurioEnvironment.Create(environmentScanner);
             Assert.IsNotNull(environment);
         }
 
@@ -94,7 +127,8 @@ namespace Mercurio.Domain.UnitTests
         [ExpectedException(typeof(ArgumentException))]
         public void MercurioEnvironment_Create_throws_with_invalid_storage_substrates()
         {
-            var environment = MercurioEnvironment.Create(_cryptoProviders, new List<IStorageSubstrate>(), _storagePlans);
+            var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, new List<IStorageSubstrate>(), _storagePlans);
+            var environment = MercurioEnvironment.Create(environmentScanner);
             Assert.IsNotNull(environment);
         }
 
@@ -102,14 +136,16 @@ namespace Mercurio.Domain.UnitTests
         [ExpectedException(typeof(ArgumentException))]
         public void MercurioEnvironment_Create_throws_with_invalid_storage_plans()
         {
-            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, new List<IStoragePlan>());
+            var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates, new List<IStoragePlan>());
+            var environment = MercurioEnvironment.Create(environmentScanner);
             Assert.IsNotNull(environment);
         }
 
         [TestMethod]
         public void MercurioEnvironment_GetContainers_returns_successful_value()
         {
-            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, _storagePlans);
+            var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates, _storagePlans);
+            var environment = MercurioEnvironment.Create(environmentScanner);
             var containers = environment.GetContainers();
             Assert.IsNotNull(containers);
             Assert.IsTrue(containers.Count >= 0);
@@ -118,7 +154,8 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void MercurioEnvironment_GetAvailableStorageSubstrates_returns_successful_value()
         {
-            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, _storagePlans);
+            var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates, _storagePlans);
+            var environment = MercurioEnvironment.Create(environmentScanner);
             var substrates = environment.GetAvailableStorageSubstrateNames();
             Assert.IsNotNull(substrates);
             Assert.IsTrue(substrates.Count >= 0);
@@ -128,7 +165,8 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_CreateContainer_creates_container()
         {
             string newContainerName = "testContainer";
-            var environment = MercurioEnvironment.Create(_cryptoProviders, _storageSubstrates, _storagePlans);
+            var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates, _storagePlans);
+            var environment = MercurioEnvironment.Create(environmentScanner);
             var substrates = environment.GetAvailableStorageSubstrateNames();
             var storagePlans = environment.GetAvailableStoragePlanNames();
             var originalContainerList = environment.GetContainers();

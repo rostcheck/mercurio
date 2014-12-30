@@ -51,8 +51,14 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MercurioEnvironmentIntegrationTests.cs" />
+    <Compile Include="DiskStorageSubstrateTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Domain.Implementation\Domain.Implementation.csproj">
+      <Project>{2825b70c-e747-4066-b327-23229c1ac60d}</Project>
+      <Name>Domain.Implementation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
       <Name>Domain</Name>
