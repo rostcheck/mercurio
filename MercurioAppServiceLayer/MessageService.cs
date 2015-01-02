@@ -7,6 +7,7 @@ using Entities;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+using Mercurio.Domain;
 
 namespace MercurioAppServiceLayer
 {

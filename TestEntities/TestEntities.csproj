@@ -64,6 +64,14 @@
       <Project>{eba5e064-56a7-409e-aba0-1882180e3678}</Project>
       <Name>Cryptography.GPG</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Domain.Implementation\Domain.Implementation.csproj">
+      <Project>{2825b70c-e747-4066-b327-23229c1ac60d}</Project>
+      <Name>Domain.Implementation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{ce737374-d61e-4d4c-8796-580ec758a00c}</Project>
       <Name>Entities</Name>

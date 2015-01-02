@@ -60,6 +60,7 @@
     <Compile Include="Identity.cs" />
     <Compile Include="IDocument.cs" />
     <Compile Include="IEnvironmentScanner.cs" />
+    <Compile Include="ISerializerCore.cs" />
     <Compile Include="IStoragePlan.cs" />
     <Compile Include="MercurioEnvironment.cs" />
     <Compile Include="RecordChange.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicyKeepOne.cs" />
     <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicyType.cs" />
     <Compile Include="IStorageSubstrate.cs" />
+    <Compile Include="Serializer.cs" />
     <Compile Include="StringDataElement.cs" />
     <Compile Include="TextDocument.cs" />
     <Compile Include="User.cs" />

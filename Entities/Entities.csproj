@@ -65,7 +65,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="ConnectInvitationAcceptedMessage.cs" />
     <Compile Include="ConfigurationKeyEnum.cs" />
     <Compile Include="CryptographicServiceProviderFactory.cs" />
@@ -79,7 +78,6 @@
     <Compile Include="FileLogger.cs" />
     <Compile Include="IMercurioLogger.cs" />
     <Compile Include="InvalidQueueNameException.cs" />
-    <Compile Include="ISerializerCore.cs" />
     <Compile Include="IMercurioUserAgent.cs" />
     <Compile Include="LogMessageLevelEnum.cs" />
     <Compile Include="MercurioException.cs" />
@@ -95,9 +93,6 @@
     <Compile Include="PersistentQueueFactory.cs" />
     <Compile Include="PersistentQueueWithCloudStorage.cs" />
     <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
-    <Compile Include="Serializer.cs" />
-    <Compile Include="SerializerFactory.cs" />
-    <Compile Include="SerializerType.cs" />
     <Compile Include="SignedKeyMessage.cs" />
     <Compile Include="SimpleTextMessage.cs" />
     <Compile Include="User.cs" />

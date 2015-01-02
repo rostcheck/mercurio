@@ -7,6 +7,8 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Mercurio.Domain;
+using Mercurio.Domain.Implementation;
 
 namespace MercurioAppServiceLayer
 {
@@ -177,7 +179,7 @@ namespace MercurioAppServiceLayer
             messageService.Send(textMessage);
         }
 
-        public List<User> GetUsers()
+        public List<Entities.User> GetUsers()
         {
             return cryptoManager.GetAvailableUsers();
         }
@@ -186,7 +188,7 @@ namespace MercurioAppServiceLayer
         /// List of identities that the currently running user can operate as
         /// </summary>
         /// <returns>List of Users</returns>
-        public List<User> GetAvailableIdentities()
+        public List<Entities.User> GetAvailableIdentities()
         {
             return cryptoManager.GetAvailableIdentities();
         }

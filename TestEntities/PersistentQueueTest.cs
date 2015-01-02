@@ -1,6 +1,8 @@
 ﻿using System;
 using Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mercurio.Domain;
+using Mercurio.Domain.Implementation;
 
 namespace TestEntities
 {

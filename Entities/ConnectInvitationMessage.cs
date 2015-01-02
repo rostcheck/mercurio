@@ -155,7 +155,7 @@ namespace Entities
             this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
         }
 
-        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        public IMercurioMessage Process(ICryptoManager cryptoManager, Mercurio.Domain.Serializer serializer, string userIdentity)
         {
             KeyID = cryptoManager.ImportKey(PublicKey);
             RaiseMessageIsDisplayable(this);

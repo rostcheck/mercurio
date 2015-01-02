@@ -6,6 +6,8 @@ using Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestUtilities;
 using Cryptography.GPG;
+using Mercurio.Domain;
+using Mercurio.Domain.Implementation;
 
 namespace TestEntities
 {

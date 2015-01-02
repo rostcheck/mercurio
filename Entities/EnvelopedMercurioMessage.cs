@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Mercurio.Domain;
+using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,7 +8,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
-using ProtoBuf;
 
 namespace Entities
 {
@@ -75,7 +76,7 @@ namespace Entities
             //}
         }
 
-        public IMercurioMessage PayloadAsMessage(Serializer serializer)
+        public IMercurioMessage PayloadAsMessage(Mercurio.Domain.Serializer serializer)
         {
             if (payload == null)
             {
@@ -95,7 +96,7 @@ namespace Entities
         private string messageType;
         private byte[] payload;
 
-        private void SetPayload(IMercurioMessage message, Serializer serializer)
+        private void SetPayload(IMercurioMessage message, Mercurio.Domain.Serializer serializer)
         {
             MemoryStream stream = new MemoryStream();
             //BinaryFormatter formatter = new BinaryFormatter();
@@ -110,7 +111,7 @@ namespace Entities
             payload = stream.ToArray();
         }
 
-        public EnvelopedMercurioMessage(string senderAddress, string recipientAddress, IMercurioMessage payload, Serializer serializer)
+        public EnvelopedMercurioMessage(string senderAddress, string recipientAddress, IMercurioMessage payload, Mercurio.Domain.Serializer serializer)
         {
             if (senderAddress == null || senderAddress == string.Empty)
                 throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without senderAddress");

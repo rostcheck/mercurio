@@ -8,6 +8,8 @@ using TestEntities;
 using MercurioAppServiceLayer;
 using System.Net;
 using Cryptography.GPG;
+using Mercurio.Domain;
+using Mercurio.Domain.Implementation;
 
 namespace TestFunctionality
 {

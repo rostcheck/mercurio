@@ -23,7 +23,7 @@ Domain Ubiquitous Language:
 - Document - a collection of Records. Analagous to a file in operating systems. Each Document contains a chain of Revisions.
 - Revision - a change to a Record. Revisions are immutable; changing a Record produces a new Revision.
 - Document - a single computer file (ex. sound file, word processor file) that we treat as a single integral Record
-- Container - a collection of Documents. Analogous to a a "folder" in operating systems.
+- Container - a collection of Documents. Analogous to a a "folder" in operating systems. 
 - User - a person who uses Mercurio. A user may have multiple Identities
 - Identity - a unique cryptographic key. Contains a Public Part and a Private Part. 
 - Change - an access permission that allows the specified Identity to change Records (add Revisions to) a Container
@@ -31,7 +31,10 @@ Domain Ubiquitous Language:
 - Delete - an access permission that allows the specified Identity to delete Records from a Container
 - Address - information (a special type of Record) used to deliver other Records to an Identity
 - Access - the level of control an Identity has over a Container (Read, Write)
-
+- Substrate - see Storage Substrate
+- Storage Substrate - Mercurio stores data onto a abstraction called a Storage Substrate, which can be implemented 
+  on disk, memory, or via network, and may store its data in a complex manner. The Substrate
+  contains the physically serialized Mercurio Containers. 
 
 A User can create, edit, and delete Identities. 
 A User may select an active Identity to operate as.
