@@ -11,7 +11,23 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void Identity_Create_succeeds_with_correct_arguments()
         {
-            var identity = Identity.Create("unique", "public");
+            var identity = Identity.Create("alice", "Alice Smith", "alice@mercurio.org", "Alice's Personal Account");            
+            Assert.IsNotNull(identity);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void Identity_Create_throws_when_empty_identifier_passed()
+        {
+            var identity = Identity.Create("", "Alice Smith", "alice@mercurio.org", "Alice's Personal Account");
+            Assert.IsNotNull(identity);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void Identity_Create_throws_when_null_identifier_passed()
+        {
+            var identity = Identity.Create(null, "Alice Smith", "alice@mercurio.org", "Alice's Personal Account");
             Assert.IsNotNull(identity);
         }
 
@@ -19,7 +35,7 @@ namespace Mercurio.Domain.UnitTests
         [ExpectedException(typeof(Exception))]
         public void Identity_Create_throws_when_empty_name_passed()
         {
-            var identity = Identity.Create("", "public");
+            var identity = Identity.Create("alice", "", "alice@mercurio.org", "Alice's Personal Account");
             Assert.IsNotNull(identity);
         }
 
@@ -27,23 +43,23 @@ namespace Mercurio.Domain.UnitTests
         [ExpectedException(typeof(Exception))]
         public void Identity_Create_throws_when_null_name_passed()
         {
-            var identity = Identity.Create(null, "public");
+            var identity = Identity.Create("alice", null, "alice@mercurio.org", "Alice's Personal Account");
             Assert.IsNotNull(identity);
         }
 
         [TestMethod]
         public void Identity_Equals_returns_true_when_unique_identifiers_match()
         {
-            var identity1 = Identity.Create("unique-id", "publickey1");
-            var identity2 = Identity.Create("unique-id", "publickey2");
+            var identity1 = Identity.Create("unique-id", "Alice Smith", "alice@mercurio.org", "Alice's Personal Account");
+            var identity2 = Identity.Create("unique-id", "Alice Smith", "alice@mercurio.org", "Alice's Personal Account");
             Assert.IsTrue(identity1.Equals(identity2));
         }
 
         [TestMethod]
         public void Identity_Equals_returns_false_when_unique_identifiers_do_not_match()
         {
-            var identity1 = Identity.Create("unique-id1", "publickey");
-            var identity2 = Identity.Create("unique-id2", "publickey");
+            var identity1 = Identity.Create("unique-id1", "Alice Smith", "alice@mercurio.org", "Alice's Personal Account");
+            var identity2 = Identity.Create("unique-id2", "Alice Smith", "alice@mercurio.org", "Alice's Personal Account");
             Assert.IsFalse(identity1.Equals(identity2));
             Assert.IsFalse(identity1 == identity2);
         }

@@ -8,11 +8,18 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Starksoft.Cryptography.OpenPGP;
 using Entities;
+using Mercurio.Domain;
 
 namespace Cryptography.GPG
 {
     public class GPGManager : ICryptoManager
     {
+        public class KeyInfo
+        {
+            public string Name { get; set; }
+            public string Description { get; set; }
+        }
+
         private Dictionary<ConfigurationKeyEnum, string> configuration;
         private GnuPG gpg;
         private delegate void GpgOperation(Stream inputStream, Stream outputStream, Stream metadataStream);
@@ -151,52 +158,54 @@ namespace Cryptography.GPG
             return (gpg.GetKeys().FirstOrDefault(s => s.KeyID == key) != null);
         }
 
-        public List<User> GetAvailableIdentities()
+        public List<UserIdentity> GetAvailableIdentities()
         {
-            List<User> identityList = new List<User>();
+            List<UserIdentity> userIdentityList = new List<UserIdentity>();
             GnuPGKeyCollection secretKeys = gpg.GetSecretKeys();
             foreach (GnuPGKey secretKey in secretKeys)
             {
-                identityList.Add(MakeUser(secretKey));
+                var keyInfo = GetKeyInfo(secretKey);
+                userIdentityList.Add(UserIdentity.Create(secretKey.KeyID, keyInfo.Name, secretKey.UserId, keyInfo.Description));
             }
-            return identityList;
+            return userIdentityList;
         }
 
-        public List<User> GetAvailableUsers()
+        public List<ContactIdentity> GetAvailableContactIdentities()
         {
-            List<User> userList = new List<User>();
+            List<ContactIdentity> contactIdentityList = new List<ContactIdentity>();
             GnuPGKeyCollection publicKeys = gpg.GetKeys();
             foreach (GnuPGKey key in publicKeys)
             {
-                userList.Add(MakeUser(key));
+                var keyInfo = GetKeyInfo(key);
+                contactIdentityList.Add(
+                    ContactIdentity.Create(key.KeyID, keyInfo.Name, key.UserId, keyInfo.Description)
+                    );
             }
-            return userList;
+            return contactIdentityList;
         }
 
-        private User MakeUser(GnuPGKey key)
+        private KeyInfo GetKeyInfo(GnuPGKey key)
         {
-            string name = string.Empty;
-            string description = string.Empty;
+            var keyInfo = new KeyInfo();
+
             // Match expressions of form: Alice (Alice's Key) 
             Match match = Regex.Match(key.UserName, @"(.+)\((.+)\)", RegexOptions.None);
             if (match.Success)
             {
-                name = match.Groups[1].Value;
-                description = match.Groups[2].Value;
+                keyInfo.Name = match.Groups[1].Value;
+                keyInfo.Description = match.Groups[2].Value;
             }
             else
             {
-                name = key.UserName;
+                keyInfo.Name = key.UserName;
             }
-            match = Regex.Match(name, @"\[(.+)\]\s+(.+)", RegexOptions.None);
+            match = Regex.Match(keyInfo.Name, @"\[(.+)\]\s+(.+)", RegexOptions.None);
             if (match.Success)
             {
-                name = match.Groups[2].Value;
+                keyInfo.Name = match.Groups[2].Value;
             }
-
-            return new User(key.KeyID, name, key.UserId, description);
+            return keyInfo;
         }
-
 
         public void CreateKey(string identifier, NetworkCredential credential)
         {

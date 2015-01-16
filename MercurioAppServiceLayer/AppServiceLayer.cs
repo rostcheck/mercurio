@@ -179,16 +179,16 @@ namespace MercurioAppServiceLayer
             messageService.Send(textMessage);
         }
 
-        public List<Entities.User> GetUsers()
+        public List<ContactIdentity> GetContacts()
         {
-            return cryptoManager.GetAvailableUsers();
+            return cryptoManager.GetAvailableContactIdentities();
         }
 
         /// <summary>
         /// List of identities that the currently running user can operate as
         /// </summary>
         /// <returns>List of Users</returns>
-        public List<Entities.User> GetAvailableIdentities()
+        public List<UserIdentity> GetAvailableIdentities()
         {
             return cryptoManager.GetAvailableIdentities();
         }

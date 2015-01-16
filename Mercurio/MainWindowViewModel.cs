@@ -21,11 +21,11 @@ namespace Mercurio
     /// </summary>
     public class MainWindowViewModel : ViewModelBase
     {
-        private ObservableCollection<UserViewModel> users, availableIdentities;
+        private ObservableCollection<IdentityViewModel> users, availableIdentities;
         private ObservableCollection<MessageViewModel> messages;
         private ObservableCollection<ConnectInvitationMessageViewModel> invitations;
         private AppServiceLayer appService;
-        private UserViewModel selectedUser = null, selectedIdentity = null;
+        private IdentityViewModel selectedUser = null, selectedIdentity = null;
         private bool locked = true, invitationPanelVisible = false, passwordInvalid = false;
         private int invitationPanelHeight = 0, invitationPanelExpandedHeight = 200;
         private NetworkCredential credential;
@@ -39,14 +39,14 @@ namespace Mercurio
             this.appService.ReplacedMessageEvent += ReplacedMessage;
             this.appService.NewInvitationEvent += NewInvitation;
 
-            users = new ObservableCollection<UserViewModel>(
-                (from user in appService.GetUsers()
-                 select new UserViewModel(user))
+            users = new ObservableCollection<IdentityViewModel>(
+                (from contact in appService.GetContacts()
+                 select new IdentityViewModel(contact))
                  .ToList());
 
-            availableIdentities = new ObservableCollection<UserViewModel>(
+            availableIdentities = new ObservableCollection<IdentityViewModel>(
                 (from user in appService.GetAvailableIdentities()
-                 select new UserViewModel(user))
+                 select new IdentityViewModel(user))
                  .ToList());
 
             if (availableIdentities.Count > 0)
@@ -70,7 +70,7 @@ namespace Mercurio
         }
 
         #region Observable Properties
-        public UserViewModel SelectedUser
+        public IdentityViewModel SelectedUser
         {
             get
             {
@@ -146,7 +146,7 @@ namespace Mercurio
             }
         }
 
-        public UserViewModel SelectedIdentity
+        public IdentityViewModel SelectedIdentity
         {
             get
             {
@@ -163,7 +163,7 @@ namespace Mercurio
             }
         }
 
-        public ObservableCollection<UserViewModel> Users
+        public ObservableCollection<IdentityViewModel> Users
         {
             get
             {
@@ -179,7 +179,7 @@ namespace Mercurio
             }
         }
 
-        public ObservableCollection<UserViewModel> AvailableIdentities
+        public ObservableCollection<IdentityViewModel> AvailableIdentities
         {
             get
             {
@@ -379,7 +379,7 @@ namespace Mercurio
 
         public void NewMessage(IMercurioMessage message, string senderAddress)
         {
-            UserViewModel user = users.FirstOrDefault<UserViewModel>(s => s.Address == senderAddress);
+            IdentityViewModel user = users.FirstOrDefault<IdentityViewModel>(s => s.Address == senderAddress);
 
             if (user == null)
             {
@@ -405,7 +405,7 @@ namespace Mercurio
 
         public void ReplacedMessage(IMercurioMessage message, string senderAddress)
         {
-            UserViewModel user = users.FirstOrDefault<UserViewModel>(s => s.Address == senderAddress);
+            IdentityViewModel user = users.FirstOrDefault<IdentityViewModel>(s => s.Address == senderAddress);
 
             if (user == null)
             {

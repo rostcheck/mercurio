@@ -8,15 +8,22 @@ namespace Mercurio.Domain.UnitTests
     public class ContainerTests
     {
         private Identity _identity;
-        private User _user;
+        private MercurioUser _user;
         private IStoragePlan _storagePlan;
 
         [TestInitialize]
         public void ContainerTests_Initialize()
         {
-            _identity = Identity.Create("davidr-1", "public-key", "private-key");
-            _user = User.Create("Test _user", _identity);
+            _identity = Identity.Create("alice", "Alice Smith", "alice@mercurio.org", "Alice's Personal Account");
+            _user = MercurioUser.Create("Test User", _identity);
             _storagePlan = new MockStoragePlan();
+        }
+
+        [TestMethod]
+        public void Container_Create_creates_unlocked_container()
+        {
+            var container = Container.Create("Container that keeps all revisions", _storagePlan, RevisionRetentionPolicyType.KeepAll);
+            Assert.IsFalse(container.IsLocked);
         }
 
         [TestMethod]
@@ -57,9 +64,6 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void Container_retains_one_revision_when_retention_policy_is_keep_one()
         {
-            var _identity = Identity.Create("davidr-1", "public-key", "private-key");
-            var _user = User.Create("Test _user", _identity);
-
             var container = Container.Create("Container that keeps one revision", _storagePlan, RevisionRetentionPolicyType.KeepOne);
             string initialValue = "this is my initial value";
             var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);
@@ -73,9 +77,6 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void Container_retains_one_revision_when_using_default_retention_policy()
         {
-            var _identity = Identity.Create("davidr-1", "public-key", "private-key");
-            var _user = User.Create("Test _user", _identity);
-
             var container = Container.Create("Container that keeps one revision", _storagePlan);
             string initialValue = "this is my initial value";
             var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);
@@ -89,9 +90,6 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void Container_shows_correct_number_of_documents()
         {
-            var _identity = Identity.Create("davidr-1", "public-key", "private-key");
-            var _user = User.Create("Test _user", _identity);
-
             var container = Container.Create("Container that keeps one revision", _storagePlan);
             string initialValue = "initial value for document 1";
             var textDocument1 = container.CreateTextDocument("Test document 1", _identity, initialValue);
@@ -101,6 +99,28 @@ namespace Mercurio.Domain.UnitTests
             Assert.IsTrue(container.Documents.Count == 2);
             Assert.IsTrue(container.Documents.Where(s => s.Name == "Test document 1").SingleOrDefault() != null);
             Assert.IsTrue(container.Documents.Where(s => s.Name == "Test document 2").SingleOrDefault() != null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UnauthorizedAccessException))]
+        public void Container_document_access_throws_if_not_unlocked()
+        {
+            var container = Container.Create("Container that keeps one revision", _storagePlan);
+            string initialValue = "initial value for document 1";
+            var textDocument1 = container.CreateTextDocument("Test document 1", _identity, initialValue);
+            container.Lock();
+            Assert.IsTrue(container.Documents.Count == 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(UnauthorizedAccessException))]
+        public void Container_CreateTextDocument_throws_if_not_unlocked()
+        {
+            var container = Container.Create("Container that keeps one revision", _storagePlan);
+            container.Lock();
+            string initialValue = "initial value for document 1";
+            var textDocument1 = container.CreateTextDocument("Test document 1", _identity, initialValue);
+            Assert.IsTrue(container.Documents.Count == 1);
         }
     }
 }

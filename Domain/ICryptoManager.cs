@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Mercurio.Domain
 {
     /// <summary>
     /// Responsible for providing cryptographic functions (with a commmon interface)
@@ -29,8 +29,8 @@ namespace Entities
         string GetFingerprint(string identifier);
         void DeleteKey(string identifier);
         bool HasPublicKey(string key); // Public key exists in keychain
-        List<User> GetAvailableIdentities();
-        List<User> GetAvailableUsers(); // Other possible users to send to
+        List<UserIdentity> GetAvailableIdentities();
+        List<ContactIdentity> GetAvailableContactIdentities(); // Other possible contacts to send to
         void CreateKey(string identifier, NetworkCredential credential);
     }
 }

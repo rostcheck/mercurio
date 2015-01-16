@@ -9,24 +9,24 @@ namespace Mercurio.Domain
     /// <summary>
     /// A person who uses Mercurio. A User may have multiple Identities
     /// </summary>
-    public class User
+    public class MercurioUser
     {
         private List<Identity> _identities;
         private string _name;
 
-        private User(string name)
+        private MercurioUser(string name)
         {
             _name = name;
             _identities = new List<Identity>();
         }
 
-        private User(string name, List<Identity> identities) 
+        private MercurioUser(string name, List<Identity> identities) 
             : this(name)
         {
             _identities = new List<Identity>(identities);
         }
 
-        public static User Create(string name, Identity identity)
+        public static MercurioUser Create(string name, Identity identity)
         {
             ValidateName(name);
             ValidateIdentity(identity);
@@ -35,11 +35,11 @@ namespace Mercurio.Domain
             return Create(name, identityList);
         }
 
-        public static User Create(string name, List<Identity> identities)
+        public static MercurioUser Create(string name, List<Identity> identities)
         {
             ValidateName(name);
             ValidateIdentities(identities);
-            return new User(name, identities);
+            return new MercurioUser(name, identities);
         }
 
         private static void ValidateName(string name)
@@ -63,6 +63,14 @@ namespace Mercurio.Domain
             if (identities == null || identities.Count == 0)
             {
                 throw new Exception("Identity list cannot be null or empty");
+            }
+        }
+
+        public string Name 
+        {
+            get
+            {
+                return _name;
             }
         }
 

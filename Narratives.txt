@@ -24,8 +24,11 @@ Domain Ubiquitous Language:
 - Revision - a change to a Record. Revisions are immutable; changing a Record produces a new Revision.
 - Document - a single computer file (ex. sound file, word processor file) that we treat as a single integral Record
 - Container - a collection of Documents. Analogous to a a "folder" in operating systems. 
-- User - a person who uses Mercurio. A user may have multiple Identities
-- Identity - a unique cryptographic key. Contains a Public Part and a Private Part. 
+- MercurioUser - a person who uses Mercurio. A user may have multiple UserIdentities
+- Key - a cryptographic key. Can be a SymmetricKey or PublicPrivateKey
+- Identity - a unique identity identified by the cryptographic PublicPart of a PublicPrivateKey. An Identity could contain multiple keys (subkeys)
+- ContactIdentity - an Identity that also contains an address to which Mercurio communications can be targeted
+- UserIdentity - an Identity that can sign and encrypt (contains both the PrivatePart and PrivatePart of the PublicPrivateKey)
 - Change - an access permission that allows the specified Identity to change Records (add Revisions to) a Container
 - Add - an access permission that allows the specified Identity to add Records to a Container
 - Delete - an access permission that allows the specified Identity to delete Records from a Container

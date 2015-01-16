@@ -4,24 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Mercurio.Domain;
 
 namespace Mercurio
 {
-    public class UserViewModel : ViewModelBase
+    public class IdentityViewModel : ViewModelBase
     {
-        private User user;
+        private Identity identity;
         private int numberOfUnreadMessages;
 
-        public UserViewModel(User user)
+        public IdentityViewModel(Identity identity)
         {
-            this.user = user;
+            this.identity = identity;
         }
 
         public string Name
         {
             get
             {
-                return user.Name;
+                return identity.Name;
             }
         }
 
@@ -29,7 +30,7 @@ namespace Mercurio
         {
             get
             {
-                return user.Address;
+                return identity.Address;
             }
         }
 
@@ -37,7 +38,7 @@ namespace Mercurio
         {
             get
             {
-                return user.Identifier;
+                return identity.UniqueIdentifier;
             }
         }
 

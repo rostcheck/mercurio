@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities;
 using MercurioAppServiceLayer;
+using Mercurio.Domain;
 
 namespace TestFunctionality
 {
@@ -43,9 +44,9 @@ namespace TestFunctionality
 
         public string GetSelectedIdentity()
         {
-           List<User> identityList = cryptoManager.GetAvailableIdentities();
+           List<UserIdentity> identityList = cryptoManager.GetAvailableIdentities();
             if (identityList.Count >= 1)
-                return identityList[0].Identifier;
+                return identityList[0].UniqueIdentifier;
             else
                 throw new Exception("No identities available");
         }

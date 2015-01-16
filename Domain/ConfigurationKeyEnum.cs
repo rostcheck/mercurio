@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Mercurio.Domain
 {
-    public enum EncryptionAlgorithmEnum
+    public enum ConfigurationKeyEnum
     {
+        UserHome,
+        GPGBinaryPath
     }
 }

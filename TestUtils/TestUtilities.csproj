@@ -58,6 +58,10 @@
     <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{ce737374-d61e-4d4c-8796-580ec758a00c}</Project>
       <Name>Entities</Name>

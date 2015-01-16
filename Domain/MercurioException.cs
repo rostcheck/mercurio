@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Mercurio.Domain
 {
     /// <summary>
     ///  Base class for exceptions generated within Mercurio application logic (vs. system exceptions)

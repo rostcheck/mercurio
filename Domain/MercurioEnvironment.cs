@@ -60,7 +60,7 @@ namespace Mercurio.Domain
             return new List<string>(_storageSubstrates.Select(s => s.Name));
         }
        
-        public Container CreateContainer(string containerName, string storageSubstrateName, string storagePlanName,
+        public IContainer CreateContainer(string containerName, string storageSubstrateName, string storagePlanName,
             RevisionRetentionPolicyType revisionRetentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
             var substrate = _storageSubstrates.SingleOrDefault(s => s.Name.ToLower() == storageSubstrateName.ToLower());
@@ -75,9 +75,7 @@ namespace Mercurio.Domain
                 throw new ArgumentException(string.Format("Invalid storage plan name {0}", storagePlanName));
             }
 
-            var container = Container.Create(containerName, storagePlan, revisionRetentionPolicyType);
-            substrate.AddContainer(container);
-            return container;
+            return substrate.CreateContainer(containerName, storagePlan, revisionRetentionPolicyType);
         }
 
         public List<string> GetAvailableStoragePlanNames()

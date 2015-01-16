@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TestUtilities;
 using System.Net;
 using Cryptography.GPG;
+using Mercurio.Domain;
 
 namespace TestCryptography
 {

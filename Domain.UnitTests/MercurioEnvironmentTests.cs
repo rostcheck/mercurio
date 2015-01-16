@@ -39,13 +39,9 @@ namespace Mercurio.Domain.UnitTests
             return new List<Container>(_containers);
         }
 
-
-        public void AddContainer(Container container)
+        public IContainer CreateContainer(string containerName, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy)
         {
-            if (container == null)
-                throw new ArgumentNullException();
-
-            _containers.Add(container);
+            throw new NotImplementedException();
         }
     }
 

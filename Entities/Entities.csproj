@@ -66,10 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectInvitationAcceptedMessage.cs" />
-    <Compile Include="ConfigurationKeyEnum.cs" />
     <Compile Include="CryptographicServiceProviderFactory.cs" />
-    <Compile Include="CryptoManagerConfiguration.cs" />
-    <Compile Include="CryptoManagerFactory.cs" />
     <Compile Include="CryptoType.cs" />
     <Compile Include="DelayedMessage.cs" />
     <Compile Include="DummyMessage.cs" />
@@ -80,14 +77,11 @@
     <Compile Include="InvalidQueueNameException.cs" />
     <Compile Include="IMercurioUserAgent.cs" />
     <Compile Include="LogMessageLevelEnum.cs" />
-    <Compile Include="MercurioException.cs" />
     <Compile Include="MercurioMessageBase.cs" />
     <Compile Include="IPersistentQueueConfiguration.cs" />
     <Compile Include="PersistentQueueConfiguration.cs" />
     <Compile Include="PersistentQueueType.cs" />
     <Compile Include="ConnectInvitationMessage.cs" />
-    <Compile Include="EncryptionAlgorithmEnum.cs" />
-    <Compile Include="ICryptoManager.cs" />
     <Compile Include="IMercurioMessage.cs" />
     <Compile Include="IPersistentQueue.cs" />
     <Compile Include="PersistentQueueFactory.cs" />
@@ -95,7 +89,6 @@
     <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
     <Compile Include="SignedKeyMessage.cs" />
     <Compile Include="SimpleTextMessage.cs" />
-    <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

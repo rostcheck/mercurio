@@ -7,33 +7,41 @@ using System.Threading.Tasks;
 namespace Mercurio.Domain
 {
     /// <summary>
-    /// A unique cryptographic key.
+    /// A unique cryptographic key identified by the cryptographic PublicPart of a PublicPrivateKey. 
     /// </summary>
     public class Identity
     {
         public string UniqueIdentifier { get; private set; }
-        public string PublicPart { get; private set; }
-        public string PrivatePart { get; private set; }
+        public string Description { get; private set; } // ex. "John's Personal Account"
+        public string Address { get; private set; } // address for message delivery (ex. person@mercurio.org)
+        public string Name { get; private set; } // readable name (ex. "John Smith")
 
-        private Identity(string uniqueIdentifier, string publicKey, string privateKey = "")
+
+        protected Identity(string uniqueIdentifier, string name, string address, string description)
         {
             this.UniqueIdentifier = uniqueIdentifier;
-            this.PublicPart = publicKey;
-            this.PrivatePart = privateKey;
+            this.Name = name;
+            this.Address = address;
+            this.Description = description;
         }
 
-        public static Identity Create(string uniqueIdentifier, string publicKey, string privateKey = "")
+        public static Identity Create(string uniqueIdentifier, string name, string address, string description)
         {
-            ValidateUniqueIdentifier(uniqueIdentifier);
-            ValidatePublicKey(publicKey);
-            return new Identity(uniqueIdentifier, publicKey, privateKey);
-        }
-
-        private static void ValidateUniqueIdentifier(string uniqueIdentifier)
-        {
-            if (uniqueIdentifier == null || uniqueIdentifier == "")
+            ValidateRequiredString(uniqueIdentifier, "Unique identifier");
+            //ValidateRequiredString(publicKey, "Public key");
+            ValidateRequiredString(name, "Name");
+            if (address == null || address == "")
             {
-                throw new Exception("UniqueIdentifier is required");
+                address = string.Format("{0}@local", uniqueIdentifier);
+            }
+            return new Identity(uniqueIdentifier, name, address, description);
+        }
+
+        protected static void ValidateRequiredString(string requiredString, string name)
+        {
+            if (requiredString == null || requiredString == "")
+            {
+                throw new Exception(string.Format("{0} is required", name));
             }
         }
 

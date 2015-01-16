@@ -46,7 +46,7 @@ namespace Entities
         /// <param name="message">Incoming message</param>
         /// <param name="cryptoManager">Crypto manager</param>
         /// <returns>A transformed message (for further processing) or null</returns>
-        IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity);
+        IMercurioMessage Process(Mercurio.Domain.ICryptoManager cryptoManager, Serializer serializer, string userIdentity);
 
         /// <summary>
         /// Event fires when the message can be displayed (can happen at various points 

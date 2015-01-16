@@ -10,17 +10,17 @@ namespace Domain.IntegrationTests
         [TestMethod]
         public void DiskStorageSubstrate_constructs_with_valid_path()
         {
-            var storageSubstrate = DiskStorageSubstrate.Create(Environment.SpecialFolder.MyDocuments.ToString());
+            var storageSubstrate = DiskStorageSubstrate.Create(".", SerializerType.BinarySerializer);
             Assert.IsNotNull(storageSubstrate);
             Assert.IsNotNull(storageSubstrate.Name);
             Assert.IsFalse(storageSubstrate.Name == "");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(UnauthorizedAccessException))]
+        [ExpectedException(typeof(System.IO.DirectoryNotFoundException))]
         public void DiskStorageSubstrate_throws_with_invalid_path()
         {
-            var storageSubstrate = DiskStorageSubstrate.Create("c:\\invalid-path");
+            var storageSubstrate = DiskStorageSubstrate.Create("c:\\invalid-path", SerializerType.BinarySerializer);
         }
     }
 }
