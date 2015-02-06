@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mercurio.Domain
+namespace Cryptography.GPG
 {
-    public enum ConfigurationKeyEnum
+    public enum GPGConfigurationKeyEnum
     {
         UserHome,
         GPGBinaryPath

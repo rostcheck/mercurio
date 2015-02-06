@@ -20,22 +20,22 @@ namespace Cryptography.GPG
             public string Description { get; set; }
         }
 
-        private Dictionary<ConfigurationKeyEnum, string> configuration;
+        private CryptoManagerConfiguration configuration;
         private GnuPG gpg;
         private delegate void GpgOperation(Stream inputStream, Stream outputStream, Stream metadataStream);
 
-        public GPGManager(Dictionary<ConfigurationKeyEnum, string> configuration)
+        public GPGManager(CryptoManagerConfiguration configuration)
         {
             this.configuration = configuration;
-             gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
-                configuration[ConfigurationKeyEnum.GPGBinaryPath]);
+             gpg = new GnuPG(configuration[GPGConfigurationKeyEnum.UserHome.ToString()],
+                configuration[GPGConfigurationKeyEnum.GPGBinaryPath.ToString()]);
         }
 
         public void SetConfiguration(CryptoManagerConfiguration configuration)
         {
             this.configuration = configuration;
-            gpg = new GnuPG(configuration[ConfigurationKeyEnum.UserHome],
-               configuration[ConfigurationKeyEnum.GPGBinaryPath]); ;
+            gpg = new GnuPG(configuration[GPGConfigurationKeyEnum.UserHome.ToString()],
+               configuration[GPGConfigurationKeyEnum.GPGBinaryPath.ToString()]);
         }
         public void SetCredential(NetworkCredential credential)
         {

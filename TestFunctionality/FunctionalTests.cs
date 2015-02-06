@@ -84,7 +84,7 @@ namespace TestFunctionality
         [TestMethod]
         public void KeyExchange()
         {
-            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), (x) => new GPGManager(x));
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
             UserServices aliceServices = Setup(alice);
             
             // Sign in as Alice and send an invitation to Bob
@@ -144,7 +144,7 @@ namespace TestFunctionality
         [TestMethod]
         public void MakeTestQueue()
         {
-            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), (x) => new GPGManager(x));
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
             const string sender = "bob@maker.net";
             const string recipient = "alice@maker.net";
             string[] messages = { "Hi Alice, are you there?", "I'm Bob, how are you?",

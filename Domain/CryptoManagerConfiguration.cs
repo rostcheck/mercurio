@@ -9,7 +9,7 @@ namespace Mercurio.Domain
     /// <summary>
     /// Configuration entries for a CryptoManager
     /// </summary>
-    public class CryptoManagerConfiguration : Dictionary<ConfigurationKeyEnum, string>
+    public class CryptoManagerConfiguration : Dictionary<string, string>
     {
     }
 }

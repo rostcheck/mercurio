@@ -18,9 +18,9 @@ namespace TestCryptography
         [TestMethod]
         public void GPGCryptoManagerTest()
         {
-            Dictionary<ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create("mercurio");
-            CryptoManagerFactory.Register(CryptoType.GPG.ToString(),  (x) => new GPGManager(x));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            CryptoManagerConfiguration configuration = TestUtilities.TestConfig.Create("mercurio");
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
             string publicKey = cryptoManager.GetPublicKey(string.Empty);
             Assert.IsTrue(publicKey.Length != 0);
 

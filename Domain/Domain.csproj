@@ -47,7 +47,6 @@
     <Compile Include="ChangePolicy\ChangePolicyAllowSpecificIdentities.cs" />
     <Compile Include="ChangePolicy\IChangePolicy.cs" />
     <Compile Include="ChangeType.cs" />
-    <Compile Include="ConfigurationKeyEnum.cs" />
     <Compile Include="ContactIdentity.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="CryptoManagerConfiguration.cs" />

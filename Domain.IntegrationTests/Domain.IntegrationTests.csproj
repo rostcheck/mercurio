@@ -55,6 +55,10 @@
     <Compile Include="DiskStorageSubstrateTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cryptography\Cryptography.GPG.csproj">
+      <Project>{eba5e064-56a7-409e-aba0-1882180e3678}</Project>
+      <Name>Cryptography.GPG</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Domain.Implementation\Domain.Implementation.csproj">
       <Project>{2825b70c-e747-4066-b327-23229c1ac60d}</Project>
       <Name>Domain.Implementation</Name>
@@ -63,6 +67,11 @@
       <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
       <Name>Domain</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

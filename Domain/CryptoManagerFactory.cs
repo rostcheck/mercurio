@@ -11,9 +11,9 @@ namespace Mercurio.Domain
     /// </summary>
     public static class CryptoManagerFactory
     {
-        private static Dictionary<string, Func<Dictionary<ConfigurationKeyEnum, string>, ICryptoManager>> registry;
+        private static Dictionary<string, Type> registry;
 
-        public static ICryptoManager Create(string cryptoManagerType, Dictionary<ConfigurationKeyEnum, string> configuration)
+        public static ICryptoManager Create(string cryptoManagerType, CryptoManagerConfiguration userConfiguration = null)
         {
             if (registry == null)
             {
@@ -21,23 +21,48 @@ namespace Mercurio.Domain
             }
             if (registry.ContainsKey(cryptoManagerType.ToLower()))
             {
-                return registry[cryptoManagerType.ToLower()](configuration);
+                var cryptoServiceProviderType = registry[cryptoManagerType.ToLower()];
+                var cryptoServiceProvider = Activator.CreateInstance(cryptoServiceProviderType) as ICryptographicServiceProvider;
+                var providerConfiguration = cryptoServiceProvider.GetConfiguration();
+                providerConfiguration.Merge(userConfiguration);
+                return cryptoServiceProvider.CreateManager(providerConfiguration);
             }
             else
             {
-                throw new NotImplementedException();
+                throw new MercurioException(string.Format("CryptoManager type {0} is not available on this system", cryptoManagerType));
             }
         }
 
-        public static void Register(string managerType, Func<Dictionary<ConfigurationKeyEnum, string>, ICryptoManager> construct)
+        public static void Register(string cryptoManagerName, Type cryptoManagerType)
         {
+            if (cryptoManagerType.FindInterfaces(InterfaceNameFilter, typeof(ICryptographicServiceProvider).Name).Length == 0)
+            {
+                throw new ArgumentException("Type must support interface ICryptographicServiceProvider");
+            }
+
             if (registry == null)
             {
-                registry = new Dictionary<string, Func<Dictionary<ConfigurationKeyEnum, string>, ICryptoManager>>();
+                registry = new Dictionary<string, Type>();
             }
-            if (!registry.ContainsKey(managerType.ToLower()))
+            if (!registry.ContainsKey(cryptoManagerName.ToLower()))
             {
-                registry.Add(managerType.ToLower(), construct);
+                registry.Add(cryptoManagerName.ToLower(), cryptoManagerType);
+            }
+        }
+
+        private static bool InterfaceNameFilter(Type typeObj, Object criteriaObj)
+        {
+            return (typeObj.Name == criteriaObj.ToString());
+        }
+
+        public static void Merge(this CryptoManagerConfiguration existingConfiguration, CryptoManagerConfiguration newConfiguration)
+        {
+            if (newConfiguration != null)
+            {
+                foreach (var key in newConfiguration.Keys)
+                {
+                    existingConfiguration[key] = newConfiguration[key];
+                }
             }
         }
     }

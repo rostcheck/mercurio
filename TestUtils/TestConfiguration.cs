@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities;
 using Mercurio.Domain;
+using Cryptography.GPG;
 
 namespace TestUtilities
 {
@@ -14,16 +15,26 @@ namespace TestUtilities
         public static CryptoManagerConfiguration Create(string userName)
         {
             CryptoManagerConfiguration configuration = new CryptoManagerConfiguration();
-            configuration[ConfigurationKeyEnum.UserHome] = Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + "\\gnupg";
-            configuration[ConfigurationKeyEnum.GPGBinaryPath] = Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) + "\\GNU\\GnuPG\\gpg2.exe";
+            configuration[GPGConfigurationKeyEnum.UserHome.ToString()] = UserHomeConfig();
+            configuration[GPGConfigurationKeyEnum.GPGBinaryPath.ToString()] = BinaryPath();
             return configuration;
         }
 
         public static CryptoManagerConfiguration GetTestConfiguration(string userName)
         {
             CryptoManagerConfiguration configuration = TestConfig.Create(userName);
-            configuration[ConfigurationKeyEnum.UserHome] = TestUtils.GetUserDir(userName);
+            configuration[GPGConfigurationKeyEnum.UserHome.ToString()] = TestUtils.GetUserDir(userName);
             return configuration;
+        }
+
+        private static string UserHomeConfig()
+        {
+            return Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "gnupg").ToString();
+        }
+
+        private static string BinaryPath()
+        {
+            return Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86), "GNU", "GnuPG", "gpg2.exe").ToString();
         }
     }
 }

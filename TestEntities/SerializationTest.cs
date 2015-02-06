@@ -31,7 +31,7 @@ namespace TestEntities
 
         private static FileLogger logger = new FileLogger("test.log");
         //private DummyMercurioUI userInterface = new DummyMercurioUI(logger);
-        private Dictionary<ConfigurationKeyEnum, string> aliceConfig, bobConfig;
+        private CryptoManagerConfiguration aliceConfig, bobConfig;
         private ICryptoManager aliceCryptoManager, bobCryptoManager;
         //private MessageService aliceMessageService, bobMessageService;
 
@@ -90,7 +90,7 @@ namespace TestEntities
 
         private void Setup()
         {
-            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), (x) => new GPGManager(x));
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
 
             serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();

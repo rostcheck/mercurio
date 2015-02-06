@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GPGConfigurationKeyEnum.cs" />
     <Compile Include="GPGManager.cs" />
     <Compile Include="OpenPGP\DecryptAsyncCompletedEventArgs.cs" />
     <Compile Include="OpenPGP\EncryptAsyncCompletedEventArgs.cs" />

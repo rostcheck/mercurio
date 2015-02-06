@@ -13,5 +13,7 @@ namespace Mercurio.Domain
     {
         string GetProviderType();
         bool IsInstalled();
+        CryptoManagerConfiguration GetConfiguration();
+        ICryptoManager CreateManager(CryptoManagerConfiguration configuration);
     }
 }

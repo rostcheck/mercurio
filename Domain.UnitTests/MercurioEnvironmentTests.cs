@@ -18,6 +18,17 @@ namespace Mercurio.Domain.UnitTests
         {
             return true;
         }
+
+
+        public CryptoManagerConfiguration GetConfiguration()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICryptoManager CreateManager(CryptoManagerConfiguration configuration)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class MockStorageSubstrate : IStorageSubstrate
@@ -41,7 +52,9 @@ namespace Mercurio.Domain.UnitTests
 
         public IContainer CreateContainer(string containerName, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy)
         {
-            throw new NotImplementedException();
+            var container = Container.Create(containerName, storagePlan, retentionPolicy);
+            _containers.Add(container);
+            return container;
         }
     }
 

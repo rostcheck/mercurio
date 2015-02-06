@@ -21,9 +21,9 @@ namespace TestFunctionality
         [TestMethod]
         public void ConnectInvitationTest()
         {
-            Dictionary <ConfigurationKeyEnum, string> configuration = TestUtilities.TestConfig.Create("Bob");
-            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), (x) => new GPGManager(x));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            var configuration = TestUtilities.TestConfig.Create("Bob");
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
             Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
             IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);

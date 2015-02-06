@@ -53,6 +53,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cryptography\Cryptography.GPG.csproj">
+      <Project>{eba5e064-56a7-409e-aba0-1882180e3678}</Project>
+      <Name>Cryptography.GPG</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Domain.Implementation\Domain.Implementation.csproj">
       <Project>{2825b70c-e747-4066-b327-23229c1ac60d}</Project>
       <Name>Domain.Implementation</Name>
