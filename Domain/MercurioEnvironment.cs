@@ -45,9 +45,9 @@ namespace Mercurio.Domain
             this._storagePlans = new List<IStoragePlan>(storagePlans);
         }
 
-        public List<Container> GetContainers()
+        public List<IContainer> GetContainers()
         {
-            var returnList = new List<Container>();
+            var returnList = new List<IContainer>();
             foreach(var substrate in this._storageSubstrates)
             {
                 returnList.AddRange(substrate.GetContainers());

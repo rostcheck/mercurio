@@ -39,6 +39,10 @@ namespace Mercurio.Domain
             _locked = false;
         }
 
+        protected Container()
+        {
+        }
+
         // Container is created unlocked
         public static Container Create(string name, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {

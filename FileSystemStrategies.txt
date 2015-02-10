@@ -1,0 +1,55 @@
+Reading on file systems shows that they are optimized for particular purposes. In today's computing
+environment (2015), disk and ram are large and disks are often SSD, so both are relatively large
+and fast. Files range from tiny to large (video), but Mercurio is primarily designed to store relatively
+small files (initial focus: text-based interactions and photos).
+
+The container needs to store the documents themselves, metadata about the container (both public and 
+private), and the directory of files within the container, all of which have different storage 
+characteristics. The metadata is small and does not change much (just potentially stored offsets to
+other segments). The directory is still relatively small and changes often. The documents may change
+often or never (read-only media such as music or video). The largest documents are most likely to 
+never change while the smallest are most likely to change. 
+
+If we put all the data together into a linear file, an approach would be to store the metadata in 
+a tiny fixed-size segment, the directory in a larger fixed-size segment, and the documents in the
+remainder. A key goal would be to keep the document space from needing to be completely rewritten,
+since that is most of the space in the container. A simple approach is to allocate documents
+contiguously as needed, and if an edit increases a document size, mark its space free and re-write
+it to the end. The downsides are that any small change requires a document rewrite and it leaves
+old revisions in place, leading to waste and/or fragmentation as subsequent documents (which may
+be different documents altogether) either do not overwrite the old revision or overwrite it with
+wasted space left over. The next optimization is to use fixed-size blocks. This requires that we
+keep a free space block map in with the directory but allows us to more efficiently reuse blocks
+without fragmentation, and diminishes the amount of old data left over. 
+
+There are still other factors: journaling/recovery and minimizing block rewrites. One way to 
+minimize block rewrites is to checksum (fingerprint) the blocks and, in the block map, keep a hash
+by fingerprint, only rewriting a block if it has not already been written. However, since the 
+data is encrypted, we are likely to find that the salt changes the block all the time anyway. If,
+however, we could insure that the key and salt were specific to the document, then we could avoid
+having to re-write changed blocks (and perhaps avoid re-encrypting them if we tracked changes by
+block at the application level).
+
+If we need to insure integrity of the filesystem during a crash, we could journal the changes.
+An efficient way to do this might be to use a regular storage block (or set of them) for the
+directory map. We could write changed blocks to the document storage, then write the changed map
+(to new storage blocks), then update the private metadata to indicate the new directory blocks.
+If the last step (which must be atomic) is not done, the blocks are just re-used. 
+
+We do not have to store all the segments in the same file, since we are running atop a general
+purpose file system (i.e. we could have a separate segment for metadata, one for the directory,
+and one (or more) for the data). For the metadata and directory, this this does not seem to 
+lead to advantages over the block-based approach previously described, at least on a desktop 
+system (which usually does not have multiple physical drives). However, for the documents, 
+keeping each document in a separate file reduces the complexity of needing to manage blocks,
+so we will use this approach at first and consider switching to a block-based blocks if needed.
+Using files does leak some info (alteration times, comparative sizes) to the OS but this is
+acceptable.
+
+We will start laying out the simple Mercurio File System as follows: 
+- root directory (passed to the DiskStorageSubstrate on initialization)
+	- <guidname> : subdirectories, each with a GUID name, one for each container
+		- <guidname>.mcn : public metadata
+		- <guidname>.mc1 : private metadata
+		- <guidname>.md0 : directory 
+		- <different-guidname>.mdc.<revision> : mercurio documents, each w/ its own guid name

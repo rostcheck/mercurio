@@ -33,11 +33,11 @@ namespace Mercurio.Domain.UnitTests
 
     internal class MockStorageSubstrate : IStorageSubstrate
     {
-        private List<Container> _containers;
+        private List<IContainer> _containers;
 
         public MockStorageSubstrate()
         {
-            _containers = new List<Container>();
+            _containers = new List<IContainer>();
         }
 
         public string Name
@@ -45,9 +45,9 @@ namespace Mercurio.Domain.UnitTests
             get { return "MockStorageSubstate"; }
         }
 
-        public IEnumerable<Container> GetContainers()
+        public IEnumerable<IContainer> GetContainers()
         {
-            return new List<Container>(_containers);
+            return new List<IContainer>(_containers);
         }
 
         public IContainer CreateContainer(string containerName, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy)

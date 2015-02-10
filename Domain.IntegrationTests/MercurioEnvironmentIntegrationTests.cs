@@ -2,6 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mercurio.Domain;
 using Mercurio.Domain.Implementation;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Domain.IntegrationTests
 {
@@ -17,8 +20,12 @@ namespace Domain.IntegrationTests
             var environment = MercurioEnvironment.Create(environmentScanner);
 
             var originalContainerList = environment.GetContainers();
-            environment.CreateContainer(string.Format("TestContainer-{0}", Guid.NewGuid().ToString()), storageSubstrates[0].Name, storagePlans[0].Name);
+            var newContainerName = string.Format("TestContainer-{0}", Guid.NewGuid().ToString());
+            environment.CreateContainer(newContainerName, storageSubstrates[0].Name, storagePlans[0].Name);
 
+            Assert.IsTrue(environment.GetContainers().Where(s => s.Name == newContainerName).FirstOrDefault() != null);
         }
+
+
     }
 }

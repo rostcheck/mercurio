@@ -12,7 +12,7 @@ namespace Mercurio.Domain
     {
         string Name { get; }
 
-        IEnumerable<Container> GetContainers();
+        IEnumerable<IContainer> GetContainers();
 
         IContainer CreateContainer(string containerName, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy);
     }
