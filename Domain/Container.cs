@@ -62,7 +62,7 @@ namespace Mercurio.Domain
             _locked = true;
         }
 
-        public string Name { get; private set; }
+        public virtual string Name { get; protected set; }
 
         public virtual TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
         {

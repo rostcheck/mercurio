@@ -23,9 +23,8 @@ namespace Domain.IntegrationTests
             var newContainerName = string.Format("TestContainer-{0}", Guid.NewGuid().ToString());
             environment.CreateContainer(newContainerName, storageSubstrates[0].Name, storagePlans[0].Name);
 
+            var containers = environment.GetContainers();
             Assert.IsTrue(environment.GetContainers().Where(s => s.Name == newContainerName).FirstOrDefault() != null);
         }
-
-
     }
 }

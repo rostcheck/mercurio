@@ -39,11 +39,12 @@ namespace Mercurio.Domain.Implementation
 
         public IEnumerable<IContainer> GetContainers()
         {
+            var serializer = SerializerFactory.Create(_serializerType);
             var returnList = new List<IContainer>();
             var containerPaths = Directory.GetFiles(_path, "*.mcn", SearchOption.AllDirectories);
             foreach (var containerPath in containerPaths)
             {
-                returnList.Add(DiskContainer.CreateFrom(containerPath));
+                returnList.Add(DiskContainer.CreateFrom(containerPath, serializer));
             }
 
             return returnList;
