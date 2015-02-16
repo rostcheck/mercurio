@@ -16,7 +16,7 @@ namespace Mercurio.Domain
         {
         }
 
-        public static UserIdentity Create(string uniqueIdentifier, string name, string address, string description)
+        public new static UserIdentity Create(string uniqueIdentifier, string name, string address, string description)
         {
             ValidateRequiredString(uniqueIdentifier, "Unique identifier");
             //ValidateRequiredString(publicKey, "Public key");

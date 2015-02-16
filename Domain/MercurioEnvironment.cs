@@ -13,15 +13,13 @@ namespace Mercurio.Domain
     {
         private List<ICryptographicServiceProvider> _cryptographicServiceProviders;
         private List<IStorageSubstrate> _storageSubstrates;
-        private List<IStoragePlan> _storagePlans;
 
         public static MercurioEnvironment Create(IEnvironmentScanner scanner)
         {
             var cryptographicServiceProviders = scanner.GetCryptographicProviders();
             var storageSubstrates = scanner.GetStorageSubstrates();
-            var storagePlans = scanner.GetStoragePlans();
 
-            if (cryptographicServiceProviders == null || storageSubstrates == null || storagePlans == null)
+            if (cryptographicServiceProviders == null || storageSubstrates == null)
                 throw new ArgumentNullException();
 
             if (!cryptographicServiceProviders.Any())
@@ -30,19 +28,14 @@ namespace Mercurio.Domain
             if (!storageSubstrates.Any())
                 throw new ArgumentException("Must provide at least one storage substrate");
             
-            if (!storagePlans.Any())
-                throw new ArgumentException("Must provide at least one storage plan");
-
-            return new MercurioEnvironment(cryptographicServiceProviders, storageSubstrates, storagePlans);
+            return new MercurioEnvironment(cryptographicServiceProviders, storageSubstrates);
         }
 
         private MercurioEnvironment(IEnumerable<ICryptographicServiceProvider> cryptographicServiceProviders, 
-            IEnumerable<IStorageSubstrate> storageSubstrates,
-            IEnumerable<IStoragePlan> storagePlans)
+            IEnumerable<IStorageSubstrate> storageSubstrates)
         {
             this._cryptographicServiceProviders = new List<ICryptographicServiceProvider>(cryptographicServiceProviders);
             this._storageSubstrates = new List<IStorageSubstrate>(storageSubstrates);
-            this._storagePlans = new List<IStoragePlan>(storagePlans);
         }
 
         public List<IContainer> GetContainers()
@@ -60,7 +53,7 @@ namespace Mercurio.Domain
             return new List<string>(_storageSubstrates.Select(s => s.Name));
         }
        
-        public IContainer CreateContainer(string containerName, string storageSubstrateName, string storagePlanName,
+        public IContainer CreateContainer(string containerName, string storageSubstrateName,
             RevisionRetentionPolicyType revisionRetentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
             var substrate = _storageSubstrates.SingleOrDefault(s => s.Name.ToLower() == storageSubstrateName.ToLower());
@@ -69,18 +62,23 @@ namespace Mercurio.Domain
                 throw new ArgumentException(string.Format("Invalid storage substrate name {0}", storageSubstrateName));
             }
 
-            var storagePlan = _storagePlans.SingleOrDefault(s => s.Name.ToLower() == storagePlanName.ToLower());
-            if (storagePlan == null)
-            {
-                throw new ArgumentException(string.Format("Invalid storage plan name {0}", storagePlanName));
-            }
-
-            return substrate.CreateContainer(containerName, storagePlan, revisionRetentionPolicyType);
+            return substrate.CreateContainer(containerName, revisionRetentionPolicyType);
         }
 
-        public List<string> GetAvailableStoragePlanNames()
+        public IContainer GetContainer(string newContainerName)
         {
-            return new List<string>(_storagePlans.Select(s => s.Name));
+            return GetContainers().Where(s => s.Name == newContainerName).FirstOrDefault();
+        }
+
+        public List<UserIdentity> GetAvailableIdentities()
+        {
+            var identities = new List<UserIdentity>();
+            foreach (var cryptographicStorageProvider in _cryptographicServiceProviders)
+            {
+                var manager = cryptographicStorageProvider.CreateManager(cryptographicStorageProvider.GetConfiguration());
+                identities.AddRange(manager.GetAvailableIdentities());
+            }
+            return identities;
         }
     }
 }

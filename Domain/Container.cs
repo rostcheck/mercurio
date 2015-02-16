@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 namespace Mercurio.Domain
 {
     /// <summary>
-    /// A collection of Records
+    /// A collection of Records (basic container)
     /// </summary>
     public class Container : IContainer
     {
-        private IRevisionRetentionPolicy _retentionPolicy;
-        private IStoragePlan _storagePlan;
         private List<IDocument> _documents;
         private bool _locked;
 
@@ -30,23 +28,24 @@ namespace Mercurio.Domain
             }
         }
 
-        protected Container(string name, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy)
+        protected Container(string name, RevisionRetentionPolicyType retentionPolicy)
         {
             Name = name;
-            _retentionPolicy = RevisionRetentionPolicy.Create(retentionPolicy);
-            _storagePlan = storagePlan;
+            this.RevisionRetentionPolicy = Mercurio.Domain.RevisionRetentionPolicy.Create(retentionPolicy);
             _documents = new List<IDocument>();
             _locked = false;
         }
 
-        protected Container()
-        {
-        }
+        //protected Container()
+        //{
+        //}
 
+        protected virtual IRevisionRetentionPolicy RevisionRetentionPolicy { get; private set; }
+       
         // Container is created unlocked
-        public static Container Create(string name, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public static Container Create(string name, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            return new Container(name, storagePlan, retentionPolicy);
+            return new Container(name, retentionPolicy);
         }
 
         public bool IsLocked 
@@ -57,9 +56,14 @@ namespace Mercurio.Domain
             } 
         }
 
-        public void Lock()
+        public virtual void Lock()
         {
             _locked = true;
+        }
+
+        public virtual void Unlock()
+        {
+            _locked = false;
         }
 
         public virtual string Name { get; protected set; }
@@ -67,7 +71,7 @@ namespace Mercurio.Domain
         public virtual TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
         {
             VerifyIsUnlocked();
-            var document = TextDocument.Create(documentName, _retentionPolicy, creatorIdentity, initialData);
+            var document = TextDocument.Create(documentName, this.RevisionRetentionPolicy, creatorIdentity, initialData);
             _documents.Add(document);
             return document;
         }

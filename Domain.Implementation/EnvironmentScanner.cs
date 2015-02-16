@@ -41,12 +41,5 @@ namespace Mercurio.Domain.Implementation
             }
             return returnList;
         }
-
-        public List<IStoragePlan> GetStoragePlans()
-        {
-            var returnList = new List<IStoragePlan>();
-            returnList.Add(new BasicStoragePlan());
-            return returnList;
-        }
     }
 }

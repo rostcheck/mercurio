@@ -22,18 +22,16 @@ namespace Mercurio.Domain.Implementation
         private string _id;
         private bool _opened;
 
-        protected DiskContainer(string storagePath, string containerName, IStoragePlan storagePlan, Serializer serializer,
-            RevisionRetentionPolicyType retentionPolicy)
-            : base(containerName, storagePlan, retentionPolicy)
+        protected DiskContainer(string storagePath, string containerName, Serializer serializer, RevisionRetentionPolicyType retentionPolicyType)
+            : base(containerName, retentionPolicyType)
         {
             _storagePath = storagePath;
-            _metadata = DiskContainerMetadata.Create(containerName);
+            _metadata = DiskContainerMetadata.Create(containerName, retentionPolicyType);
             _privateMetadata = new DiskContainerPrivateMetadata();
             _directory = new Dictionary<string, DiskDirectoryNode>();
             _serializer = serializer;
             Id = Guid.NewGuid().ToString();
             _opened = true;
-
         }
 
         public string Id { get; protected set; }
@@ -69,28 +67,21 @@ namespace Mercurio.Domain.Implementation
             }
         }
 
-        private DiskContainerMetadata Metadata
-        {
-            get
-            {
-                return new DiskContainerMetadata(this.Name);
-            }
-        }
-
-        protected DiskContainer(string diskPath, Serializer serializer)
+        protected DiskContainer(DiskContainerMetadata metadata, Serializer serializer, string id, string diskPath, RevisionRetentionPolicyType retentionPolicy)
+            : base(metadata.Name, retentionPolicy)
         {
             _opened = false;
             _serializer = serializer;
-            Id = Path.GetFileNameWithoutExtension(diskPath);
+            this.Id = id;
             var folderPath = Path.GetDirectoryName(diskPath);
             _storagePath = Path.GetDirectoryName(folderPath);
-            _metadata = _serializer.Deserialize<DiskContainerMetadata>(diskPath);
+            _metadata = metadata;
         }
 
-        public static DiskContainer Create(string diskStorageSubstratePath, string containerName, IStoragePlan storagePlan,
-            Serializer serializer, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public static DiskContainer Create(string diskStorageSubstratePath, string containerName, Serializer serializer, 
+            RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            var container = new DiskContainer(diskStorageSubstratePath, containerName, storagePlan, serializer, retentionPolicy);
+            var container = new DiskContainer(diskStorageSubstratePath, containerName, serializer, retentionPolicy);
             container.EnsureDiskRepresentationExists();
             //VerifyDiskRepresentationIntegrity(folderName);
 
@@ -103,7 +94,7 @@ namespace Mercurio.Domain.Implementation
             {
                 Directory.CreateDirectory(this.FolderName);
             }
-            _serializer.Serialize(MetadataFilePath, Metadata);
+            _serializer.Serialize(MetadataFilePath, _metadata);
         }
 
         /// <summary>
@@ -111,9 +102,12 @@ namespace Mercurio.Domain.Implementation
         /// </summary>
         public static DiskContainer CreateFrom(string diskPath, Serializer serializer)
         {
-            var container = new DiskContainer(diskPath, serializer);
-            container.LoadMetadata();
-            return container;
+            var metadata = LoadMetadata(serializer, diskPath);
+
+            var id = Path.GetFileNameWithoutExtension(diskPath);
+            var folderPath = Path.GetDirectoryName(diskPath);
+            var storagePath = Path.GetDirectoryName(folderPath);
+            return new DiskContainer(metadata, serializer, id, diskPath, (RevisionRetentionPolicyType)metadata.RevisionRetentionPolicyType);
         }
 
         public override TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
@@ -125,6 +119,17 @@ namespace Mercurio.Domain.Implementation
             return document;
         }
 
+        protected override IRevisionRetentionPolicy RevisionRetentionPolicy
+        {
+            get
+            {
+                return Mercurio.Domain.RevisionRetentionPolicy.Create((RevisionRetentionPolicyType)_metadata.RevisionRetentionPolicyType);
+            }
+            //set
+            //{
+            //    _metadata.RevisionRetentionPolicyType = value;
+            //}
+        }
         //public void Serialize(Serializer serializer)
         //{
         //    serializer.Serialize(_folderName, this);
@@ -135,9 +140,9 @@ namespace Mercurio.Domain.Implementation
             return Path.Combine(directoryName, id);
         }
 
-        private void LoadMetadata()
+        private static DiskContainerMetadata LoadMetadata(Serializer serializer, string filePath)
         {
-            _serializer.Deserialize<DiskContainerMetadata>(MetadataFilePath);
+            return serializer.Deserialize<DiskContainerMetadata>(filePath);
         }
 
         private static void VerifyDiskRepresentationIntegrity(string folderName)

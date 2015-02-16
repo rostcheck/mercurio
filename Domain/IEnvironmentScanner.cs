@@ -13,6 +13,5 @@ namespace Mercurio.Domain
     {
          List<ICryptographicServiceProvider> GetCryptographicProviders();
          List<IStorageSubstrate> GetStorageSubstrates();
-         List<IStoragePlan> GetStoragePlans();
     }
 }

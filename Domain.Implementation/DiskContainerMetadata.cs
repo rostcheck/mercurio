@@ -15,6 +15,7 @@ namespace Mercurio.Domain.Implementation
         private const string KeyFingerprintSerializationName = "KeyFingerprint";
         private const string PrivateDataStartSerializationName = "PrivateDataStart";
         private const string PrivateDataLengthSerializationName = "PrivateDataLength";
+        private const string RevisionRetentionPolicyTypeSerializationName = "RevisionRetentionPolicyType"; //TODO: move to private metadata
 
         [DataMember]
         public string Name { get; set; }
@@ -24,6 +25,8 @@ namespace Mercurio.Domain.Implementation
         public long PrivateDataStart { get; private set; }
         [DataMember]
         public long PrivateDataLength { get; private set; }
+        [DataMember]
+        public int RevisionRetentionPolicyType { get; private set; }
 
         // Needed for serialization
         protected DiskContainerMetadata(SerializationInfo info, StreamingContext context)
@@ -32,19 +35,21 @@ namespace Mercurio.Domain.Implementation
             this.KeyFingerprint = info.GetString(KeyFingerprintSerializationName);
             this.PrivateDataStart = info.GetInt32(PrivateDataStartSerializationName);
             this.PrivateDataLength = info.GetInt32(PrivateDataLengthSerializationName);
+            this.RevisionRetentionPolicyType = info.GetInt32(RevisionRetentionPolicyTypeSerializationName);
         }
 
-        public DiskContainerMetadata(string name)
+        public DiskContainerMetadata(string name, RevisionRetentionPolicyType retentionPolicyType)
         {
             this.Name = name;
             this.KeyFingerprint = "";
             this.PrivateDataStart = 0;
             this.PrivateDataLength = 0;
+            this.RevisionRetentionPolicyType = (int)retentionPolicyType;
         }
 
-        public static DiskContainerMetadata Create(string name)
+        public static DiskContainerMetadata Create(string name, RevisionRetentionPolicyType revisionRetentionPolicyType)
         {
-            return new DiskContainerMetadata(name);
+            return new DiskContainerMetadata(name, revisionRetentionPolicyType);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -53,6 +58,7 @@ namespace Mercurio.Domain.Implementation
             info.AddValue(KeyFingerprintSerializationName, KeyFingerprint);
             info.AddValue(PrivateDataStartSerializationName, PrivateDataStart);
             info.AddValue(PrivateDataLengthSerializationName, PrivateDataLength);
+            info.AddValue(RevisionRetentionPolicyTypeSerializationName, RevisionRetentionPolicyType);
         }
     }
 }

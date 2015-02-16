@@ -18,9 +18,9 @@ namespace Mercurio.Domain
             throw new NotImplementedException();
         }
 
-        public IContainer CreateContainer(string containerName, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public IContainer CreateContainer(string containerName, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            return Container.Create(containerName, storagePlan, retentionPolicy);
+            return Container.Create(containerName, retentionPolicy);
         }
     }
 }

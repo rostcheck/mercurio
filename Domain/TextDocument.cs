@@ -12,20 +12,20 @@ namespace Mercurio.Domain
     {
         private IRevisionRetentionPolicy _revisionRetentionPolicy;
         private List<Revision> _revisions;
-        public List<Revision> Revisions 
-        { 
+        public List<Revision> Revisions
+        {
             get
             {
                 return new List<Revision>(_revisions);
-            }             
+            }
             private set
             {
                 _revisions = value;
             }
         }
 
-        public string Content 
-        { 
+        public string Content
+        {
             get
             {
                 return this.Revisions.Last().DocumentContent;
@@ -36,10 +36,30 @@ namespace Mercurio.Domain
 
         private TextDocument(string documentName, IRevisionRetentionPolicy retentionPolicy, Identity creatorIdentity, string initialData)
         {
+            ValidateArgumentstringNotNullOrEmpty(documentName, "document name");
+            ValidateArgumentNotNull(retentionPolicy, "retention policy");
+            ValidateArgumentNotNull(creatorIdentity, "creator identity");
+
             this.Name = documentName;
             this._revisionRetentionPolicy = retentionPolicy;
             this.Revisions = new List<Revision>();
             SetContent(initialData, creatorIdentity);
+        }
+
+        protected static void ValidateArgumentstringNotNullOrEmpty(string stringToValidate, string fieldName)
+        {
+            if (stringToValidate == null || stringToValidate == "")
+            {
+                throw new ArgumentException(string.Format("Invalid argument {0}", fieldName));
+            }
+        }
+
+        protected static void ValidateArgumentNotNull(object objectToValidate, string fieldName)
+        {
+            if (objectToValidate == null)
+            {
+                throw new ArgumentException(string.Format("Invalid argument {0}", fieldName));
+            }
         }
 
         internal static TextDocument Create(string documentName, IRevisionRetentionPolicy retentionPolicy, Identity creatorIdentity, string initialData)

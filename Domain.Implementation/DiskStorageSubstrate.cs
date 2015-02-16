@@ -50,9 +50,9 @@ namespace Mercurio.Domain.Implementation
             return returnList;
         }
 
-        public IContainer CreateContainer(string containerName, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public IContainer CreateContainer(string containerName, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {            
-            return DiskContainer.Create(_path, containerName, storagePlan, SerializerFactory.Create(_serializerType), retentionPolicy);
+            return DiskContainer.Create(_path, containerName, SerializerFactory.Create(_serializerType), retentionPolicy);
         }
 
         public void CloseContainer (IContainer container)

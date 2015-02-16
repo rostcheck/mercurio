@@ -14,6 +14,6 @@ namespace Mercurio.Domain
 
         IEnumerable<IContainer> GetContainers();
 
-        IContainer CreateContainer(string containerName, IStoragePlan storagePlan, RevisionRetentionPolicyType retentionPolicy);
+        IContainer CreateContainer(string containerName, RevisionRetentionPolicyType retentionPolicy);
     }
 }

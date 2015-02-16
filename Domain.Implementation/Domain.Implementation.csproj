@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicStoragePlan.cs" />
     <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="DiskContainer.cs" />
     <Compile Include="DiskContainerMetadata.cs" />

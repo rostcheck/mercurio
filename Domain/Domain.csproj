@@ -68,7 +68,6 @@
     <Compile Include="IEnvironmentScanner.cs" />
     <Compile Include="InMemoryStorageSubstrate.cs" />
     <Compile Include="ISerializerCore.cs" />
-    <Compile Include="IStoragePlan.cs" />
     <Compile Include="UserIdentity.cs" />
     <Compile Include="MercurioEnvironment.cs" />
     <Compile Include="MercurioException.cs" />
