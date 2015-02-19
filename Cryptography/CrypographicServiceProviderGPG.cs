@@ -18,7 +18,7 @@ namespace Cryptography.GPG
 
         public bool IsInstalled()
         {
-            var path = Path.Combine(Environment.SpecialFolder.ProgramFilesX86.ToString(), "GNU", "GnuPG", "gpg2.exe");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GNU", "GnuPG", "gpg2.exe");
             return File.Exists(path);
         }
 

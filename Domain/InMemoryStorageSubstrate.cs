@@ -13,12 +13,12 @@ namespace Mercurio.Domain
             get { throw new NotImplementedException(); }
         }
 
-        public IEnumerable<IContainer> GetContainers()
+        public IEnumerable<IContainer> GetContainers(List<ICryptographicServiceProvider> availableProviders)
         {
             throw new NotImplementedException();
         }
 
-        public IContainer CreateContainer(string containerName, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public IContainer CreateContainer(string containerName, ICryptographicServiceProvider cryptoProvider, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
             return Container.Create(containerName, retentionPolicy);
         }

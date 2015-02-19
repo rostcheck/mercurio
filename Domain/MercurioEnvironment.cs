@@ -43,7 +43,7 @@ namespace Mercurio.Domain
             var returnList = new List<IContainer>();
             foreach(var substrate in this._storageSubstrates)
             {
-                returnList.AddRange(substrate.GetContainers());
+                returnList.AddRange(substrate.GetContainers(_cryptographicServiceProviders));
             }
             return returnList;
         }
@@ -54,15 +54,31 @@ namespace Mercurio.Domain
         }
        
         public IContainer CreateContainer(string containerName, string storageSubstrateName,
-            RevisionRetentionPolicyType revisionRetentionPolicyType = RevisionRetentionPolicyType.KeepOne)
+            RevisionRetentionPolicyType revisionRetentionPolicyType = RevisionRetentionPolicyType.KeepOne, string cryptoProviderType = null)
         {
             var substrate = _storageSubstrates.SingleOrDefault(s => s.Name.ToLower() == storageSubstrateName.ToLower());
             if (substrate == null)
             {
                 throw new ArgumentException(string.Format("Invalid storage substrate name {0}", storageSubstrateName));
             }
-
-            return substrate.CreateContainer(containerName, revisionRetentionPolicyType);
+            ICryptographicServiceProvider cryptoProvider = null;
+            if (cryptoProviderType == null || cryptoProviderType == "")
+            {
+                cryptoProvider = _cryptographicServiceProviders.FirstOrDefault();
+                if (cryptoProvider == null)
+                {
+                    throw new MercurioExceptionRequiredCryptoProviderNotAvailable("No crypto providers are available on this system");
+                }
+            }
+            else
+            {
+                cryptoProvider = _cryptographicServiceProviders.Where(s => s.GetProviderType() == cryptoProviderType).FirstOrDefault();
+                if (cryptoProvider == null)
+                {
+                    throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Requested crypto provider {0} is not available on this system", cryptoProviderType));
+                }
+            }
+            return substrate.CreateContainer(containerName, cryptoProvider, revisionRetentionPolicyType);
         }
 
         public IContainer GetContainer(string newContainerName)

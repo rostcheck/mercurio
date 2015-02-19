@@ -15,21 +15,33 @@ namespace Mercurio.Domain.Implementation
     /// </summary>
     public class EnvironmentScanner : IEnvironmentScanner
     {
-        private List<ICryptographicServiceProvider> providerList;
+        private List<ICryptographicServiceProvider> possibleCryptoProviderList;
+
+        public EnvironmentScanner()
+        {
+            possibleCryptoProviderList = new List<ICryptographicServiceProvider>();
+            // Manually maintained list of things we know how to find
+            RegisterCryptographicProvider(typeof(CrypographicServiceProviderGPG));
+        }
 
         public List<ICryptographicServiceProvider> GetCryptographicProviders()
         {
-            providerList = new List<ICryptographicServiceProvider>();
+            var availableProviders = new List<ICryptographicServiceProvider>();
 
-            // List of crypographic providers the scanner knows how to find
-            RegisterCryptographicProvider(typeof(CrypographicServiceProviderGPG));
-            return providerList;
+            foreach (var provider in possibleCryptoProviderList)
+            {
+                if (provider.IsInstalled())
+                {
+                    availableProviders.Add(provider);
+                }
+            }
+            return availableProviders;
         }
 
         private void RegisterCryptographicProvider(Type type)
         {
             CryptoManagerFactory.Register(type.Name, type);
-            providerList.Add((ICryptographicServiceProvider)Activator.CreateInstance(type));
+            possibleCryptoProviderList.Add((ICryptographicServiceProvider)Activator.CreateInstance(type));
         }
 
         public List<IStorageSubstrate> GetStorageSubstrates()

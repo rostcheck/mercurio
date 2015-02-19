@@ -7,19 +7,10 @@ a private metadata section, a directory section, and a data section. All section
 the public metadata are encrypted.
 
 The public metadata section contains the fingerprint of the key required to recover the Container 
-data and the offset to the private data section.  
+data and the symmetric encryption key,  
 
 The private metadata contains the container name, description, and offsets to the other sections.
 
 The directory section contains a list of the Documents in the Container, with their offsets.
 
-The data section contains all the serialized Documents.
-
-
-Each Container is serialized according
-to the instructions in a Storage Plan, which can be specific to that Container. The Storage 
-Plan provides instructions for how to recover the Container Info, Document Directory and 
-Documents from the Container. Data in a Container is normally encrypted.
-
-Storage Plans are stored in the Storage Plan Cache and are considered Secrets, because without
-a Storage Plan you cannot recover the data in a Container.
+The data section contains all the serialized Documents. Data in a Container is normally encrypted.

@@ -13,8 +13,7 @@ namespace Mercurio.Domain.Implementation
     {
         private const string NameSerializationName = "Name";
         private const string KeyFingerprintSerializationName = "KeyFingerprint";
-        private const string PrivateDataStartSerializationName = "PrivateDataStart";
-        private const string PrivateDataLengthSerializationName = "PrivateDataLength";
+        private const string CryptoProviderTypeSerializationName = "CryptoProviderType";
         private const string RevisionRetentionPolicyTypeSerializationName = "RevisionRetentionPolicyType"; //TODO: move to private metadata
 
         [DataMember]
@@ -22,9 +21,7 @@ namespace Mercurio.Domain.Implementation
         [DataMember]
         public string KeyFingerprint { get; private set; }
         [DataMember]
-        public long PrivateDataStart { get; private set; }
-        [DataMember]
-        public long PrivateDataLength { get; private set; }
+        public string CryptoProviderType { get; private set; }
         [DataMember]
         public int RevisionRetentionPolicyType { get; private set; }
 
@@ -33,31 +30,28 @@ namespace Mercurio.Domain.Implementation
         {
             this.Name = info.GetString(NameSerializationName);
             this.KeyFingerprint = info.GetString(KeyFingerprintSerializationName);
-            this.PrivateDataStart = info.GetInt32(PrivateDataStartSerializationName);
-            this.PrivateDataLength = info.GetInt32(PrivateDataLengthSerializationName);
+            this.CryptoProviderType = info.GetString(CryptoProviderTypeSerializationName);
             this.RevisionRetentionPolicyType = info.GetInt32(RevisionRetentionPolicyTypeSerializationName);
         }
 
-        public DiskContainerMetadata(string name, RevisionRetentionPolicyType retentionPolicyType)
+        public DiskContainerMetadata(string name, string cryptoProviderType, RevisionRetentionPolicyType retentionPolicyType)
         {
             this.Name = name;
             this.KeyFingerprint = "";
-            this.PrivateDataStart = 0;
-            this.PrivateDataLength = 0;
+            this.CryptoProviderType = cryptoProviderType;
             this.RevisionRetentionPolicyType = (int)retentionPolicyType;
         }
 
-        public static DiskContainerMetadata Create(string name, RevisionRetentionPolicyType revisionRetentionPolicyType)
+        public static DiskContainerMetadata Create(string name, string cryptoProviderType, RevisionRetentionPolicyType revisionRetentionPolicyType)
         {
-            return new DiskContainerMetadata(name, revisionRetentionPolicyType);
+            return new DiskContainerMetadata(name, cryptoProviderType, revisionRetentionPolicyType);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(NameSerializationName, this.Name);
             info.AddValue(KeyFingerprintSerializationName, KeyFingerprint);
-            info.AddValue(PrivateDataStartSerializationName, PrivateDataStart);
-            info.AddValue(PrivateDataLengthSerializationName, PrivateDataLength);
+            info.AddValue(CryptoProviderTypeSerializationName, CryptoProviderType);
             info.AddValue(RevisionRetentionPolicyTypeSerializationName, RevisionRetentionPolicyType);
         }
     }

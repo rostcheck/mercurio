@@ -45,12 +45,12 @@ namespace Mercurio.Domain.UnitTests
             get { return "MockStorageSubstate"; }
         }
 
-        public IEnumerable<IContainer> GetContainers()
+        public IEnumerable<IContainer> GetContainers(List<ICryptographicServiceProvider> availableProviders)
         {
             return new List<IContainer>(_containers);
         }
 
-        public IContainer CreateContainer(string containerName, RevisionRetentionPolicyType retentionPolicy)
+        public IContainer CreateContainer(string containerName, ICryptographicServiceProvider cryptoProvider, RevisionRetentionPolicyType retentionPolicy)
         {
             var container = Container.Create(containerName, retentionPolicy);
             _containers.Add(container);
