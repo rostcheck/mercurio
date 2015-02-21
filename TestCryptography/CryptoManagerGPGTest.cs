@@ -16,7 +16,7 @@ namespace TestCryptography
         private const string hermesPassphrase = @"Our technology has been TurneD AGAINST US :(";
 
         [TestMethod]
-        public void GPGCryptoManagerTest()
+        public void GPGCryptoManager_Test_GetPublicKey()
         {
             CryptoManagerConfiguration configuration = TestUtilities.TestConfig.Create("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
@@ -24,9 +24,30 @@ namespace TestCryptography
             string publicKey = cryptoManager.GetPublicKey(string.Empty);
             Assert.IsTrue(publicKey.Length != 0);
 
-            string publicKey2 = cryptoManager.GetPublicKey(hermesPublicKeyID);
-            Assert.IsTrue(publicKey2.Length != 0);
+            string publicKey2 = cryptoManager.GetPublicKey(null);
             Assert.IsTrue(publicKey2 == publicKey);
+
+            string publicKey3 = cryptoManager.GetPublicKey(hermesPublicKeyID);
+            Assert.IsTrue(publicKey3 == publicKey);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(MercurioException))]
+        public void GPGCryptoManager_test_GetPublicKey_Failure()
+        {
+            CryptoManagerConfiguration configuration = TestUtilities.TestConfig.Create("mercurio");
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
+            string publicKey = cryptoManager.GetPublicKey("bad-key-id");
+
+        }
+
+        [TestMethod]
+        public void GPGCryptoManager_Test_ValidateCredential()
+        {
+            CryptoManagerConfiguration configuration = TestUtilities.TestConfig.Create("mercurio");
+            CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
 
             NetworkCredential goodCredential = new NetworkCredential(hermesPublicKeyID, hermesPassphrase);
             NetworkCredential badCredential = new NetworkCredential(hermesPublicKeyID, "Not the correct passphrase");
