@@ -39,7 +39,6 @@ namespace TestCryptography
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
             ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
             string publicKey = cryptoManager.GetPublicKey("bad-key-id");
-
         }
 
         [TestMethod]
