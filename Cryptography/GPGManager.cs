@@ -122,7 +122,19 @@ namespace Cryptography.GPG
 
         public string GetPublicKey(string identity)
         {
-            GnuPGKey firstSecretKey = gpg.GetSecretKeys().FirstOrDefault<GnuPGKey>();
+            GnuPGKey firstSecretKey = null;
+            if (identity == null || identity == "")
+            {
+                firstSecretKey = gpg.GetSecretKeys().FirstOrDefault<GnuPGKey>();
+            }
+            else
+            {
+                firstSecretKey = gpg.GetSecretKeys().Where(s => s.KeyID == identity).FirstOrDefault();
+            }
+            if (firstSecretKey == null)
+            {
+                throw new MercurioException(string.Format("Could not find public key with id {0}", identity));
+            }
             GnuPGKey publicKey = gpg.GetKeys().FirstOrDefault(s => s.KeyID == firstSecretKey.KeyID);
             return gpg.GetActualKey(publicKey.KeyID);
         }

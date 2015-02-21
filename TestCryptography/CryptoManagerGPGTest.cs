@@ -24,6 +24,10 @@ namespace TestCryptography
             string publicKey = cryptoManager.GetPublicKey(string.Empty);
             Assert.IsTrue(publicKey.Length != 0);
 
+            string publicKey2 = cryptoManager.GetPublicKey(hermesPublicKeyID);
+            Assert.IsTrue(publicKey2.Length != 0);
+            Assert.IsTrue(publicKey2 == publicKey);
+
             NetworkCredential goodCredential = new NetworkCredential(hermesPublicKeyID, hermesPassphrase);
             NetworkCredential badCredential = new NetworkCredential(hermesPublicKeyID, "Not the correct passphrase");
             Assert.IsTrue(cryptoManager.ValidateCredential(goodCredential));
