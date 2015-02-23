@@ -34,22 +34,22 @@ namespace Mercurio.Domain.Implementation
             this.RevisionRetentionPolicyType = info.GetInt32(RevisionRetentionPolicyTypeSerializationName);
         }
 
-        public DiskContainerMetadata(string name, string cryptoProviderType, RevisionRetentionPolicyType retentionPolicyType)
+        public DiskContainerMetadata(string name, string cryptoProviderType, string keyFingerprint, RevisionRetentionPolicyType retentionPolicyType)
         {
             this.Name = name;
-            this.KeyFingerprint = "";
+            this.KeyFingerprint = keyFingerprint;
             this.CryptoProviderType = cryptoProviderType;
             this.RevisionRetentionPolicyType = (int)retentionPolicyType;
         }
 
-        public static DiskContainerMetadata Create(string name, string cryptoProviderType, RevisionRetentionPolicyType revisionRetentionPolicyType)
+        public static DiskContainerMetadata Create(string name, string cryptoProviderType, string keyFingerprint, RevisionRetentionPolicyType revisionRetentionPolicyType)
         {
-            return new DiskContainerMetadata(name, cryptoProviderType, revisionRetentionPolicyType);
+            return new DiskContainerMetadata(name, cryptoProviderType, keyFingerprint, revisionRetentionPolicyType);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(NameSerializationName, this.Name);
+            info.AddValue(NameSerializationName, Name);
             info.AddValue(KeyFingerprintSerializationName, KeyFingerprint);
             info.AddValue(CryptoProviderTypeSerializationName, CryptoProviderType);
             info.AddValue(RevisionRetentionPolicyTypeSerializationName, RevisionRetentionPolicyType);

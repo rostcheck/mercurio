@@ -68,6 +68,7 @@
     <Compile Include="IEnvironmentScanner.cs" />
     <Compile Include="InMemoryStorageSubstrate.cs" />
     <Compile Include="ISerializerCore.cs" />
+    <Compile Include="MercurioExceptionNoIdentitiesAvailable.cs" />
     <Compile Include="MercurioExceptionRequiredCryptoProviderNotAvailable.cs" />
     <Compile Include="UserIdentity.cs" />
     <Compile Include="MercurioEnvironment.cs" />

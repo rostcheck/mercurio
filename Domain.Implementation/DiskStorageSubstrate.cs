@@ -41,7 +41,8 @@ namespace Mercurio.Domain.Implementation
         {
             var serializer = SerializerFactory.Create(_serializerType);
             var returnList = new List<IContainer>();
-            var containerPaths = Directory.GetFiles(_path, "*.mcn", SearchOption.AllDirectories);
+            var containerPaths = Directory.GetDirectories(_path);
+                //, "*", SearchOption.AllDirectories);
             foreach (var containerPath in containerPaths)
             {
                 returnList.Add(DiskContainer.CreateFrom(containerPath, serializer, availableCryptoProviders));
@@ -50,9 +51,9 @@ namespace Mercurio.Domain.Implementation
             return returnList;
         }
 
-        public IContainer CreateContainer(string containerName, ICryptographicServiceProvider cryptoProvider, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public IContainer CreateContainer(string containerName, string keyFingerprint, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            return DiskContainer.Create(_path, containerName, SerializerFactory.Create(_serializerType), cryptoProvider, retentionPolicy);
+            return DiskContainer.Create(_path, containerName, keyFingerprint, SerializerFactory.Create(_serializerType), cryptoManager, retentionPolicy);
         }
 
         public void CloseContainer (IContainer container)

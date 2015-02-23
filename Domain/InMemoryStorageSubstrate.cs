@@ -18,7 +18,7 @@ namespace Mercurio.Domain
             throw new NotImplementedException();
         }
 
-        public IContainer CreateContainer(string containerName, ICryptographicServiceProvider cryptoProvider, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public IContainer CreateContainer(string containerName, string keyFingerprint, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
             return Container.Create(containerName, retentionPolicy);
         }

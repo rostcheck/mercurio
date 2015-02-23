@@ -24,6 +24,14 @@ namespace Cryptography.GPG
         private GnuPG gpg;
         private delegate void GpgOperation(Stream inputStream, Stream outputStream, Stream metadataStream);
 
+        public string ManagerType
+        {
+            get
+            {
+                return "GPG";
+            }
+        }
+
         public GPGManager(CryptoManagerConfiguration configuration)
         {
             this.configuration = configuration;
@@ -98,11 +106,6 @@ namespace Cryptography.GPG
         public string Decrypt(string message)
         {
             return ExecuteGPGStringOperation(gpg.Decrypt, message);
-        }
-
-        public string EncryptSymmetric(string message, EncryptionAlgorithmEnum algorithm)
-        {
-            throw new NotImplementedException();
         }
 
         public bool Validate(string message)

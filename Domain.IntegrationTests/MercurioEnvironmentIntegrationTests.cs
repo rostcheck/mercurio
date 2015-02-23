@@ -5,6 +5,7 @@ using Mercurio.Domain.Implementation;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 namespace Domain.IntegrationTests
 {
@@ -16,7 +17,7 @@ namespace Domain.IntegrationTests
         {
             var environmentScanner = new EnvironmentScanner();
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
-            var environment = MercurioEnvironment.Create(environmentScanner);
+            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
 
             var originalContainerList = environment.GetContainers();
             var newContainerName = string.Format("TestContainer-{0}", Guid.NewGuid().ToString());
@@ -26,13 +27,18 @@ namespace Domain.IntegrationTests
             Assert.IsTrue(environment.GetContainers().Where(s => s.Name == newContainerName).FirstOrDefault() != null);
         }
 
+        private static NetworkCredential PassphraseFunction(string identifier)
+        {
+            return new NetworkCredential(identifier, "Our technology has been TURNED AGAINST US");
+        }
+
         [TestMethod]
         public void CreateTextDocument_creates_document()
         {
             const string testDocumentData = @"These are the contents of the test document. One, two, three. Here they are. If you have any questions, you can contact me via telepathy, or Mercurio message.";
             var environmentScanner = new EnvironmentScanner();
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
-            var environment = MercurioEnvironment.Create(environmentScanner);
+            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
 
             var originalContainerList = environment.GetContainers();
             var newContainerName = string.Format("TestContainer-{0}", Guid.NewGuid().ToString());

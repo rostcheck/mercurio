@@ -14,6 +14,6 @@ namespace Mercurio.Domain
 
         IEnumerable<IContainer> GetContainers(List<ICryptographicServiceProvider> availableCryptoProviders);
 
-        IContainer CreateContainer(string containerName, ICryptographicServiceProvider cryptoProvider, RevisionRetentionPolicyType retentionPolicy);
+        IContainer CreateContainer(string containerName, string keyFingerprint, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy);
     }
 }

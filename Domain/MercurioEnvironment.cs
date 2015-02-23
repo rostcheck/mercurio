@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,8 +14,11 @@ namespace Mercurio.Domain
     {
         private List<ICryptographicServiceProvider> _cryptographicServiceProviders;
         private List<IStorageSubstrate> _storageSubstrates;
+        private string _activeIdentity;
+        private Func<string, NetworkCredential> _passphraseFunction;
+        private NetworkCredential _activeCredential;
 
-        public static MercurioEnvironment Create(IEnvironmentScanner scanner)
+        public static MercurioEnvironment Create(IEnvironmentScanner scanner, Func<string, NetworkCredential> passphraseFunction)
         {
             var cryptographicServiceProviders = scanner.GetCryptographicProviders();
             var storageSubstrates = scanner.GetStorageSubstrates();
@@ -28,14 +32,19 @@ namespace Mercurio.Domain
             if (!storageSubstrates.Any())
                 throw new ArgumentException("Must provide at least one storage substrate");
             
-            return new MercurioEnvironment(cryptographicServiceProviders, storageSubstrates);
+            if (passphraseFunction == null)
+            {
+                throw new ArgumentNullException("Must provide a valid passphrase function");
+            }
+            return new MercurioEnvironment(cryptographicServiceProviders, storageSubstrates, passphraseFunction);
         }
 
         private MercurioEnvironment(IEnumerable<ICryptographicServiceProvider> cryptographicServiceProviders, 
-            IEnumerable<IStorageSubstrate> storageSubstrates)
+            IEnumerable<IStorageSubstrate> storageSubstrates, Func<string, NetworkCredential> passphraseFunction)
         {
             this._cryptographicServiceProviders = new List<ICryptographicServiceProvider>(cryptographicServiceProviders);
             this._storageSubstrates = new List<IStorageSubstrate>(storageSubstrates);
+            this._passphraseFunction = passphraseFunction;
         }
 
         public List<IContainer> GetContainers()
@@ -78,7 +87,13 @@ namespace Mercurio.Domain
                     throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Requested crypto provider {0} is not available on this system", cryptoProviderType));
                 }
             }
-            return substrate.CreateContainer(containerName, cryptoProvider, revisionRetentionPolicyType);
+            if (_activeCredential == null)
+            {
+                throw new MercurioException("Not logged in - set identity first");
+            }
+            var cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
+            cryptoManager.SetCredential(_activeCredential);
+            return substrate.CreateContainer(containerName, _activeIdentity, cryptoManager, revisionRetentionPolicyType);
         }
 
         public IContainer GetContainer(string newContainerName)
@@ -95,6 +110,21 @@ namespace Mercurio.Domain
                 identities.AddRange(manager.GetAvailableIdentities());
             }
             return identities;
+        }
+
+        public void SetActiveIdentity(string identity)
+        {
+            if (GetAvailableIdentities().Where(s => s.UniqueIdentifier == identity).FirstOrDefault() == null)
+            {
+                throw new MercurioException(string.Format("Specified identity {0} is not available", identity));
+            }
+            var credential = _passphraseFunction(identity);
+            if (credential == null)
+            {
+                throw new MercurioException(string.Format("Cannot change to requested identity {0} - bad login", identity));
+            }
+            _activeCredential = credential;
+            _activeIdentity = identity;
         }
     }
 }

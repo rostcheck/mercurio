@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mercurio.Domain;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Mercurio.Domain.UnitTests
 {
@@ -50,7 +51,7 @@ namespace Mercurio.Domain.UnitTests
             return new List<IContainer>(_containers);
         }
 
-        public IContainer CreateContainer(string containerName, ICryptographicServiceProvider cryptoProvider, RevisionRetentionPolicyType retentionPolicy)
+        public IContainer CreateContainer(string containerName, string keyFingerprint, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy)
         {
             var container = Container.Create(containerName, retentionPolicy);
             _containers.Add(container);
@@ -100,7 +101,7 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_Create_creates_successfully_with_valid_arguments()
         {
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner);
+            var environment = MercurioEnvironment.Create(environmentScanner, Passphrase);
             Assert.IsNotNull(environment);
         }
 
@@ -109,7 +110,7 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_Create_throws_with_invalid_crypto_providers()
         {
             var environmentScanner = new MockEnvironmentScanner(new List<ICryptographicServiceProvider>(), _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner);
+            var environment = MercurioEnvironment.Create(environmentScanner, Passphrase);
             Assert.IsNotNull(environment);
         }
 
@@ -118,7 +119,7 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_Create_throws_with_invalid_storage_substrates()
         {
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, new List<IStorageSubstrate>());
-            var environment = MercurioEnvironment.Create(environmentScanner);
+            var environment = MercurioEnvironment.Create(environmentScanner, Passphrase);
             Assert.IsNotNull(environment);
         }
 
@@ -126,7 +127,7 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_GetContainers_returns_successful_value()
         {
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner);
+            var environment = MercurioEnvironment.Create(environmentScanner, Passphrase);
             var containers = environment.GetContainers();
             Assert.IsNotNull(containers);
             Assert.IsTrue(containers.Count >= 0);
@@ -136,7 +137,7 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_GetAvailableStorageSubstrates_returns_successful_value()
         {
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner);
+            var environment = MercurioEnvironment.Create(environmentScanner, Passphrase);
             var substrates = environment.GetAvailableStorageSubstrateNames();
             Assert.IsNotNull(substrates);
             Assert.IsTrue(substrates.Count >= 0);
@@ -147,7 +148,7 @@ namespace Mercurio.Domain.UnitTests
         {
             string newContainerName = "testContainer";
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner);
+            var environment = MercurioEnvironment.Create(environmentScanner, Passphrase);
             var substrates = environment.GetAvailableStorageSubstrateNames();
             var originalContainerList = environment.GetContainers();
             var newContainer = environment.CreateContainer(newContainerName, substrates[0]);
@@ -155,6 +156,11 @@ namespace Mercurio.Domain.UnitTests
             var newContainerList = environment.GetContainers();
             Assert.IsTrue(newContainerList.Count == originalContainerList.Count + 1);
             Assert.IsNotNull(newContainerList.Where(s => s.Name == newContainerName).SingleOrDefault());
+        }
+
+        private NetworkCredential Passphrase(string identity)
+        {
+            return new NetworkCredential(identity, "Our technology has been TURNED AGAINST US");
         }
     }
 }

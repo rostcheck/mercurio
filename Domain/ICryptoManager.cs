@@ -18,7 +18,6 @@ namespace Mercurio.Domain
         bool ValidateCredential(NetworkCredential credential);
         Stream Encrypt(Stream messageStream, string identifier);
         string Encrypt(string message, string identifier);
-        string EncryptSymmetric(string message, EncryptionAlgorithmEnum algorithm);
         Stream Decrypt(Stream messageStream);
         string Sign(string message);
         bool Validate(string message);
@@ -32,5 +31,6 @@ namespace Mercurio.Domain
         List<UserIdentity> GetAvailableIdentities();
         List<ContactIdentity> GetAvailableContactIdentities(); // Other possible contacts to send to
         void CreateKey(string identifier, NetworkCredential credential);
+        string ManagerType { get; } // string identifying the CryptoManager (ex. "GPG")
     }
 }
