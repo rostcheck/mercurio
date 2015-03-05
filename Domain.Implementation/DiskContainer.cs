@@ -23,14 +23,14 @@ namespace Mercurio.Domain.Implementation
         private bool _opened;
         private ICryptoManager _cryptoManager;
 
-        protected DiskContainer(string storagePath, string containerName, Serializer serializer, ICryptographicServiceProvider cryptoProvider,
+        protected DiskContainer(string storagePath, string containerName, string keyFingerprint, Serializer serializer, ICryptoManager cryptoManager,
             RevisionRetentionPolicyType retentionPolicyType)
             : base(containerName, retentionPolicyType)
         {
             _storagePath = storagePath;
-            _cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
-            _metadata = DiskContainerMetadata.Create(containerName, cryptoProvider.GetProviderType(), retentionPolicyType);
-            _privateMetadata = new DiskContainerPrivateMetadata();
+            _cryptoManager = cryptoManager;
+            _metadata = DiskContainerMetadata.Create(containerName, cryptoManager.ManagerType, keyFingerprint, retentionPolicyType);
+            _privateMetadata = DiskContainerPrivateMetadata.Create(containerName, "");
             _directory = new Dictionary<string, DiskDirectoryNode>();
             _serializer = serializer;
             Id = Guid.NewGuid().ToString();
@@ -66,19 +66,30 @@ namespace Mercurio.Domain.Implementation
         {
             get
             {
-                return Path.Combine(FolderName, string.Format("{0}.mcn", Id));
+                return GetMetadataFilePath(FolderName, Id);
             }
+        }
+
+        private static string GetMetadataFilePath(string folderName, string id)
+        {
+            return Path.Combine(folderName, string.Format("{0}.mcn", id));
         }
 
         public string PrivateMetadataFilePath
         {
             get
             {
-                return Path.Combine(FolderName, string.Format("{0}.mc0", Id));
+                return GetPrivateMetadataFilePath(FolderName, Id);
             }
         }
 
-        protected DiskContainer(DiskContainerMetadata metadata, Serializer serializer, string id, string diskPath, ICryptographicServiceProvider cryptoProvider, RevisionRetentionPolicyType retentionPolicy)
+        private static string GetPrivateMetadataFilePath(string folderName, string id)
+        {
+            return Path.Combine(folderName, string.Format("{0}.mc0", id));
+        }
+
+        protected DiskContainer(DiskContainerMetadata metadata, Serializer serializer, string id, string diskPath, 
+            ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy)
             : base(metadata.Name, retentionPolicy)
         {
             _opened = false;
@@ -87,13 +98,13 @@ namespace Mercurio.Domain.Implementation
             var folderPath = Path.GetDirectoryName(diskPath);
             _storagePath = Path.GetDirectoryName(folderPath);
             _metadata = metadata;
-            _cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
+            _cryptoManager = cryptoManager;
         }
 
-        public static DiskContainer Create(string diskStorageSubstratePath, string containerName, Serializer serializer, ICryptographicServiceProvider cryptoProvider,
-            RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public static DiskContainer Create(string diskStorageSubstratePath, string containerName, string keyFingerprint, Serializer serializer, 
+            ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            var container = new DiskContainer(diskStorageSubstratePath, containerName, serializer, cryptoProvider, retentionPolicy);
+            var container = new DiskContainer(diskStorageSubstratePath, containerName, keyFingerprint, serializer, cryptoManager, retentionPolicy);
             container.EnsureDiskRepresentationExists();
             //VerifyDiskRepresentationIntegrity(folderName);
 
@@ -107,25 +118,35 @@ namespace Mercurio.Domain.Implementation
                 Directory.CreateDirectory(this.FolderName);
             }
             _serializer.Serialize(MetadataFilePath, _metadata);
-            //_serializer.Serialize(PrivateMetadataFilePath, )
+
+            MemoryStream stream = new MemoryStream();
+            _serializer.Serialize(stream, _privateMetadata);
+            var encryptedStream =  _cryptoManager.Encrypt(stream, _metadata.KeyFingerprint);
+
+            FileStream diskStream = File.Open(PrivateMetadataFilePath, FileMode.Create);
+            StreamWriter diskWriter = new StreamWriter(diskStream);
+            diskWriter.Write(encryptedStream);
+            diskWriter.Flush();
+            diskWriter.Close();
         }
 
         /// <summary>
         /// Create a DiskContainer from an (existing) disk representation
         /// </summary>
-        public static DiskContainer CreateFrom(string diskPath, Serializer serializer, List<ICryptographicServiceProvider> availableCryptoProviders)
+        public static DiskContainer CreateFrom(string folderPath, Serializer serializer, List<ICryptographicServiceProvider> availableCryptoProviders)
         {
-            var metadata = LoadMetadata(serializer, diskPath);
+            var id = Path.GetFileName(folderPath);
+            var metadata = LoadMetadata(GetMetadataFilePath(folderPath, id), serializer);
             var cryptoProvider = availableCryptoProviders.Where(s => s.GetProviderType() == metadata.CryptoProviderType).FirstOrDefault();
             if (cryptoProvider == null)
             {
-                var message = string.Format("Cannot open container located at path {0}; it requires a cryptographic provider of type {1} and none is installed", diskPath, metadata.CryptoProviderType);
+                var message = string.Format("Cannot open container located at path {0}; it requires a cryptographic provider of type {1} and none is installed", folderPath, metadata.CryptoProviderType);
                 throw new MercurioExceptionRequiredCryptoProviderNotAvailable(message);
             }
-            var id = Path.GetFileNameWithoutExtension(diskPath);
-            var folderPath = Path.GetDirectoryName(diskPath);
-            var storagePath = Path.GetDirectoryName(folderPath);
-            return new DiskContainer(metadata, serializer, id, diskPath, cryptoProvider, (RevisionRetentionPolicyType)metadata.RevisionRetentionPolicyType);
+
+            var privateMetadata = LoadPrivateMetadata(GetPrivateMetadataFilePath(folderPath, id), serializer, cryptoProvider);
+            var cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
+            return new DiskContainer(metadata, serializer, id, folderPath, cryptoManager, (RevisionRetentionPolicyType)metadata.RevisionRetentionPolicyType);
         }
 
         public override TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
@@ -143,24 +164,25 @@ namespace Mercurio.Domain.Implementation
             {
                 return Mercurio.Domain.RevisionRetentionPolicy.Create((RevisionRetentionPolicyType)_metadata.RevisionRetentionPolicyType);
             }
-            //set
-            //{
-            //    _metadata.RevisionRetentionPolicyType = value;
-            //}
         }
-        //public void Serialize(Serializer serializer)
-        //{
-        //    serializer.Serialize(_folderName, this);
-        //}
 
         private static string GetPath(string directoryName, string id)
         {
             return Path.Combine(directoryName, id);
         }
 
-        private static DiskContainerMetadata LoadMetadata(Serializer serializer, string filePath)
+        private static DiskContainerMetadata LoadMetadata(string filePath, Serializer serializer)
         {
             return serializer.Deserialize<DiskContainerMetadata>(filePath);
+        }
+
+        private static DiskContainerPrivateMetadata LoadPrivateMetadata(string diskPath, Serializer serializer, ICryptographicServiceProvider cryptoProvider)
+        {
+            var cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
+            var fileStream = File.OpenRead(diskPath);
+            var privateMetadata = serializer.Deserialize<DiskContainerPrivateMetadata>(cryptoManager.Decrypt(fileStream));
+            fileStream.Close();
+            return privateMetadata;
         }
 
         private static void VerifyDiskRepresentationIntegrity(string folderName)

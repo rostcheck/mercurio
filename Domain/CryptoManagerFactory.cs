@@ -12,6 +12,7 @@ namespace Mercurio.Domain
     public static class CryptoManagerFactory
     {
         private static Dictionary<string, Type> registry;
+        private static Dictionary<string, CryptoManagerConfiguration> configurationRegistry;
 
         public static ICryptoManager Create(string cryptoManagerType, CryptoManagerConfiguration userConfiguration = null)
         {
@@ -23,7 +24,16 @@ namespace Mercurio.Domain
             {
                 var cryptoServiceProviderType = registry[cryptoManagerType.ToLower()];
                 var cryptoServiceProvider = Activator.CreateInstance(cryptoServiceProviderType) as ICryptographicServiceProvider;
-                var providerConfiguration = cryptoServiceProvider.GetConfiguration();
+                CryptoManagerConfiguration providerConfiguration;
+                if (configurationRegistry.ContainsKey(cryptoManagerType.ToLower()))
+                {
+                    providerConfiguration = configurationRegistry[cryptoManagerType.ToLower()];
+                }
+                else
+                {
+                    providerConfiguration = cryptoServiceProvider.GetConfiguration();
+                }
+
                 providerConfiguration.Merge(userConfiguration);
                 return cryptoServiceProvider.CreateManager(providerConfiguration);
             }
@@ -33,7 +43,8 @@ namespace Mercurio.Domain
             }
         }
 
-        public static void Register(string cryptoManagerName, Type cryptoManagerType)
+        // Can supply optional configuration primarily for testing (force provider to use a specific configuration)
+        public static void Register(string cryptoManagerName, Type cryptoManagerType, CryptoManagerConfiguration configuration = null)
         {
             if (cryptoManagerType.FindInterfaces(InterfaceNameFilter, typeof(ICryptographicServiceProvider).Name).Length == 0)
             {
@@ -47,6 +58,14 @@ namespace Mercurio.Domain
             if (!registry.ContainsKey(cryptoManagerName.ToLower()))
             {
                 registry.Add(cryptoManagerName.ToLower(), cryptoManagerType);
+            }
+            if (configuration != null)
+            {
+                if (configurationRegistry == null)
+                {
+                    configurationRegistry = new Dictionary<string, CryptoManagerConfiguration>();
+                }
+                configurationRegistry[cryptoManagerName.ToLower()] = configuration;
             }
         }
 
