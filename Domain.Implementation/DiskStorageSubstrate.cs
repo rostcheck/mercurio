@@ -37,18 +37,22 @@ namespace Mercurio.Domain.Implementation
             get { return _path; }
         }
 
-        public IEnumerable<IContainer> GetContainers(List<ICryptographicServiceProvider> availableCryptoProviders)
+        public IEnumerable<IContainer> GetAllContainers()
         {
             var serializer = SerializerFactory.Create(_serializerType);
             var returnList = new List<IContainer>();
             var containerPaths = Directory.GetDirectories(_path);
-                //, "*", SearchOption.AllDirectories);
             foreach (var containerPath in containerPaths)
             {
-                returnList.Add(DiskContainer.CreateFrom(containerPath, serializer, availableCryptoProviders));
+                returnList.Add(DiskContainer.CreateFrom(containerPath, serializer));
             }
 
             return returnList;
+        }
+
+        public IEnumerable<IContainer> GetAccessibleContainers(string identity, ICryptoManager cryptoManager)
+        {
+            return GetAllContainers().Where(s => (s.CryptoManagerType == cryptoManager.ManagerType && s.IsAvailableToIdentity(identity)));
         }
 
         public IContainer CreateContainer(string containerName, string keyFingerprint, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)

@@ -53,3 +53,8 @@ We will start laying out the simple Mercurio File System as follows:
 		- <guidname>.mc1 : private metadata
 		- <guidname>.md0 : directory 
 		- <different-guidname>.mdc.<revision> : mercurio documents, each w/ its own guid name
+
+Is access controlled at the container and/or document level?
+- It needs to be controlled at the container level to insure that users w/o access to the container
+  cannot even see it
+- Control at the document level may or may not be useful; let's start without it

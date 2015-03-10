@@ -224,21 +224,22 @@ namespace Starksoft.Cryptography.OpenPGP
         }
 
         /// <summary>
-        /// Secret passphrase (exposes password to memory as plain text - avoid using this if you 
-        /// can use the Credential or its SecurePassword)
-        /// </summary>
-        public string Passphrase
-        {
-            get { return _credential.Password; }
-        }
-
-        /// <summary>
         /// Secret credential (key id and passphrase)
         /// </summary>
         public NetworkCredential Credential
         {
             get { return _credential; }            
-            set { _credential = value; }
+            set 
+            { 
+                if (value != null)
+                {
+                    if (GetFingerprint(value.UserName) == string.Empty)
+                    {
+                        throw new ArgumentException(string.Format("Cannot set credential to {0} - no such identity", value.UserName));
+                    }
+                }
+                _credential = value; 
+            }
         }
 
         /// <summary>
@@ -290,7 +291,7 @@ namespace Starksoft.Cryptography.OpenPGP
 
             if (outputStream == null)
                 throw new ArgumentNullException("Argument outputStream can not be null.");
-
+            
             if (!inputStream.CanRead)
                 throw new ArgumentException("Argument inputStream must be readable.");
 

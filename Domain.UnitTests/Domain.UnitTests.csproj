@@ -62,6 +62,10 @@
       <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
       <Name>Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestCryptography\TestCryptography.csproj">
+      <Project>{76b24dc4-da0a-4a9b-b4a3-e892f96f3609}</Project>
+      <Name>TestCryptography</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -14,14 +14,15 @@ namespace Mercurio.Domain
         List<IDocument> Documents { get; }
         bool IsLocked { get; }
         void Lock();
-        void Unlock();
+        void Unlock(ICryptoManager cryptoManager);
 
         string Name { get; }
+        string CryptoManagerType { get; }
 
         TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null);
         void DeleteRecord(string recordId);
         void ChangeRecord(Record changedRecord);
         void AddIdentity(Identity identity, AccessPermissionType accessPermissionType);
-
+        bool IsAvailableToIdentity(string uniqueIdentifier);
     }
 }

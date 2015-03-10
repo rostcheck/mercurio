@@ -45,6 +45,7 @@ namespace Cryptography.GPG
             gpg = new GnuPG(configuration[GPGConfigurationKeyEnum.UserHome.ToString()],
                configuration[GPGConfigurationKeyEnum.GPGBinaryPath.ToString()]);
         }
+
         public void SetCredential(NetworkCredential credential)
         {
             gpg.Credential = credential;
@@ -65,6 +66,11 @@ namespace Cryptography.GPG
                 gpg.Credential = savedCredential;
                 return false;
             }
+        }
+
+        public string GetActiveIdentity()
+        {
+            return (gpg.Credential == null) ? string.Empty : gpg.Credential.UserName;
         }
 
         private Stream ExecuteGPGStreamOperation(GpgOperation operation, Stream messageStream)
@@ -180,7 +186,7 @@ namespace Cryptography.GPG
             foreach (GnuPGKey secretKey in secretKeys)
             {
                 var keyInfo = GetKeyInfo(secretKey);
-                userIdentityList.Add(UserIdentity.Create(secretKey.KeyID, keyInfo.Name, secretKey.UserId, keyInfo.Description));
+                userIdentityList.Add(UserIdentity.Create(secretKey.KeyID, keyInfo.Name, secretKey.UserId, keyInfo.Description, this.ManagerType));
             }
             return userIdentityList;
         }
@@ -192,9 +198,7 @@ namespace Cryptography.GPG
             foreach (GnuPGKey key in publicKeys)
             {
                 var keyInfo = GetKeyInfo(key);
-                contactIdentityList.Add(
-                    ContactIdentity.Create(key.KeyID, keyInfo.Name, key.UserId, keyInfo.Description)
-                    );
+                contactIdentityList.Add(ContactIdentity.Create(key.KeyID, keyInfo.Name, key.UserId, keyInfo.Description, this.ManagerType));
             }
             return contactIdentityList;
         }

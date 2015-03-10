@@ -11,6 +11,7 @@ namespace Mercurio.Domain
     /// </summary>
     public class Container : IContainer
     {
+        protected ICryptoManager _cryptoManager;
         private List<IDocument> _documents;
         private bool _locked;
 
@@ -28,27 +29,24 @@ namespace Mercurio.Domain
             }
         }
 
-        protected Container(string name, RevisionRetentionPolicyType retentionPolicy)
+        protected Container(string name, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
             Name = name;
             this.RevisionRetentionPolicy = Mercurio.Domain.RevisionRetentionPolicy.Create(retentionPolicy);
             _documents = new List<IDocument>();
             _locked = false;
+            _cryptoManager = cryptoManager;
         }
-
-        //protected Container()
-        //{
-        //}
 
         protected virtual IRevisionRetentionPolicy RevisionRetentionPolicy { get; private set; }
        
         // Container is created unlocked
-        public static Container Create(string name, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public static Container Create(string name, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            return new Container(name, retentionPolicy);
+            return new Container(name, cryptoManager, retentionPolicy);
         }
 
-        public bool IsLocked 
+        public virtual bool IsLocked 
         { 
             get 
             { 
@@ -61,7 +59,7 @@ namespace Mercurio.Domain
             _locked = true;
         }
 
-        public virtual void Unlock()
+        public virtual void Unlock(ICryptoManager cryptoManager)
         {
             _locked = false;
         }
@@ -99,6 +97,16 @@ namespace Mercurio.Domain
             {
                 throw new UnauthorizedAccessException("Container is locked");
             }
+        }
+
+        public virtual string CryptoManagerType
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public virtual bool IsAvailableToIdentity(string uniqueIdentifier)
+        {
+            throw new NotImplementedException();
         }
     }
 }

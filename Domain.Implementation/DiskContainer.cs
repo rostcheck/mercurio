@@ -20,21 +20,17 @@ namespace Mercurio.Domain.Implementation
         private Dictionary<string, DiskDirectoryNode> _directory;
         private Serializer _serializer;
         private string _id;
-        private bool _opened;
-        private ICryptoManager _cryptoManager;
 
         protected DiskContainer(string storagePath, string containerName, string keyFingerprint, Serializer serializer, ICryptoManager cryptoManager,
             RevisionRetentionPolicyType retentionPolicyType)
-            : base(containerName, retentionPolicyType)
+            : base(containerName, cryptoManager, retentionPolicyType)
         {
             _storagePath = storagePath;
-            _cryptoManager = cryptoManager;
             _metadata = DiskContainerMetadata.Create(containerName, cryptoManager.ManagerType, keyFingerprint, retentionPolicyType);
             _privateMetadata = DiskContainerPrivateMetadata.Create(containerName, "");
             _directory = new Dictionary<string, DiskDirectoryNode>();
             _serializer = serializer;
             Id = Guid.NewGuid().ToString();
-            _opened = true;
         }
 
         public string Id { get; protected set; }
@@ -51,6 +47,14 @@ namespace Mercurio.Domain.Implementation
                 {
                     _metadata.Name = value;
                 }
+            }
+        }
+
+        public override string CryptoManagerType
+        {
+            get
+            {
+                return _metadata.CryptoProviderType;
             }
         }
 
@@ -88,17 +92,29 @@ namespace Mercurio.Domain.Implementation
             return Path.Combine(folderName, string.Format("{0}.mc0", id));
         }
 
-        protected DiskContainer(DiskContainerMetadata metadata, Serializer serializer, string id, string diskPath, 
-            ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy)
-            : base(metadata.Name, retentionPolicy)
+        protected DiskContainer(DiskContainerMetadata metadata, DiskContainerPrivateMetadata privateMetadata, Serializer serializer, string id, string diskPath, 
+            RevisionRetentionPolicyType retentionPolicy)
+            : base(metadata.Name, null, retentionPolicy)
         {
-            _opened = false;
             _serializer = serializer;
             this.Id = id;
             var folderPath = Path.GetDirectoryName(diskPath);
             _storagePath = Path.GetDirectoryName(folderPath);
             _metadata = metadata;
-            _cryptoManager = cryptoManager;
+            _privateMetadata = privateMetadata;
+        }
+
+        public override bool IsLocked
+        {
+            get
+            {
+                return _privateMetadata == null;
+            }
+        }
+
+        public override bool IsAvailableToIdentity(string uniqueIdentifier)
+        {
+            return (_metadata.KeyFingerprint == uniqueIdentifier); // TODO: generalize to support multiple identities
         }
 
         public static DiskContainer Create(string diskStorageSubstratePath, string containerName, string keyFingerprint, Serializer serializer, 
@@ -131,22 +147,32 @@ namespace Mercurio.Domain.Implementation
         }
 
         /// <summary>
-        /// Create a DiskContainer from an (existing) disk representation
+        /// Create a DiskContainer from an (existing) disk representation. The container is locked (only public metadata is loaded)
         /// </summary>
-        public static DiskContainer CreateFrom(string folderPath, Serializer serializer, List<ICryptographicServiceProvider> availableCryptoProviders)
+        public static DiskContainer CreateFrom(string folderPath, Serializer serializer)
+            //, List<ICryptographicServiceProvider> availableCryptoProviders)
         {
             var id = Path.GetFileName(folderPath);
             var metadata = LoadMetadata(GetMetadataFilePath(folderPath, id), serializer);
-            var cryptoProvider = availableCryptoProviders.Where(s => s.GetProviderType() == metadata.CryptoProviderType).FirstOrDefault();
-            if (cryptoProvider == null)
-            {
-                var message = string.Format("Cannot open container located at path {0}; it requires a cryptographic provider of type {1} and none is installed", folderPath, metadata.CryptoProviderType);
-                throw new MercurioExceptionRequiredCryptoProviderNotAvailable(message);
-            }
+            //var cryptoProvider = availableCryptoProviders.Where(s => s.GetProviderType() == metadata.CryptoProviderType).FirstOrDefault();
+            //if (cryptoProvider == null)
+            //{
+            //    var message = string.Format("Cannot open container located at path {0}; it requires a cryptographic provider of type {1} and none is installed", folderPath, metadata.CryptoProviderType);
+            //    throw new MercurioExceptionRequiredCryptoProviderNotAvailable(message);
+            //}
 
-            var privateMetadata = LoadPrivateMetadata(GetPrivateMetadataFilePath(folderPath, id), serializer, cryptoProvider);
-            var cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
-            return new DiskContainer(metadata, serializer, id, folderPath, cryptoManager, (RevisionRetentionPolicyType)metadata.RevisionRetentionPolicyType);
+            //var privateMetadata = LoadPrivateMetadata(GetPrivateMetadataFilePath(folderPath, id), serializer, cryptoProvider);
+            //var cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
+            return new DiskContainer(metadata, null, serializer, id, folderPath, (RevisionRetentionPolicyType)metadata.RevisionRetentionPolicyType);
+        }
+
+        /// <summary>
+        /// Unlock the container (read its private metadata). Requires a cryptoManager w/ credentials set
+        /// </summary>
+        /// <param name="cryptoManager"></param>
+        public override void Unlock(ICryptoManager cryptoManager)
+        {
+            throw new NotImplementedException();
         }
 
         public override TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)

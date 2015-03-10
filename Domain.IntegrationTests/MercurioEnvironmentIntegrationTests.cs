@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mercurio.Domain;
 using Mercurio.Domain.Implementation;
@@ -6,18 +7,38 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using TestCryptography;
 
 namespace Domain.IntegrationTests
 {
     [TestClass]
     public class MercurioEnvironmentIntegrationTests
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            var storageDir = ConfigurationManager.AppSettings["StorageSubstrate"];
+            if (storageDir != null)
+            {
+                foreach (var file in Directory.EnumerateFiles(storageDir, "*.*", SearchOption.AllDirectories))
+                {
+                    File.Delete(file);
+                }
+                foreach (var directory in Directory.EnumerateDirectories(storageDir, "*.*", SearchOption.AllDirectories))
+                {
+                    Directory.Delete(directory);
+                }
+            }
+        }
+
         [TestMethod]
         public void Create_container_persists_container()
         {
             var environmentScanner = new EnvironmentScanner();
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
+            environment.SetActiveIdentity(identity);
 
             var originalContainerList = environment.GetContainers();
             var newContainerName = string.Format("TestContainer-{0}", Guid.NewGuid().ToString());
@@ -29,7 +50,7 @@ namespace Domain.IntegrationTests
 
         private static NetworkCredential PassphraseFunction(string identifier)
         {
-            return new NetworkCredential(identifier, "Our technology has been TURNED AGAINST US");
+            return new NetworkCredential(identifier, CryptoTestConstants.HermesPassphrase);
         }
 
         [TestMethod]
@@ -46,7 +67,7 @@ namespace Domain.IntegrationTests
 
             var container = environment.GetContainer(newContainerName);
             Assert.IsNotNull(container);
-            container.Unlock();
+            environment.UnlockContainer(container);
 
             var documentName = "Thoughts About Test Documents";
             var identity = environment.GetAvailableIdentities().Where(s => s.Address == "hermes@proyectomercurio.cl").FirstOrDefault();
@@ -58,7 +79,7 @@ namespace Domain.IntegrationTests
 
             var container2 = environment.GetContainer(newContainerName);
             Assert.IsNotNull(container2);
-            container2.Unlock();
+            environment.UnlockContainer(container2);
             var document2 = container.Documents.Where(s => s.Name == documentName).FirstOrDefault();;
             Assert.IsNotNull(document2);
             Assert.IsTrue(document2.Content == document.Content);

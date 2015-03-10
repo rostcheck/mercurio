@@ -9,25 +9,29 @@ namespace Mercurio.Domain.UnitTests
     {
         private Identity _identity;
         private MercurioUser _user;
+        private const string _cryptoManagerType = "GPG";
+        private ICryptoManager _cryptoManager;
+
 
         [TestInitialize]
         public void ContainerTests_Initialize()
         {
-            _identity = Identity.Create("alice", "Alice Smith", "alice@mercurio.org", "Alice's Personal Account");
+            _identity = Identity.Create("alice", "Alice Smith", "alice@mercurio.org", "Alice's Personal Account", _cryptoManagerType);
             _user = MercurioUser.Create("Test User", _identity);
+            _cryptoManager = new MockCryptoManager();
         }
 
         [TestMethod]
         public void Container_Create_creates_unlocked_container()
         {
-            var container = Container.Create("Container that keeps all revisions", RevisionRetentionPolicyType.KeepAll);
+            var container = Container.Create("Container that keeps all revisions", _cryptoManager, RevisionRetentionPolicyType.KeepAll);
             Assert.IsFalse(container.IsLocked);
         }
 
         [TestMethod]
         public void Container_CreateTextDocument_creates_document_correctly()
         {
-            var container = Container.Create("Container that keeps all revisions", RevisionRetentionPolicyType.KeepAll);
+            var container = Container.Create("Container that keeps all revisions", _cryptoManager, RevisionRetentionPolicyType.KeepAll);
             string initialValue = "this is my initial value";
             string documentName = "Test document";
             var textDocument = container.CreateTextDocument(documentName, _identity, initialValue);
@@ -38,7 +42,7 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void Container_SetContent_modifies_document_content_correctly()
         {
-            var container = Container.Create("Container that keeps all revisions", RevisionRetentionPolicyType.KeepAll);
+            var container = Container.Create("Container that keeps all revisions", _cryptoManager, RevisionRetentionPolicyType.KeepAll);
             string initialValue = "this is my initial value";
             var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);            
             string newValue = initialValue + " and this is a revised value";
@@ -49,7 +53,7 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void Container_retains_all_revisions_when_retention_policy_is_keep_all()
         {
-            var container = Container.Create("Container that keeps all revisions", RevisionRetentionPolicyType.KeepAll);
+            var container = Container.Create("Container that keeps all revisions", _cryptoManager, RevisionRetentionPolicyType.KeepAll);
             string initialValue = "this is my initial value";
             var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);
             string newValue = initialValue + " and this is a revised value";
@@ -62,7 +66,7 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void Container_retains_one_revision_when_retention_policy_is_keep_one()
         {
-            var container = Container.Create("Container that keeps one revision", RevisionRetentionPolicyType.KeepOne);
+            var container = Container.Create("Container that keeps one revision", _cryptoManager, RevisionRetentionPolicyType.KeepOne);
             string initialValue = "this is my initial value";
             var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);
             string newValue = initialValue + " and this is a revised value";
@@ -75,7 +79,7 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void Container_retains_one_revision_when_using_default_retention_policy()
         {
-            var container = Container.Create("Container that keeps one revision");
+            var container = Container.Create("Container that keeps one revision", _cryptoManager);
             string initialValue = "this is my initial value";
             var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);
             string newValue = initialValue + " and this is a revised value";
@@ -88,7 +92,7 @@ namespace Mercurio.Domain.UnitTests
         [TestMethod]
         public void Container_shows_correct_number_of_documents()
         {
-            var container = Container.Create("Container that keeps one revision");
+            var container = Container.Create("Container that keeps one revision", _cryptoManager);
             string initialValue = "initial value for document 1";
             var textDocument1 = container.CreateTextDocument("Test document 1", _identity, initialValue);
             initialValue = "initial value for document 2";
@@ -103,7 +107,7 @@ namespace Mercurio.Domain.UnitTests
         [ExpectedException(typeof(UnauthorizedAccessException))]
         public void Container_document_access_throws_if_not_unlocked()
         {
-            var container = Container.Create("Container that keeps one revision");
+            var container = Container.Create("Container that keeps one revision", _cryptoManager);
             string initialValue = "initial value for document 1";
             var textDocument1 = container.CreateTextDocument("Test document 1", _identity, initialValue);
             container.Lock();
@@ -114,7 +118,7 @@ namespace Mercurio.Domain.UnitTests
         [ExpectedException(typeof(UnauthorizedAccessException))]
         public void Container_CreateTextDocument_throws_if_not_unlocked()
         {
-            var container = Container.Create("Container that keeps one revision");
+            var container = Container.Create("Container that keeps one revision", _cryptoManager);
             container.Lock();
             string initialValue = "initial value for document 1";
             var textDocument1 = container.CreateTextDocument("Test document 1", _identity, initialValue);

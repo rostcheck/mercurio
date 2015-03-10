@@ -14,6 +14,7 @@ namespace Mercurio.Domain
     public interface ICryptoManager
     {
         void SetCredential(NetworkCredential credential);
+        string GetActiveIdentity();
         void SetConfiguration(CryptoManagerConfiguration configuration);
         bool ValidateCredential(NetworkCredential credential);
         Stream Encrypt(Stream messageStream, string identifier);

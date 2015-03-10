@@ -11,17 +11,17 @@ namespace Mercurio.Domain
     /// </summary>
     public class UserIdentity : Identity
     {
-        protected UserIdentity(string uniqueIdentifier, string name, string address, string description)
-            : base(uniqueIdentifier, name, address, description)
+        protected UserIdentity(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
+            : base(uniqueIdentifier, name, address, description, cryptoManagerType)
         {
         }
 
-        public new static UserIdentity Create(string uniqueIdentifier, string name, string address, string description)
+        public new static UserIdentity Create(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
         {
             ValidateRequiredString(uniqueIdentifier, "Unique identifier");
             //ValidateRequiredString(publicKey, "Public key");
             ValidateRequiredString(name, "Name");
-            return new UserIdentity(uniqueIdentifier, name, address, description);
+            return new UserIdentity(uniqueIdentifier, name, address, description, cryptoManagerType);
         }
     }
 }

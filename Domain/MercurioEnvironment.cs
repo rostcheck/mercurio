@@ -14,7 +14,8 @@ namespace Mercurio.Domain
     {
         private List<ICryptographicServiceProvider> _cryptographicServiceProviders;
         private List<IStorageSubstrate> _storageSubstrates;
-        private string _activeIdentity;
+        private UserIdentity _activeIdentity;
+        private ICryptoManager _activeCryptoManager;
         private Func<string, NetworkCredential> _passphraseFunction;
         private NetworkCredential _activeCredential;
 
@@ -49,10 +50,12 @@ namespace Mercurio.Domain
 
         public List<IContainer> GetContainers()
         {
+            VerifyActiveIdentity();
+
             var returnList = new List<IContainer>();
             foreach(var substrate in this._storageSubstrates)
             {
-                returnList.AddRange(substrate.GetContainers(_cryptographicServiceProviders));
+                returnList.AddRange(substrate.GetAccessibleContainers(_activeIdentity.UniqueIdentifier, _activeCryptoManager));
             }
             return returnList;
         }
@@ -63,42 +66,40 @@ namespace Mercurio.Domain
         }
        
         public IContainer CreateContainer(string containerName, string storageSubstrateName,
-            RevisionRetentionPolicyType revisionRetentionPolicyType = RevisionRetentionPolicyType.KeepOne, string cryptoProviderType = null)
+            RevisionRetentionPolicyType revisionRetentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
+            VerifyActiveIdentity();
+
             var substrate = _storageSubstrates.SingleOrDefault(s => s.Name.ToLower() == storageSubstrateName.ToLower());
             if (substrate == null)
             {
                 throw new ArgumentException(string.Format("Invalid storage substrate name {0}", storageSubstrateName));
             }
-            ICryptographicServiceProvider cryptoProvider = null;
-            if (cryptoProviderType == null || cryptoProviderType == "")
-            {
-                cryptoProvider = _cryptographicServiceProviders.FirstOrDefault();
-                if (cryptoProvider == null)
-                {
-                    throw new MercurioExceptionRequiredCryptoProviderNotAvailable("No crypto providers are available on this system");
-                }
-            }
-            else
-            {
-                cryptoProvider = _cryptographicServiceProviders.Where(s => s.GetProviderType() == cryptoProviderType).FirstOrDefault();
-                if (cryptoProvider == null)
-                {
-                    throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Requested crypto provider {0} is not available on this system", cryptoProviderType));
-                }
-            }
-            if (_activeCredential == null)
-            {
-                throw new MercurioException("Not logged in - set identity first");
-            }
-            var cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
-            cryptoManager.SetCredential(_activeCredential);
-            return substrate.CreateContainer(containerName, _activeIdentity, cryptoManager, revisionRetentionPolicyType);
+            return substrate.CreateContainer(containerName, _activeIdentity.UniqueIdentifier, _activeCryptoManager, revisionRetentionPolicyType);
         }
 
         public IContainer GetContainer(string newContainerName)
         {
+            VerifyActiveIdentity();
             return GetContainers().Where(s => s.Name == newContainerName).FirstOrDefault();
+        }
+
+        public void UnlockContainer(IContainer container)
+        {
+            if (container.CryptoManagerType != _activeCryptoManager.ManagerType)
+            {
+                throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Container {0} requires crypto provider {1} to unlock, but the current identity {3} does not have it available.", container.Name, container.CryptoManagerType, _activeIdentity.Name));
+            }
+
+            container.Unlock(_activeCryptoManager);
+        }
+
+        private void VerifyActiveIdentity()
+        {
+            if (_activeIdentity == null || _activeCryptoManager == null || _activeCredential == null)
+            {
+                throw new MercurioException("Active identity must be set");
+            }
         }
 
         public List<UserIdentity> GetAvailableIdentities()
@@ -112,18 +113,28 @@ namespace Mercurio.Domain
             return identities;
         }
 
-        public void SetActiveIdentity(string identity)
+        public void SetActiveIdentity(UserIdentity identity)
         {
-            if (GetAvailableIdentities().Where(s => s.UniqueIdentifier == identity).FirstOrDefault() == null)
+            var cryptoProvider = _cryptographicServiceProviders.Where(s => s.GetProviderType() == identity.CryptoManagerType).FirstOrDefault();
+            if (cryptoProvider == null)
             {
-                throw new MercurioException(string.Format("Specified identity {0} is not available", identity));
+                throw new MercurioException(string.Format("Cannot find cryptographic provider for {0} in the current environment", identity.CryptoManagerType));
             }
-            var credential = _passphraseFunction(identity);
+
+            var credential = _passphraseFunction(identity.UniqueIdentifier);
             if (credential == null)
             {
                 throw new MercurioException(string.Format("Cannot change to requested identity {0} - bad login", identity));
             }
             _activeCredential = credential;
+
+            _activeCryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
+            _activeCryptoManager.SetCredential(_activeCredential);
+
+            if (_activeCryptoManager.GetFingerprint(identity.UniqueIdentifier) == null)
+            {
+                throw new MercurioException(string.Format("Specified identity {0} is not available", identity));
+            }
             _activeIdentity = identity;
         }
     }

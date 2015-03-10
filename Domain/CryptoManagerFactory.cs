@@ -20,6 +20,12 @@ namespace Mercurio.Domain
             {
                 throw new MercurioException("No CryptoManager types are registered with CryptoManagerFactory");
             }
+
+            if (configurationRegistry == null)
+            {
+                configurationRegistry = new Dictionary<string, CryptoManagerConfiguration>();
+            }
+
             if (registry.ContainsKey(cryptoManagerType.ToLower()))
             {
                 var cryptoServiceProviderType = registry[cryptoManagerType.ToLower()];

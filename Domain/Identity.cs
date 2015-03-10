@@ -15,17 +15,18 @@ namespace Mercurio.Domain
         public string Description { get; private set; } // ex. "John's Personal Account"
         public string Address { get; private set; } // address for message delivery (ex. person@mercurio.org)
         public string Name { get; private set; } // readable name (ex. "John Smith")
+        public string CryptoManagerType { get; private set; } // Identity must be established by an ICryptoManager
 
-
-        protected Identity(string uniqueIdentifier, string name, string address, string description)
+        protected Identity(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
         {
             this.UniqueIdentifier = uniqueIdentifier;
             this.Name = name;
             this.Address = address;
             this.Description = description;
+            this.CryptoManagerType = cryptoManagerType;
         }
 
-        public static Identity Create(string uniqueIdentifier, string name, string address, string description)
+        public static Identity Create(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
         {
             ValidateRequiredString(uniqueIdentifier, "Unique identifier");
             //ValidateRequiredString(publicKey, "Public key");
@@ -34,7 +35,7 @@ namespace Mercurio.Domain
             {
                 address = string.Format("{0}@local", uniqueIdentifier);
             }
-            return new Identity(uniqueIdentifier, name, address, description);
+            return new Identity(uniqueIdentifier, name, address, description, cryptoManagerType);
         }
 
         protected static void ValidateRequiredString(string requiredString, string name)
