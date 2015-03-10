@@ -15,22 +15,34 @@ namespace Mercurio.Domain.Implementation
     public class DiskContainer : Container, IContainer
     {
         private string _storagePath;
-        private DiskContainerMetadata _metadata;
-        private DiskContainerPrivateMetadata _privateMetadata;
+        private ContainerMetadata _metadata;
+        private ContainerPrivateMetadata _privateMetadata;
         private Dictionary<string, DiskDirectoryNode> _directory;
         private Serializer _serializer;
         private string _id;
 
-        protected DiskContainer(string storagePath, string containerName, string keyFingerprint, Serializer serializer, ICryptoManager cryptoManager,
+        protected DiskContainer(string storagePath, string containerName, Serializer serializer, ICryptoManager cryptoManager,
             RevisionRetentionPolicyType retentionPolicyType)
             : base(containerName, cryptoManager, retentionPolicyType)
         {
             _storagePath = storagePath;
-            _metadata = DiskContainerMetadata.Create(containerName, cryptoManager.ManagerType, keyFingerprint, retentionPolicyType);
-            _privateMetadata = DiskContainerPrivateMetadata.Create(containerName, "");
+            _metadata = ContainerMetadata.Create(containerName, cryptoManager.ManagerType, cryptoManager.GetActiveIdentity(), retentionPolicyType);
+            _privateMetadata = ContainerPrivateMetadata.Create(containerName, "");
             _directory = new Dictionary<string, DiskDirectoryNode>();
             _serializer = serializer;
             Id = Guid.NewGuid().ToString();
+        }
+
+        protected DiskContainer(ContainerMetadata metadata, ContainerPrivateMetadata privateMetadata, Serializer serializer, string id, string diskPath,
+            RevisionRetentionPolicyType retentionPolicy)
+            : base(metadata.Name, null, retentionPolicy)
+        {
+            _serializer = serializer;
+            this.Id = id;
+            var folderPath = Path.GetDirectoryName(diskPath);
+            _storagePath = Path.GetDirectoryName(folderPath);
+            _metadata = metadata;
+            _privateMetadata = privateMetadata;
         }
 
         public string Id { get; protected set; }
@@ -92,18 +104,6 @@ namespace Mercurio.Domain.Implementation
             return Path.Combine(folderName, string.Format("{0}.mc0", id));
         }
 
-        protected DiskContainer(DiskContainerMetadata metadata, DiskContainerPrivateMetadata privateMetadata, Serializer serializer, string id, string diskPath, 
-            RevisionRetentionPolicyType retentionPolicy)
-            : base(metadata.Name, null, retentionPolicy)
-        {
-            _serializer = serializer;
-            this.Id = id;
-            var folderPath = Path.GetDirectoryName(diskPath);
-            _storagePath = Path.GetDirectoryName(folderPath);
-            _metadata = metadata;
-            _privateMetadata = privateMetadata;
-        }
-
         public override bool IsLocked
         {
             get
@@ -117,10 +117,15 @@ namespace Mercurio.Domain.Implementation
             return (_metadata.KeyFingerprint == uniqueIdentifier); // TODO: generalize to support multiple identities
         }
 
-        public static DiskContainer Create(string diskStorageSubstratePath, string containerName, string keyFingerprint, Serializer serializer, 
+        public static DiskContainer Create(string diskStorageSubstratePath, string containerName, Serializer serializer, 
             ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            var container = new DiskContainer(diskStorageSubstratePath, containerName, keyFingerprint, serializer, cryptoManager, retentionPolicy);
+            if (cryptoManager.GetActiveIdentity() == string.Empty)
+            {
+                throw new MercurioExceptionIdentityNotSet("Identity not set on cryptoManager");
+            }
+
+            var container = new DiskContainer(diskStorageSubstratePath, containerName, serializer, cryptoManager, retentionPolicy);
             container.EnsureDiskRepresentationExists();
             //VerifyDiskRepresentationIntegrity(folderName);
 
@@ -197,16 +202,16 @@ namespace Mercurio.Domain.Implementation
             return Path.Combine(directoryName, id);
         }
 
-        private static DiskContainerMetadata LoadMetadata(string filePath, Serializer serializer)
+        private static ContainerMetadata LoadMetadata(string filePath, Serializer serializer)
         {
-            return serializer.Deserialize<DiskContainerMetadata>(filePath);
+            return serializer.Deserialize<ContainerMetadata>(filePath);
         }
 
-        private static DiskContainerPrivateMetadata LoadPrivateMetadata(string diskPath, Serializer serializer, ICryptographicServiceProvider cryptoProvider)
+        private static ContainerPrivateMetadata LoadPrivateMetadata(string diskPath, Serializer serializer, ICryptographicServiceProvider cryptoProvider)
         {
             var cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
             var fileStream = File.OpenRead(diskPath);
-            var privateMetadata = serializer.Deserialize<DiskContainerPrivateMetadata>(cryptoManager.Decrypt(fileStream));
+            var privateMetadata = serializer.Deserialize<ContainerPrivateMetadata>(cryptoManager.Decrypt(fileStream));
             fileStream.Close();
             return privateMetadata;
         }

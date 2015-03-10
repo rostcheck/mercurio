@@ -5,39 +5,36 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mercurio.Domain.Implementation
+namespace Mercurio.Domain
 {
     /// <summary>
     /// Metadata about the Container that is encrypted when stored onto the StorageSubstrate
     /// </summary>
-    [DataContract]
     [Serializable]
-    public class DiskContainerPrivateMetadata : ISerializable
+    public class ContainerPrivateMetadata : ISerializable
     {
         private const string ContainerNameSerializationName = "ContainerName";
         private const string ContainerDescriptionSerializationName = "ContainerDescription";
 
-        [DataMember]
         public string ContainerName { get; private set; }
-        [DataMember]
         public string ContainerDescription { get; private set; }
 
         // Needed for serialization
-        protected DiskContainerPrivateMetadata(SerializationInfo info, StreamingContext context)
+        protected ContainerPrivateMetadata(SerializationInfo info, StreamingContext context)
         {
             this.ContainerName = info.GetString(ContainerNameSerializationName);
             this.ContainerDescription = info.GetString(ContainerDescriptionSerializationName);
         }
 
-        public DiskContainerPrivateMetadata(string name, string description)
+        public ContainerPrivateMetadata(string name, string description)
         {
             this.ContainerName = name;
             this.ContainerDescription = description;
         }
 
-        public static DiskContainerPrivateMetadata Create(string name, string description)
+        public static ContainerPrivateMetadata Create(string name, string description)
         {
-            return new DiskContainerPrivateMetadata(name, description);
+            return new ContainerPrivateMetadata(name, description);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)

@@ -49,6 +49,8 @@
     <Compile Include="ChangeType.cs" />
     <Compile Include="ContactIdentity.cs" />
     <Compile Include="Container.cs" />
+    <Compile Include="ContainerMetadata.cs" />
+    <Compile Include="ContainerPrivateMetadata.cs" />
     <Compile Include="CryptoManagerConfiguration.cs" />
     <Compile Include="CryptoManagerFactory.cs" />
     <Compile Include="Database.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="IEnvironmentScanner.cs" />
     <Compile Include="InMemoryStorageSubstrate.cs" />
     <Compile Include="ISerializerCore.cs" />
+    <Compile Include="MercurioExceptionIdentityNotSet.cs" />
     <Compile Include="MercurioExceptionNoIdentitiesAvailable.cs" />
     <Compile Include="MercurioExceptionRequiredCryptoProviderNotAvailable.cs" />
     <Compile Include="UserIdentity.cs" />

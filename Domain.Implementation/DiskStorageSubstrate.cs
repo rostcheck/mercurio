@@ -25,9 +25,7 @@ namespace Mercurio.Domain.Implementation
                 throw new ArgumentNullException("Path cannot be null");
 
             if (!Directory.Exists(diskPath))
-            {
                 throw new DirectoryNotFoundException();
-            }
 
             return new DiskStorageSubstrate(diskPath, serializerType);
         }
@@ -57,7 +55,10 @@ namespace Mercurio.Domain.Implementation
 
         public IContainer CreateContainer(string containerName, string keyFingerprint, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            return DiskContainer.Create(_path, containerName, keyFingerprint, SerializerFactory.Create(_serializerType), cryptoManager, retentionPolicy);
+            if (cryptoManager.GetActiveIdentity() == string.Empty)
+                throw new MercurioExceptionIdentityNotSet("Identity not set on cryptoManager");
+
+            return DiskContainer.Create(_path, containerName, SerializerFactory.Create(_serializerType), cryptoManager, retentionPolicy);
         }
 
         public void CloseContainer (IContainer container)
@@ -68,10 +69,10 @@ namespace Mercurio.Domain.Implementation
             container.Lock();
         }
 
-        private DiskContainerMetadata GetContainerMetadata(string path)
+        private ContainerMetadata GetContainerMetadata(string path)
         {
             var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            return serializer.Deserialize<DiskContainerMetadata>(path);
+            return serializer.Deserialize<ContainerMetadata>(path);
         }
     }
 }

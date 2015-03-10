@@ -43,8 +43,6 @@
   <ItemGroup>
     <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="DiskContainer.cs" />
-    <Compile Include="DiskContainerMetadata.cs" />
-    <Compile Include="DiskContainerPrivateMetadata.cs" />
     <Compile Include="DiskDirectoryNode.cs" />
     <Compile Include="DiskStorageSubstrate.cs" />
     <Compile Include="EnvironmentScanner.cs" />

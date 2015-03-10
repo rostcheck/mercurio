@@ -5,28 +5,23 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mercurio.Domain.Implementation
+namespace Mercurio.Domain
 {
-    [DataContract]
     [Serializable]
-    public class DiskContainerMetadata : ISerializable
+    public class ContainerMetadata : ISerializable
     {
         private const string NameSerializationName = "Name";
         private const string KeyFingerprintSerializationName = "KeyFingerprint";
         private const string CryptoProviderTypeSerializationName = "CryptoProviderType";
         private const string RevisionRetentionPolicyTypeSerializationName = "RevisionRetentionPolicyType"; //TODO: move to private metadata
 
-        [DataMember]
         public string Name { get; set; }
-        [DataMember]
         public string KeyFingerprint { get; private set; }
-        [DataMember]
         public string CryptoProviderType { get; private set; }
-        [DataMember]
         public int RevisionRetentionPolicyType { get; private set; }
 
         // Needed for serialization
-        protected DiskContainerMetadata(SerializationInfo info, StreamingContext context)
+        protected ContainerMetadata(SerializationInfo info, StreamingContext context)
         {
             this.Name = info.GetString(NameSerializationName);
             this.KeyFingerprint = info.GetString(KeyFingerprintSerializationName);
@@ -34,7 +29,7 @@ namespace Mercurio.Domain.Implementation
             this.RevisionRetentionPolicyType = info.GetInt32(RevisionRetentionPolicyTypeSerializationName);
         }
 
-        public DiskContainerMetadata(string name, string cryptoProviderType, string keyFingerprint, RevisionRetentionPolicyType retentionPolicyType)
+        public ContainerMetadata(string name, string cryptoProviderType, string keyFingerprint, RevisionRetentionPolicyType retentionPolicyType)
         {
             this.Name = name;
             this.KeyFingerprint = keyFingerprint;
@@ -42,9 +37,9 @@ namespace Mercurio.Domain.Implementation
             this.RevisionRetentionPolicyType = (int)retentionPolicyType;
         }
 
-        public static DiskContainerMetadata Create(string name, string cryptoProviderType, string keyFingerprint, RevisionRetentionPolicyType revisionRetentionPolicyType)
+        public static ContainerMetadata Create(string name, string cryptoProviderType, string keyFingerprint, RevisionRetentionPolicyType revisionRetentionPolicyType)
         {
-            return new DiskContainerMetadata(name, cryptoProviderType, keyFingerprint, revisionRetentionPolicyType);
+            return new ContainerMetadata(name, cryptoProviderType, keyFingerprint, revisionRetentionPolicyType);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
