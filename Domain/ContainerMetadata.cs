@@ -18,7 +18,7 @@ namespace Mercurio.Domain
         public string Name { get; set; }
         public string KeyFingerprint { get; private set; }
         public string CryptoProviderType { get; private set; }
-        public int RevisionRetentionPolicyType { get; private set; }
+        public int RevisionRetentionPolicyType { get; set; }
 
         // Needed for serialization
         protected ContainerMetadata(SerializationInfo info, StreamingContext context)

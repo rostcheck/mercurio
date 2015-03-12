@@ -15,25 +15,19 @@ namespace Mercurio.Domain.Implementation
     public class DiskContainer : Container, IContainer
     {
         private string _storagePath;
-        private ContainerMetadata _metadata;
-        private ContainerPrivateMetadata _privateMetadata;
         private Dictionary<string, DiskDirectoryNode> _directory;
         private Serializer _serializer;
-        private string _id;
 
         protected DiskContainer(string storagePath, string containerName, Serializer serializer, ICryptoManager cryptoManager,
             RevisionRetentionPolicyType retentionPolicyType)
             : base(containerName, cryptoManager, retentionPolicyType)
         {
             _storagePath = storagePath;
-            _metadata = ContainerMetadata.Create(containerName, cryptoManager.ManagerType, cryptoManager.GetActiveIdentity(), retentionPolicyType);
-            _privateMetadata = ContainerPrivateMetadata.Create(containerName, "");
             _directory = new Dictionary<string, DiskDirectoryNode>();
             _serializer = serializer;
-            Id = Guid.NewGuid().ToString();
         }
 
-        protected DiskContainer(ContainerMetadata metadata, ContainerPrivateMetadata privateMetadata, Serializer serializer, string id, string diskPath,
+        protected DiskContainer(ContainerMetadata metadata, Serializer serializer, string id, string diskPath,
             RevisionRetentionPolicyType retentionPolicy)
             : base(metadata.Name, null, retentionPolicy)
         {
@@ -41,33 +35,31 @@ namespace Mercurio.Domain.Implementation
             this.Id = id;
             var folderPath = Path.GetDirectoryName(diskPath);
             _storagePath = Path.GetDirectoryName(folderPath);
-            _metadata = metadata;
-            _privateMetadata = privateMetadata;
         }
 
-        public string Id { get; protected set; }
-
-        public override string Name
+        public static DiskContainer Create(string diskStorageSubstratePath, string containerName, Serializer serializer,
+            ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            get
+            if (cryptoManager.GetActiveIdentity() == string.Empty)
             {
-                return _metadata.Name;
+                throw new MercurioExceptionIdentityNotSet("Identity not set on cryptoManager");
             }
-            protected set
-            {
-                if (_metadata != null)
-                {
-                    _metadata.Name = value;
-                }
-            }
+
+            var container = new DiskContainer(diskStorageSubstratePath, containerName, serializer, cryptoManager, retentionPolicy);
+            container.EnsureDiskRepresentationExists();
+
+            return container;
         }
 
-        public override string CryptoManagerType
+        /// <summary>
+        /// Create a DiskContainer from an (existing) disk representation. The container is locked (only public metadata is loaded)
+        /// </summary>
+        public static DiskContainer CreateFrom(string folderPath, Serializer serializer)
         {
-            get
-            {
-                return _metadata.CryptoProviderType;
-            }
+            var id = Path.GetFileName(folderPath);
+            var metadata = LoadMetadata(GetMetadataFilePath(folderPath, id), serializer);
+
+            return new DiskContainer(metadata, serializer, id, folderPath, (RevisionRetentionPolicyType)metadata.RevisionRetentionPolicyType);
         }
 
         public string FolderName
@@ -104,34 +96,6 @@ namespace Mercurio.Domain.Implementation
             return Path.Combine(folderName, string.Format("{0}.mc0", id));
         }
 
-        public override bool IsLocked
-        {
-            get
-            {
-                return _privateMetadata == null;
-            }
-        }
-
-        public override bool IsAvailableToIdentity(string uniqueIdentifier)
-        {
-            return (_metadata.KeyFingerprint == uniqueIdentifier); // TODO: generalize to support multiple identities
-        }
-
-        public static DiskContainer Create(string diskStorageSubstratePath, string containerName, Serializer serializer, 
-            ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
-        {
-            if (cryptoManager.GetActiveIdentity() == string.Empty)
-            {
-                throw new MercurioExceptionIdentityNotSet("Identity not set on cryptoManager");
-            }
-
-            var container = new DiskContainer(diskStorageSubstratePath, containerName, serializer, cryptoManager, retentionPolicy);
-            container.EnsureDiskRepresentationExists();
-            //VerifyDiskRepresentationIntegrity(folderName);
-
-            return container;
-        }
-
         private void EnsureDiskRepresentationExists()
         {
             if (!Directory.Exists(this.FolderName))
@@ -151,35 +115,6 @@ namespace Mercurio.Domain.Implementation
             diskWriter.Close();
         }
 
-        /// <summary>
-        /// Create a DiskContainer from an (existing) disk representation. The container is locked (only public metadata is loaded)
-        /// </summary>
-        public static DiskContainer CreateFrom(string folderPath, Serializer serializer)
-            //, List<ICryptographicServiceProvider> availableCryptoProviders)
-        {
-            var id = Path.GetFileName(folderPath);
-            var metadata = LoadMetadata(GetMetadataFilePath(folderPath, id), serializer);
-            //var cryptoProvider = availableCryptoProviders.Where(s => s.GetProviderType() == metadata.CryptoProviderType).FirstOrDefault();
-            //if (cryptoProvider == null)
-            //{
-            //    var message = string.Format("Cannot open container located at path {0}; it requires a cryptographic provider of type {1} and none is installed", folderPath, metadata.CryptoProviderType);
-            //    throw new MercurioExceptionRequiredCryptoProviderNotAvailable(message);
-            //}
-
-            //var privateMetadata = LoadPrivateMetadata(GetPrivateMetadataFilePath(folderPath, id), serializer, cryptoProvider);
-            //var cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
-            return new DiskContainer(metadata, null, serializer, id, folderPath, (RevisionRetentionPolicyType)metadata.RevisionRetentionPolicyType);
-        }
-
-        /// <summary>
-        /// Unlock the container (read its private metadata). Requires a cryptoManager w/ credentials set
-        /// </summary>
-        /// <param name="cryptoManager"></param>
-        public override void Unlock(ICryptoManager cryptoManager)
-        {
-            throw new NotImplementedException();
-        }
-
         public override TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
         {
             var document = base.CreateTextDocument(documentName, creatorIdentity, initialData);
@@ -187,14 +122,6 @@ namespace Mercurio.Domain.Implementation
             // TODO: Create the disk file and serialize the data to it            
             _directory.Add(document.Name.ToLower(), DiskDirectoryNode.Create(filename, 1));
             return document;
-        }
-
-        protected override IRevisionRetentionPolicy RevisionRetentionPolicy
-        {
-            get
-            {
-                return Mercurio.Domain.RevisionRetentionPolicy.Create((RevisionRetentionPolicyType)_metadata.RevisionRetentionPolicyType);
-            }
         }
 
         private static string GetPath(string directoryName, string id)

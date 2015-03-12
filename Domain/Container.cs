@@ -12,11 +12,30 @@ namespace Mercurio.Domain
     public class Container : IContainer
     {
         protected ICryptoManager _cryptoManager;
+        protected ContainerMetadata _metadata;
+        protected ContainerPrivateMetadata _privateMetadata;
         private List<IDocument> _documents;
         private bool _locked;
 
-        public List<IDocument> Documents 
-        { 
+        protected Container(string containerName, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
+        {
+            Id = Guid.NewGuid().ToString();
+            _documents = new List<IDocument>();
+            _locked = false;
+            _cryptoManager = cryptoManager;
+            _metadata = ContainerMetadata.Create(containerName, cryptoManager.ManagerType, cryptoManager.GetActiveIdentity(), retentionPolicyType);
+            _privateMetadata = ContainerPrivateMetadata.Create(containerName, "");
+            ChangeRevisionRetentionPolicy(retentionPolicyType);
+        }
+
+        // Container is created unlocked
+        public static Container Create(string name, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        {
+            return new Container(name, cryptoManager, retentionPolicy);
+        }
+
+        public List<IDocument> Documents
+        {
             get
             {
                 VerifyIsUnlocked();
@@ -29,42 +48,70 @@ namespace Mercurio.Domain
             }
         }
 
-        protected Container(string name, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public virtual string Id { get; protected set; }
+
+        public virtual string Name
         {
-            Name = name;
-            this.RevisionRetentionPolicy = Mercurio.Domain.RevisionRetentionPolicy.Create(retentionPolicy);
-            _documents = new List<IDocument>();
-            _locked = false;
-            _cryptoManager = cryptoManager;
+            get
+            {
+                return(_metadata == null) ? string.Empty : _metadata.Name;
+            }
+            protected set
+            {
+                if (_metadata != null)
+                {
+                    _metadata.Name = value;
+                }
+            }
         }
 
-        protected virtual IRevisionRetentionPolicy RevisionRetentionPolicy { get; private set; }
-       
-        // Container is created unlocked
-        public static Container Create(string name, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        public virtual string CryptoManagerType
         {
-            return new Container(name, cryptoManager, retentionPolicy);
+            get
+            {
+                return (_metadata == null) ? string.Empty : _metadata.CryptoProviderType;
+            }
         }
 
-        public virtual bool IsLocked 
-        { 
-            get 
-            { 
-                return _locked; 
-            } 
+        public virtual bool IsLocked
+        {
+            get
+            {
+                return _privateMetadata == null;
+            }
         }
 
         public virtual void Lock()
         {
-            _locked = true;
+            _privateMetadata = null; //TODO: Secure erase
         }
 
+        /// <summary>
+        /// Unlock the container (read its private metadata). Requires a cryptoManager w/ credentials set
+        /// </summary>
+        /// <param name="cryptoManager"></param>
         public virtual void Unlock(ICryptoManager cryptoManager)
         {
-            _locked = false;
+            throw new NotImplementedException();
         }
 
-        public virtual string Name { get; protected set; }
+        public virtual bool IsAvailableToIdentity(string uniqueIdentifier)
+        {
+            return (_metadata.KeyFingerprint == uniqueIdentifier); // TODO: generalize to support multiple identities
+        }
+
+        public virtual IRevisionRetentionPolicy RevisionRetentionPolicy
+        {
+            get
+            {
+                return Mercurio.Domain.RevisionRetentionPolicy.Create((RevisionRetentionPolicyType)_metadata.RevisionRetentionPolicyType);
+            }
+        }
+
+        public virtual void ChangeRevisionRetentionPolicy(RevisionRetentionPolicyType revisionRetentionPolicyType)
+        {
+            _metadata.RevisionRetentionPolicyType = (int)revisionRetentionPolicyType;
+        }
 
         public virtual TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
         {
@@ -93,20 +140,10 @@ namespace Mercurio.Domain
 
         private void VerifyIsUnlocked()
         {
-            if (_locked)
+            if (_privateMetadata == null)
             {
                 throw new UnauthorizedAccessException("Container is locked");
             }
-        }
-
-        public virtual string CryptoManagerType
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public virtual bool IsAvailableToIdentity(string uniqueIdentifier)
-        {
-            throw new NotImplementedException();
         }
     }
 }

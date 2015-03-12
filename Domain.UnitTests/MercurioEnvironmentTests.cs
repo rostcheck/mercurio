@@ -175,7 +175,7 @@ namespace Mercurio.Domain.UnitTests
 
         public IEnumerable<IContainer> GetAccessibleContainers(string identity, ICryptoManager cryptoManager)
         {
-            throw new NotImplementedException();
+            return new List<IContainer>(_containers.Where(s => s.IsAvailableToIdentity(identity)));
         }
     }
 

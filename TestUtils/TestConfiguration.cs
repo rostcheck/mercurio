@@ -15,7 +15,7 @@ namespace TestUtilities
         public static CryptoManagerConfiguration Create(string userName)
         {
             CryptoManagerConfiguration configuration = new CryptoManagerConfiguration();
-            configuration[GPGConfigurationKeyEnum.UserHome.ToString()] = UserHomeConfig();
+            configuration[GPGConfigurationKeyEnum.UserHome.ToString()] = UserHomeConfig(userName);
             configuration[GPGConfigurationKeyEnum.GPGBinaryPath.ToString()] = BinaryPath();
             return configuration;
         }
@@ -27,9 +27,9 @@ namespace TestUtilities
             return configuration;
         }
 
-        private static string UserHomeConfig()
+        private static string UserHomeConfig(string userName)
         {
-            return Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "gnupg").ToString();
+            return Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "TestKeyChains", userName).ToString();
         }
 
         private static string BinaryPath()

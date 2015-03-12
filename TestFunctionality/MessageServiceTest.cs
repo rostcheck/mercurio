@@ -13,17 +13,17 @@ namespace TestFunctionality
     [TestClass]
     public class MessageServiceTest
     {
-        private const string senderAddress = "alice@maker.net";
-        private const string recipientAddress = "bob@maker.net";
+        private const string senderAddress = "bob@maker.net"; 
+        private const string recipientAddress ="alice@maker.net";
         private const string evidenceURL = "http://thisisdavidr.net/pgp_fingerprint.m4v";
-        private const string senderKey = "79222C24";
+        private const string senderKey = "875DB1F1";
 
         [TestMethod]
         public void ConnectInvitationTest()
         {
             var configuration = TestUtilities.TestConfig.Create("Bob");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
             Serializer serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
             IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
