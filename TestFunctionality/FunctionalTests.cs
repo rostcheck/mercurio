@@ -175,11 +175,11 @@ namespace TestFunctionality
 
             // Queue up more invitations for Alice from Carlos and Danielle
             UserServices carlosService = SwitchUser(bob, carlos);
-            connectInvitationMessage = new ConnectInvitationMessage(user[carlos].Address, user[alice].Address, carlosService.GetPublicKey(user[alice].Key), signatures, evidenceURL);
+            connectInvitationMessage = new ConnectInvitationMessage(user[carlos].Address, user[alice].Address, carlosService.GetPublicKey(user[carlos].Key), signatures, evidenceURL);
             carlosService.SendMessage(connectInvitationMessage);
-            UserServices danielleeService = SwitchUser(carlos, danielle);
-            connectInvitationMessage = new ConnectInvitationMessage(user[danielle].Address, user[alice].Address, danielleeService.GetPublicKey(user[alice].Key), signatures, evidenceURL);
-            danielleeService.SendMessage(connectInvitationMessage);
+            UserServices danielleService = SwitchUser(carlos, danielle);
+            connectInvitationMessage = new ConnectInvitationMessage(user[danielle].Address, user[alice].Address, danielleService.GetPublicKey(user[danielle].Key), signatures, evidenceURL);
+            danielleService.SendMessage(connectInvitationMessage);
         }
 
         private UserServices Setup(string userName)

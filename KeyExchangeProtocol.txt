@@ -1,0 +1,34 @@
+Key Exchange Protocol is as follows:
+
+Current:
+
+- Requester sends ConnectInvitationMessage, which contains:
+  - Mercurio address of requester
+  - Mercurio address of recipient
+  - Requester's public key
+  - Signatures (on the requester's key) [Can be a subset of the available signatures on the key, to prevent exposing excess social graph]
+  - A URL pointing to evidence
+
+- Recipient either 
+ - ignores ConnectInvitationMessage 
+ or 
+ - signs the key requester's public key
+ - replies with ConnectInvitationAcceptedMessage, which includes requester's signed public key
+
+ Issues with current protocol:
+ - request itself is not signed, so can be faked
+ - are signatures exposed? Need to check if the signature contains key information about whose signature it is
+ - evidence URL is not encrypted
+ - evidence URL could be used for spear-fishing
+ - there is no way to disguise that it is a connect invitation request (short of servers wrapping it in additional layers of encryption)
+
+ Benefits of the current protocol:
+ - including requester's public key is convenient
+ - at least contains some evidence
+ - no need to bootstrap by asking for recipient's public key
+
+ What could be improved?
+ - sign connect invitation request (requires earlier step to get recipient's public key)
+ - encrypt connect invitation request (requires earlier step to get recipient's public key)
+ - but: does that make the connect invitation message too highly predictable? (highly structured, contains public key, sender and recipient can be observed)
+ - could package payload w/ random noise padding before encryption to prevent known-cleartext attack?

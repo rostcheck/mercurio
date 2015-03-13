@@ -129,23 +129,24 @@ namespace Cryptography.GPG
             return ExecuteGPGStringOperation(gpg.Sign, message);
         }
 
-        public string GetPublicKey(string identity)
+        public string GetPublicKey(string requestedIdentity)
         {
-            GnuPGKey firstSecretKey = null;
+            var identity = requestedIdentity;
             if (identity == null || identity == "")
             {
-                firstSecretKey = gpg.GetSecretKeys().FirstOrDefault<GnuPGKey>();
+                var firstSecretKey = gpg.GetSecretKeys().FirstOrDefault<GnuPGKey>();
+                if (firstSecretKey != null)
+                    identity = firstSecretKey.KeyID;
+                else
+                    throw new MercurioException("No default public key is available");
             }
-            else
+            GnuPGKey publicKey = gpg.GetKeys().FirstOrDefault(s => s.KeyID == identity);
+            if (publicKey == null && requestedIdentity != null && requestedIdentity != "")
             {
-                firstSecretKey = gpg.GetSecretKeys().Where(s => s.KeyID == identity).FirstOrDefault();
+                throw new MercurioException(string.Format("Requested public key {0} is not available", requestedIdentity));
             }
-            if (firstSecretKey == null)
-            {
-                throw new MercurioException(string.Format("Could not find public key with id {0}", identity));
-            }
-            GnuPGKey publicKey = gpg.GetKeys().FirstOrDefault(s => s.KeyID == firstSecretKey.KeyID);
-            return gpg.GetActualKey(publicKey.KeyID);
+
+            return (publicKey == null) ? "" : gpg.GetActualKey(publicKey.KeyID);
         }
 
         public string ImportKey(string key)
