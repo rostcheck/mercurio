@@ -42,11 +42,6 @@ namespace TestUtilities
 
         public static void SwitchUser(string fromUser, string toUser)
         {
-            //if (fromUser != null && fromUser != string.Empty)
-            //{
-            //    CopyGPGFiles(KeyChainDirectory, GetUserWorkingDir(fromUser));
-            //}
-            //CopyGPGFiles(GetUserWorkingDir(toUser), KeyChainDirectory);
         }
 
         private static void CopyGPGFiles(string sourceDir, string destinationDir)
@@ -55,30 +50,22 @@ namespace TestUtilities
             {
                 Directory.CreateDirectory(destinationDir);
             }
-            CopyFile("pubring.gpg", sourceDir, destinationDir);
-            CopyFile("secring.gpg", sourceDir, destinationDir);
-            CopyFile("trustdb.gpg", sourceDir, destinationDir);
+            CopyFileIfExists("pubring.gpg", sourceDir, destinationDir);
+            CopyFileIfExists("secring.gpg", sourceDir, destinationDir);
+            CopyFileIfExists("trustdb.gpg", sourceDir, destinationDir);
         }
 
-        private static void CopyFile(string fileName, string sourceDirectory, string destinationDirectory)
+        private static void CopyFileIfExists(string fileName, string sourceDirectory, string destinationDirectory)
         {
-            if (!Directory.Exists(destinationDirectory))
-                Directory.CreateDirectory(destinationDirectory);
             string sourcePath = sourceDirectory + "\\" + fileName;
-            string destinationPath = destinationDirectory + "\\" + fileName;
-            File.Copy(sourcePath, destinationPath, true); // overwrite
-        }
+            if (File.Exists(sourcePath))
+            {
 
-        //public static void SetupDirs(List<string> userNames)
-        //{
-        //    if (!Directory.Exists(KeyChainDirectory))
-        //    {
-        //        Directory.CreateDirectory(KeyChainDirectory);
-        //    }
-        //    foreach (string userName in userNames)
-        //    {
-        //        SetupUserDir(userName);
-        //    }
-        //}
+                if (!Directory.Exists(destinationDirectory))
+                    Directory.CreateDirectory(destinationDirectory);
+                string destinationPath = destinationDirectory + "\\" + fileName;
+                File.Copy(sourcePath, destinationPath, true); // overwrite
+            }
+        }
     }
 }

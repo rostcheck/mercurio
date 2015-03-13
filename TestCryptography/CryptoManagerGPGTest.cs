@@ -16,9 +16,9 @@ namespace TestCryptography
         [TestMethod]
         public void GPGCryptoManager_Test_GetPublicKey()
         {
-            CryptoManagerConfiguration configuration = TestUtilities.TestConfig.Create("mercurio");
+            CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
             string publicKey = cryptoManager.GetPublicKey(string.Empty);
             Assert.IsTrue(publicKey.Length != 0);
 
@@ -33,18 +33,18 @@ namespace TestCryptography
         [ExpectedException(typeof(MercurioException))]
         public void GPGCryptoManager_Test_GetPublicKey_Failure()
         {
-            CryptoManagerConfiguration configuration = TestUtilities.TestConfig.Create("mercurio");
+            CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
             string publicKey = cryptoManager.GetPublicKey("bad-key-id");
         }
 
         [TestMethod]
         public void GPGCryptoManager_Test_ValidateCredential()
         {
-            CryptoManagerConfiguration configuration = TestUtilities.TestConfig.Create("mercurio");
+            CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
 
             NetworkCredential goodCredential = new NetworkCredential(CryptoTestConstants.HermesPublicKeyID, CryptoTestConstants.HermesPassphrase);
             NetworkCredential badCredential = new NetworkCredential(CryptoTestConstants.HermesPublicKeyID, "Not the correct passphrase");
@@ -55,9 +55,9 @@ namespace TestCryptography
         [TestMethod]
         public void GPGCryptoManager_Test_SetCredential_allows_setting_to_null()
         {
-            CryptoManagerConfiguration configuration = TestUtilities.TestConfig.Create("mercurio");
+            CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
 
             cryptoManager.SetCredential(null);
         }
@@ -66,18 +66,19 @@ namespace TestCryptography
         [ExpectedException(typeof(GnuPGException))]
         public void GPGCryptoManager_Test_SetCredential_throws_when_identity_does_not_exist()
         {
-            CryptoManagerConfiguration configuration = TestUtilities.TestConfig.Create("mercurio");
+            CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString());
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
 
             NetworkCredential badCredential = new NetworkCredential("invalid-identity", "Not the correct passphrase");
             cryptoManager.SetCredential(badCredential);
         }
 
-        private void PrepareTest(string userName)
+        private CryptoManagerConfiguration PrepareTest(string userName)
         {
             TestUtils.SetupUserDir(userName);
             TestUtils.SwitchUser(null, userName);
+            return TestConfig.Create(userName);
         }
     }
 }

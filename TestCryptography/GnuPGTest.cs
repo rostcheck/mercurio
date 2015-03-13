@@ -47,12 +47,6 @@ dI/J+ka6IXbxS/1QzYPaRrGiaun0
             GnuPG gpg = PrepareTest("mercurio");
             GnuPGKeyCollection keys = gpg.GetKeys();
             Assert.IsTrue(keys.Count >= 2);
-            GnuPGKey testKey = keys.FirstOrDefault<GnuPGKey>(s => s.KeyID == testPublicKeyID);
-            Assert.IsNotNull(testKey);
-            Assert.IsTrue(testKey.KeyLength == 1024);
-            Assert.IsTrue(testKey.Algorithm == GnuPGAlgorithmType.RSA);
-            Assert.IsTrue(testKey.CreationDate == new DateTime(2014, 11, 14));
-            Assert.IsNull(testKey.KeyExpiration);
             GnuPGKey hermesKey = keys.FirstOrDefault<GnuPGKey>(s => s.KeyID == hermesPublicKeyID);
             Assert.IsNotNull(hermesKey);
             Assert.IsTrue(hermesKey.KeyLength == 4096);
@@ -74,7 +68,7 @@ dI/J+ka6IXbxS/1QzYPaRrGiaun0
         {
             TestUtils.SetupUserDir(userName);
             TestUtils.SwitchUser(null, userName);
-            string keyPath = TestUtils.KeyChainDirectory;
+            string keyPath = TestUtils.GetUserWorkingDir(userName);
             string binaryPath = Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86) + "\\GNU\\GnuPG\\gpg2.exe";
             return new GnuPG(keyPath, binaryPath);
         }
