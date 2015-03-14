@@ -35,15 +35,15 @@ namespace Cryptography.GPG
         public GPGManager(CryptoManagerConfiguration configuration)
         {
             this.configuration = configuration;
-             gpg = new GnuPG(configuration[GPGConfigurationKeyEnum.UserHome.ToString()],
-                configuration[GPGConfigurationKeyEnum.GPGBinaryPath.ToString()]);
+             gpg = new GnuPG(configuration[CryptoConfigurationKeyEnum.KeyringPath.ToString()],
+                configuration[CryptoConfigurationKeyEnum.CryptoExeBinaryPath.ToString()]);
         }
 
         public void SetConfiguration(CryptoManagerConfiguration configuration)
         {
             this.configuration = configuration;
-            gpg = new GnuPG(configuration[GPGConfigurationKeyEnum.UserHome.ToString()],
-               configuration[GPGConfigurationKeyEnum.GPGBinaryPath.ToString()]);
+            gpg = new GnuPG(configuration[CryptoConfigurationKeyEnum.KeyringPath.ToString()],
+               configuration[CryptoConfigurationKeyEnum.CryptoExeBinaryPath.ToString()]);
         }
 
         public void SetCredential(NetworkCredential credential)

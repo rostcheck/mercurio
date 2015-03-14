@@ -15,15 +15,15 @@ namespace TestUtilities
         public static CryptoManagerConfiguration Create(string userName)
         {
             CryptoManagerConfiguration configuration = new CryptoManagerConfiguration();
-            configuration[GPGConfigurationKeyEnum.UserHome.ToString()] = UserHomeConfig(userName);
-            configuration[GPGConfigurationKeyEnum.GPGBinaryPath.ToString()] = BinaryPath();
+            configuration[CryptoConfigurationKeyEnum.KeyringPath.ToString()] = UserHomeConfig(userName);
+            configuration[CryptoConfigurationKeyEnum.CryptoExeBinaryPath.ToString()] = BinaryPath();
             return configuration;
         }
 
         public static CryptoManagerConfiguration GetTestConfiguration(string userName)
         {
             CryptoManagerConfiguration configuration = TestConfig.Create(userName);
-            configuration[GPGConfigurationKeyEnum.UserHome.ToString()] = TestUtils.GetUserDir(userName);
+            configuration[CryptoConfigurationKeyEnum.KeyringPath.ToString()] = TestUtils.GetUserDir(userName);
             return configuration;
         }
 

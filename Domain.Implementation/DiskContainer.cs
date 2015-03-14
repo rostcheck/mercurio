@@ -27,9 +27,8 @@ namespace Mercurio.Domain.Implementation
             _serializer = serializer;
         }
 
-        protected DiskContainer(ContainerMetadata metadata, Serializer serializer, string id, string diskPath,
-            RevisionRetentionPolicyType retentionPolicy)
-            : base(metadata.Name, null, retentionPolicy)
+        protected DiskContainer(ContainerMetadata metadata, Serializer serializer, string id, string diskPath)
+            : base(metadata)
         {
             _serializer = serializer;
             this.Id = id;
@@ -59,7 +58,7 @@ namespace Mercurio.Domain.Implementation
             var id = Path.GetFileName(folderPath);
             var metadata = LoadMetadata(GetMetadataFilePath(folderPath, id), serializer);
 
-            return new DiskContainer(metadata, serializer, id, folderPath, (RevisionRetentionPolicyType)metadata.RevisionRetentionPolicyType);
+            return new DiskContainer(metadata, serializer, id, folderPath);
         }
 
         public string FolderName

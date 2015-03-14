@@ -18,6 +18,7 @@ namespace Mercurio.Domain
         private ICryptoManager _activeCryptoManager;
         private Func<string, NetworkCredential> _passphraseFunction;
         private NetworkCredential _activeCredential;
+        private string _userHomeDirectory = null;
 
         public static MercurioEnvironment Create(IEnvironmentScanner scanner, Func<string, NetworkCredential> passphraseFunction)
         {
@@ -46,6 +47,12 @@ namespace Mercurio.Domain
             this._cryptographicServiceProviders = new List<ICryptographicServiceProvider>(cryptographicServiceProviders);
             this._storageSubstrates = new List<IStorageSubstrate>(storageSubstrates);
             this._passphraseFunction = passphraseFunction;
+        }
+
+        // Generally only needed for testing
+        public void SetUserHomeDirectory(string userHomeDirectory)
+        {
+            _userHomeDirectory = userHomeDirectory;
         }
 
         public List<IContainer> GetContainers()
@@ -107,14 +114,33 @@ namespace Mercurio.Domain
             var identities = new List<UserIdentity>();
             foreach (var cryptographicStorageProvider in _cryptographicServiceProviders)
             {
-                var manager = cryptographicStorageProvider.CreateManager(cryptographicStorageProvider.GetConfiguration());
+                var manager = cryptographicStorageProvider.CreateManager(GetCryptoManagerConfiguration(cryptographicStorageProvider));
                 identities.AddRange(manager.GetAvailableIdentities());
             }
             return identities;
         }
 
+        private CryptoManagerConfiguration GetCryptoManagerConfiguration(ICryptographicServiceProvider provider)
+        {
+            var configuration = provider.GetConfiguration();
+            if (_userHomeDirectory != null && _userHomeDirectory != "")
+            {
+                var userEnvironmentConfiguration = new CryptoManagerConfiguration();
+                userEnvironmentConfiguration.Add(CryptoConfigurationKeyEnum.KeyringPath.ToString(), _userHomeDirectory);
+                configuration.Merge(userEnvironmentConfiguration);            
+            }
+            return configuration;
+        }
+
         public void SetActiveIdentity(UserIdentity identity)
         {
+            if (identity == null)
+            {
+                _activeCredential = null;
+                _activeCryptoManager = null;
+                return;
+            }
+
             var cryptoProvider = _cryptographicServiceProviders.Where(s => s.GetProviderType() == identity.CryptoManagerType).FirstOrDefault();
             if (cryptoProvider == null)
             {
@@ -128,7 +154,7 @@ namespace Mercurio.Domain
             }
             _activeCredential = credential;
 
-            _activeCryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
+            _activeCryptoManager = cryptoProvider.CreateManager(GetCryptoManagerConfiguration(cryptoProvider));
             _activeCryptoManager.SetCredential(_activeCredential);
 
             if (_activeCryptoManager.GetFingerprint(identity.UniqueIdentifier) == null)

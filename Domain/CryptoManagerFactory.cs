@@ -79,16 +79,5 @@ namespace Mercurio.Domain
         {
             return (typeObj.Name == criteriaObj.ToString());
         }
-
-        public static void Merge(this CryptoManagerConfiguration existingConfiguration, CryptoManagerConfiguration newConfiguration)
-        {
-            if (newConfiguration != null)
-            {
-                foreach (var key in newConfiguration.Keys)
-                {
-                    existingConfiguration[key] = newConfiguration[key];
-                }
-            }
-        }
     }
 }

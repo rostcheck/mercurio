@@ -72,6 +72,10 @@
       <Project>{76b24dc4-da0a-4a9b-b4a3-e892f96f3609}</Project>
       <Name>TestCryptography</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestUtils\TestUtilities.csproj">
+      <Project>{8e90eeaa-8440-456f-b682-ae0e35c8095d}</Project>
+      <Name>TestUtilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

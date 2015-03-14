@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cryptography.GPG
+namespace Mercurio.Domain
 {
-    public enum GPGConfigurationKeyEnum
+    public enum CryptoConfigurationKeyEnum
     {
-        UserHome,
-        GPGBinaryPath
+        KeyringPath,
+        CryptoExeBinaryPath
     }
 }

@@ -228,8 +228,9 @@ namespace MercurioAppServiceLayer
         private CryptoManagerConfiguration SetupGPGConfiguration()
         {
             CryptoManagerConfiguration configuration = new CryptoManagerConfiguration();
-            configuration[GPGConfigurationKeyEnum.UserHome.ToString()] = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "gnupg");
-            configuration[GPGConfigurationKeyEnum.GPGBinaryPath.ToString()] = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86), "GNU", "GnuPG", "gpg2.exe");
+            //configuration.Merge(userEnvironmentConfiguration);
+            configuration[CryptoConfigurationKeyEnum.KeyringPath.ToString()] = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), "gnupg");
+            configuration[CryptoConfigurationKeyEnum.CryptoExeBinaryPath.ToString()] = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFilesX86), "GNU", "GnuPG", "gpg2.exe");
             return configuration;
         }
 
@@ -258,8 +259,8 @@ namespace MercurioAppServiceLayer
         private List<string> ValidateGPGConfiguration(CryptoManagerConfiguration config)
         {
             List<string> errorList = new List<string>();
-            GPGConfigurationKeyEnum[] requiredKeys = { GPGConfigurationKeyEnum.GPGBinaryPath, GPGConfigurationKeyEnum.UserHome };
-            foreach (GPGConfigurationKeyEnum key in requiredKeys)
+            CryptoConfigurationKeyEnum[] requiredKeys = { CryptoConfigurationKeyEnum.CryptoExeBinaryPath, CryptoConfigurationKeyEnum.KeyringPath };
+            foreach (CryptoConfigurationKeyEnum key in requiredKeys)
             {
                 string error = ValidateConfigurationKey(AppCryptoManagerType.GPG, config, key);
                 if (error != null && error != string.Empty)
@@ -269,7 +270,7 @@ namespace MercurioAppServiceLayer
         }
 
         private string ValidateConfigurationKey(AppCryptoManagerType appCryptoManagerType,
-            CryptoManagerConfiguration config, GPGConfigurationKeyEnum keyEnum)
+            CryptoManagerConfiguration config, CryptoConfigurationKeyEnum keyEnum)
         {
             string missingRequiredKey = "Configuration must contain key {0} for specified crypto manager type {1}";
             string missingRequiredValue = "Configuration key {0} does not contain a value - required for specified crypto manager type {1}";

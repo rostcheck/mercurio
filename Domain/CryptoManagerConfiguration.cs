@@ -11,5 +11,15 @@ namespace Mercurio.Domain
     /// </summary>
     public class CryptoManagerConfiguration : Dictionary<string, string>
     {
+        public void Merge(Dictionary<string, string> configurationToAdd)
+        {
+            if (configurationToAdd != null)
+            {
+                foreach (var key in configurationToAdd.Keys)
+                {
+                    this[key] = configurationToAdd[key];
+                }
+            }
+        }
     }
 }

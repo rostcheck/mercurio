@@ -8,12 +8,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using TestCryptography;
+using TestUtilities;
 
 namespace Domain.IntegrationTests
 {
     [TestClass]
     public class MercurioEnvironmentIntegrationTests
     {
+        public const string TestUserName = "mercurio";
+
         [TestInitialize]
         public void TestInitialize()
         {
@@ -29,14 +32,17 @@ namespace Domain.IntegrationTests
                     Directory.Delete(directory);
                 }
             }
+            TestUtils.SetupUserDir(TestUserName);
+            TestUtils.SwitchUser(null, TestUserName);
         }
 
         [TestMethod]
         public void Create_container_persists_container()
         {
-            var environmentScanner = new EnvironmentScanner();
+            var environmentScanner = new EnvironmentScanner(TestUtils.GetUserWorkingDir(TestUserName));
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
             var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
             environment.SetActiveIdentity(identity);
 
@@ -60,6 +66,10 @@ namespace Domain.IntegrationTests
             var environmentScanner = new EnvironmentScanner();
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
+
+            var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
+            environment.SetActiveIdentity(identity);
 
             var originalContainerList = environment.GetContainers();
             var newContainerName = string.Format("TestContainer-{0}", Guid.NewGuid().ToString());
@@ -70,7 +80,6 @@ namespace Domain.IntegrationTests
             environment.UnlockContainer(container);
 
             var documentName = "Thoughts About Test Documents";
-            var identity = environment.GetAvailableIdentities().Where(s => s.Address == "hermes@proyectomercurio.cl").FirstOrDefault();
             Assert.IsNotNull(identity);
             var document = container.CreateTextDocument(documentName, identity, testDocumentData);
             Assert.IsNotNull(document);

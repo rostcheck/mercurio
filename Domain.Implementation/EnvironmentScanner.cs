@@ -17,11 +17,17 @@ namespace Mercurio.Domain.Implementation
     {
         private List<ICryptographicServiceProvider> possibleCryptoProviderList;
 
-        public EnvironmentScanner()
+        public EnvironmentScanner(string userHome = null)
         {
+            CryptoManagerConfiguration configuration = null;
+            if (userHome != null)
+            {
+                configuration = new CryptoManagerConfiguration();
+                configuration.Add(CryptoConfigurationKeyEnum.KeyringPath.ToString(), userHome);
+            }
             possibleCryptoProviderList = new List<ICryptographicServiceProvider>();
             // Manually maintained list of things we know how to find
-            RegisterCryptographicProvider(typeof(CrypographicServiceProviderGPG));
+            RegisterCryptographicProvider(typeof(CrypographicServiceProviderGPG), configuration);
         }
 
         public List<ICryptographicServiceProvider> GetCryptographicProviders()
@@ -38,9 +44,9 @@ namespace Mercurio.Domain.Implementation
             return availableProviders;
         }
 
-        private void RegisterCryptographicProvider(Type type)
+        private void RegisterCryptographicProvider(Type type, CryptoManagerConfiguration configuration = null)
         {
-            CryptoManagerFactory.Register(type.Name, type);
+            CryptoManagerFactory.Register(type.Name, type, configuration);
             possibleCryptoProviderList.Add((ICryptographicServiceProvider)Activator.CreateInstance(type));
         }
 

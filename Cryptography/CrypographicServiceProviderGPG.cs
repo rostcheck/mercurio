@@ -25,8 +25,8 @@ namespace Cryptography.GPG
         public CryptoManagerConfiguration GetConfiguration()
         {
             var configuration = new CryptoManagerConfiguration();
-            configuration.Add(GPGConfigurationKeyEnum.GPGBinaryPath.ToString(), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GNU", "GnuPG", "gpg2.exe").ToString());
-            configuration.Add(GPGConfigurationKeyEnum.UserHome.ToString(), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GnuPG").ToString());
+            configuration.Add(CryptoConfigurationKeyEnum.CryptoExeBinaryPath.ToString(), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GNU", "GnuPG", "gpg2.exe").ToString());
+            configuration.Add(CryptoConfigurationKeyEnum.KeyringPath.ToString(), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GnuPG").ToString());
             return configuration;
         }
 

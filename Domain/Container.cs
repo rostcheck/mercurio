@@ -28,6 +28,12 @@ namespace Mercurio.Domain
             ChangeRevisionRetentionPolicy(retentionPolicyType);
         }
 
+        protected Container(ContainerMetadata metadata)
+        {
+            _metadata = metadata;
+            _privateMetadata = null; // Created locked
+        }
+
         // Container is created unlocked
         public static Container Create(string name, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
