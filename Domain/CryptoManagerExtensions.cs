@@ -12,13 +12,7 @@ namespace Mercurio.Domain
         public static T Decrypt<T>(this ICryptoManager cryptoManager, Stream encryptedStream, Serializer serializer)
         {
             encryptedStream.Position = 0;
-            Stream decryptedStream = cryptoManager.Decrypt(encryptedStream);
-            decryptedStream.Flush();
-            decryptedStream.Position = 0;
-            StreamReader reader = new StreamReader(decryptedStream);
-            string decrypted = reader.ReadToEnd();
-            decryptedStream.Position = 0;
-            return serializer.Deserialize<T>(decryptedStream);
+            return serializer.Deserialize<T>(cryptoManager.Decrypt(encryptedStream));
         }
 
         public static T Decrypt<T>(this ICryptoManager cryptoManager, byte[] encryptedData, Serializer serializer)
