@@ -106,13 +106,14 @@ namespace Entities
             writer.Write(content);
             writer.Flush();
             encryptedStream.Position = 0;
-            Stream decryptedStream = cryptoManager.Decrypt(encryptedStream);
-            decryptedStream.Flush();
-            decryptedStream.Position = 0;
-            StreamReader reader = new StreamReader(decryptedStream);
-            string decrypted = reader.ReadToEnd();
-            decryptedStream.Position = 0;
-            return serializer.Deserialize<IMercurioMessage>(decryptedStream);
+            //Stream decryptedStream = cryptoManager.Decrypt(encryptedStream);
+            //decryptedStream.Flush();
+            //decryptedStream.Position = 0;
+            //StreamReader reader = new StreamReader(decryptedStream);
+            //string decrypted = reader.ReadToEnd();
+            //decryptedStream.Position = 0;
+            //return serializer.Deserialize<IMercurioMessage>(decryptedStream);
+            return cryptoManager.Decrypt<IMercurioMessage>(encryptedStream, serializer);
         }
 
         public override string ToString()

@@ -32,8 +32,7 @@ namespace Mercurio.Domain.Implementation
         {
             _serializer = serializer;
             this.Id = id;
-            var folderPath = Path.GetDirectoryName(diskPath);
-            _storagePath = Path.GetDirectoryName(folderPath);
+            _storagePath = Path.GetDirectoryName(diskPath);
         }
 
         public static DiskContainer Create(string diskStorageSubstratePath, string containerName, Serializer serializer,
@@ -105,13 +104,16 @@ namespace Mercurio.Domain.Implementation
 
             MemoryStream stream = new MemoryStream();
             _serializer.Serialize(stream, _privateMetadata);
+            stream.Flush();
+            stream.Position = 0;
             var encryptedStream =  _cryptoManager.Encrypt(stream, _metadata.KeyFingerprint);
+            stream.Close();
 
-            FileStream diskStream = File.Open(PrivateMetadataFilePath, FileMode.Create);
-            StreamWriter diskWriter = new StreamWriter(diskStream);
-            diskWriter.Write(encryptedStream);
-            diskWriter.Flush();
-            diskWriter.Close();
+            using (var diskStream = File.Create(PrivateMetadataFilePath))
+            {
+                encryptedStream.Position = 0;
+                encryptedStream.CopyTo(diskStream);
+            }
         }
 
         public override TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
@@ -121,6 +123,12 @@ namespace Mercurio.Domain.Implementation
             // TODO: Create the disk file and serialize the data to it            
             _directory.Add(document.Name.ToLower(), DiskDirectoryNode.Create(filename, 1));
             return document;
+        }
+
+        public override void Unlock(ICryptoManager cryptoManager)
+        {
+            _privateMetadata = LoadPrivateMetadata(PrivateMetadataFilePath, _serializer, cryptoManager);
+            //base.Unlock(cryptoManager, privateMetadataBytes, serializer);
         }
 
         private static string GetPath(string directoryName, string id)
@@ -133,9 +141,8 @@ namespace Mercurio.Domain.Implementation
             return serializer.Deserialize<ContainerMetadata>(filePath);
         }
 
-        private static ContainerPrivateMetadata LoadPrivateMetadata(string diskPath, Serializer serializer, ICryptographicServiceProvider cryptoProvider)
+        private static ContainerPrivateMetadata LoadPrivateMetadata(string diskPath, Serializer serializer, ICryptoManager cryptoManager)
         {
-            var cryptoManager = cryptoProvider.CreateManager(cryptoProvider.GetConfiguration());
             var fileStream = File.OpenRead(diskPath);
             var privateMetadata = serializer.Deserialize<ContainerPrivateMetadata>(cryptoManager.Decrypt(fileStream));
             fileStream.Close();
@@ -149,6 +156,6 @@ namespace Mercurio.Domain.Implementation
                 throw new MercurioException(string.Format("Container located at {0} is missing", folderName));
             }
             //TODO: check individual files exist
-        }
+        }       
     }
 }

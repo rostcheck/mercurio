@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,13 +16,11 @@ namespace Mercurio.Domain
         protected ContainerMetadata _metadata;
         protected ContainerPrivateMetadata _privateMetadata;
         private List<IDocument> _documents;
-        private bool _locked;
 
         protected Container(string containerName, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
             Id = Guid.NewGuid().ToString();
             _documents = new List<IDocument>();
-            _locked = false;
             _cryptoManager = cryptoManager;
             _metadata = ContainerMetadata.Create(containerName, cryptoManager.ManagerType, cryptoManager.GetActiveIdentity(), retentionPolicyType);
             _privateMetadata = ContainerPrivateMetadata.Create(containerName, "");
@@ -98,6 +97,7 @@ namespace Mercurio.Domain
         /// <param name="cryptoManager"></param>
         public virtual void Unlock(ICryptoManager cryptoManager)
         {
+            //_privateMetadata = cryptoManager.Decrypt<ContainerPrivateMetadata>(privateMetadataBytes, serializer);
             throw new NotImplementedException();
         }
 

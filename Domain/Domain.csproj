@@ -52,6 +52,7 @@
     <Compile Include="ContainerMetadata.cs" />
     <Compile Include="ContainerPrivateMetadata.cs" />
     <Compile Include="CryptoConfigurationKeyEnum.cs" />
+    <Compile Include="CryptoManagerExtensions.cs" />
     <Compile Include="CryptoManagerConfiguration.cs" />
     <Compile Include="CryptoManagerFactory.cs" />
     <Compile Include="Database.cs" />

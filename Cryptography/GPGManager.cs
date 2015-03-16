@@ -78,6 +78,7 @@ namespace Cryptography.GPG
             MemoryStream outputStream = new MemoryStream();
             MemoryStream metadataStream = new MemoryStream();
             operation(messageStream, outputStream, metadataStream);
+            outputStream.Position = 0;
             return outputStream;
         }
 

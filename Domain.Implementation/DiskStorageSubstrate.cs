@@ -60,19 +60,5 @@ namespace Mercurio.Domain.Implementation
 
             return DiskContainer.Create(_path, containerName, SerializerFactory.Create(_serializerType), cryptoManager, retentionPolicy);
         }
-
-        public void CloseContainer (IContainer container)
-        {
-            if (container == null)
-                throw new ArgumentNullException();
-
-            container.Lock();
-        }
-
-        private ContainerMetadata GetContainerMetadata(string path)
-        {
-            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            return serializer.Deserialize<ContainerMetadata>(path);
-        }
     }
 }

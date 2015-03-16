@@ -93,12 +93,25 @@ namespace Mercurio.Domain
 
         public void UnlockContainer(IContainer container)
         {
+            if (container == null)
+            {
+                throw new ArgumentException("Must supply a container to unlock");
+            }
             if (container.CryptoManagerType != _activeCryptoManager.ManagerType)
             {
                 throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Container {0} requires crypto provider {1} to unlock, but the current identity {3} does not have it available.", container.Name, container.CryptoManagerType, _activeIdentity.Name));
             }
 
             container.Unlock(_activeCryptoManager);
+        }
+
+        public void LockContainer(IContainer container)
+        {
+            if (container == null)
+            {
+                throw new ArgumentException("Must supply a container to lock");
+            }
+            container.Lock();
         }
 
         private void VerifyActiveIdentity()
