@@ -8,9 +8,9 @@ namespace Mercurio.Domain
 {
     public class RevisionRetentionPolicyKeepOne : IRevisionRetentionPolicy
     {
-        public List<Revision> RevisionsToDelete(List<Revision> currentRevisions)
+        public List<DocumentVersionMetadata> RevisionsToDelete(List<DocumentVersionMetadata> currentRevisions)
         {
-            var revisionsToDelete = new List<Revision>(currentRevisions);
+            var revisionsToDelete = new List<DocumentVersionMetadata>(currentRevisions);
             revisionsToDelete.Remove(revisionsToDelete.Last());
             return revisionsToDelete;
         }

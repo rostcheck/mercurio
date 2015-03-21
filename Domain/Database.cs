@@ -7,7 +7,7 @@ namespace Mercurio.Domain
 {
     class Database
     {
-        internal static Document Create(string documentName, object initialData)
+        internal static DocumentVersion Create(string documentName, object initialData)
         {
             throw new NotImplementedException();
         }

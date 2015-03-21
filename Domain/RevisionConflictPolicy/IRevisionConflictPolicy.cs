@@ -8,6 +8,6 @@ namespace Mercurio.Domain.RevisionConflictPolicy
 {
     public interface IRevisionConflictPolicy
     {
-        Revision ResolveConflicingRevisions(Record record, List<Revision> conflictingRevisions);
+        DocumentVersion ResolveConflicingRevisions(Record record, List<DocumentVersion> conflictingRevisions);
     }
 }

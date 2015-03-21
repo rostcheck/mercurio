@@ -11,7 +11,7 @@ namespace Mercurio.Domain
     /// </summary>
     public class Record
     {
-        private List<Revision> _revisions;
+        private List<DocumentVersion> _revisions;
         private List<AtomicDataElement> _dataElements;
         private List<AtomicDataElementChange> _uncommittedRevisions;
 
@@ -22,14 +22,14 @@ namespace Mercurio.Domain
             return new Record(name);
         }
 
-        public List<Revision> GetRevisions()
+        public List<DocumentVersion> GetRevisions()
         {
-            return new List<Revision>(_revisions);
+            return new List<DocumentVersion>(_revisions);
         }
 
         private Record(string name, List<AtomicDataElement> dataElements = null)
         {
-            _revisions = new List<Revision>();
+            _revisions = new List<DocumentVersion>();
             _dataElements = dataElements ?? new List<AtomicDataElement>();
             _uncommittedRevisions = new List<AtomicDataElementChange>();
             Id = Guid.NewGuid();
@@ -59,7 +59,7 @@ namespace Mercurio.Domain
             var priorRevision =  _revisions.Last();
             var priorRevisionId = (priorRevision == null) ? Guid.Empty : priorRevision.Id;
 
-            _revisions.Add(Revision.Create(priorRevisionId, revisorIdentityUniqueId, _uncommittedRevisions));
+            //_revisions.Add(DocumentVersion.Create(priorRevisionId, revisorIdentityUniqueId, _uncommittedRevisions));
             _uncommittedRevisions = new List<AtomicDataElementChange>();
             // TODO: publish change event (to container)
         }

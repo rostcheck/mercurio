@@ -11,6 +11,6 @@ namespace Mercurio.Domain
     /// </summary>
     public interface IRevisionRetentionPolicy
     {
-        List<Revision> RevisionsToDelete(List<Revision> currentRevisions);
+        List<DocumentVersionMetadata> RevisionsToDelete(List<DocumentVersionMetadata> currentRevisions);
     }
 }

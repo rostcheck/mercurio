@@ -89,9 +89,11 @@ namespace Domain.IntegrationTests
             var container2 = environment.GetContainer(newContainerName);
             Assert.IsNotNull(container2);
             environment.UnlockContainer(container2);
-            var document2 = container.Documents.Where(s => s.Name == documentName).FirstOrDefault();;
-            Assert.IsNotNull(document2);
-            Assert.IsTrue(document2.Content == document.Content);
+            var documentVersion = container.Documents.Where(s => s == documentName).FirstOrDefault();;
+            Assert.IsNotNull(documentVersion);
+            container2.GetLatestDocumentVersion(documentName);
+            var document2 = container2.RetrieveDocument(documentName);
+            Assert.IsTrue(document2.DocumentContent == document.DocumentContent);
             container.Lock();
         }
     }

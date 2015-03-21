@@ -8,11 +8,11 @@ namespace Mercurio.Domain.RevisionConflictPolicy
 {
     public class RevisionConflictPolicyEarliestWins : IRevisionConflictPolicy
     {
-        public Revision ResolveConflicingRevisions(Record record, List<Revision> conflictingRevisions)
+        public DocumentVersion ResolveConflicingRevisions(Record record, List<DocumentVersion> conflictingRevisions)
         {
             // Throws exception if more than one has the same time
-            var earliestUtcDateTime = conflictingRevisions.Min(s => s.UtcDateTime);
-            return conflictingRevisions.Where(s => s.UtcDateTime == earliestUtcDateTime).SingleOrDefault();
+            var earliestUtcDateTime = conflictingRevisions.Min(s => s.CreatedDateTime);
+            return conflictingRevisions.Where(s => s.CreatedDateTime == earliestUtcDateTime).SingleOrDefault();
         }
     }
 }

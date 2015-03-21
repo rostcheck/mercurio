@@ -15,7 +15,6 @@ namespace Mercurio.Domain.Implementation
     public class DiskContainer : Container, IContainer
     {
         private string _storagePath;
-        private Dictionary<string, DiskDirectoryNode> _directory;
         private Serializer _serializer;
 
         protected DiskContainer(string storagePath, string containerName, Serializer serializer, ICryptoManager cryptoManager,
@@ -23,7 +22,6 @@ namespace Mercurio.Domain.Implementation
             : base(containerName, cryptoManager, retentionPolicyType)
         {
             _storagePath = storagePath;
-            _directory = new Dictionary<string, DiskDirectoryNode>();
             _serializer = serializer;
         }
 
@@ -116,12 +114,13 @@ namespace Mercurio.Domain.Implementation
             }
         }
 
-        public override TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
+        public override DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
         {
             var document = base.CreateTextDocument(documentName, creatorIdentity, initialData);
             string filename = Path.Combine(FolderName, string.Format("{0}.mdc.1", Guid.NewGuid().ToString()));
-            // TODO: Create the disk file and serialize the data to it            
-            _directory.Add(document.Name.ToLower(), DiskDirectoryNode.Create(filename, 1));
+            // TODO: Create the disk file and serialize the data to it   
+   
+            // TODO: apply revision management
             return document;
         }
 

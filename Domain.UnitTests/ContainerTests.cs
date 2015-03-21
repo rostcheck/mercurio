@@ -32,61 +32,66 @@ namespace Mercurio.Domain.UnitTests
         public void Container_CreateTextDocument_creates_document_correctly()
         {
             var container = Container.Create("Container that keeps all revisions", _cryptoManager, RevisionRetentionPolicyType.KeepAll);
-            string initialValue = "this is my initial value";
             string documentName = "Test document";
+            string initialValue = "this is my initial value";
             var textDocument = container.CreateTextDocument(documentName, _identity, initialValue);
-            Assert.IsTrue(textDocument.Name == documentName);
-            Assert.IsTrue(textDocument.Content == initialValue);
+            Assert.IsTrue(textDocument != null);
+            Assert.IsTrue(textDocument.DocumentName == documentName);
+            Assert.IsTrue(textDocument.DocumentContent == initialValue);
         }
 
         [TestMethod]
         public void Container_SetContent_modifies_document_content_correctly()
         {
             var container = Container.Create("Container that keeps all revisions", _cryptoManager, RevisionRetentionPolicyType.KeepAll);
+            string documentName = "Test document";
             string initialValue = "this is my initial value";
-            var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);            
+            var textDocument = container.CreateTextDocument(documentName, _identity, initialValue);            
             string newValue = initialValue + " and this is a revised value";
-            textDocument.SetContent(newValue, _identity);
-            Assert.IsTrue(textDocument.Content == newValue);
+            container.ModifyTextDocument(documentName, _identity, newValue);
+            Assert.IsTrue(textDocument.DocumentContent == newValue);
         }
 
         [TestMethod]
         public void Container_retains_all_revisions_when_retention_policy_is_keep_all()
         {
             var container = Container.Create("Container that keeps all revisions", _cryptoManager, RevisionRetentionPolicyType.KeepAll);
+            string documentName = "Test document";
             string initialValue = "this is my initial value";
-            var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);
+            var textDocument = container.CreateTextDocument(documentName, _identity, initialValue);
             string newValue = initialValue + " and this is a revised value";
-            textDocument.SetContent(newValue, _identity);
+            container.ModifyTextDocument(documentName, _identity, newValue);
 
-            Assert.IsTrue(textDocument.Content == newValue);
-            Assert.IsTrue(textDocument.Revisions.Count == 2);
+            Assert.IsTrue(textDocument.DocumentContent == newValue);
+            Assert.IsTrue(container.GetAvailableVersions("Test document").Count == 2);
         }
 
         [TestMethod]
         public void Container_retains_one_revision_when_retention_policy_is_keep_one()
         {
             var container = Container.Create("Container that keeps one revision", _cryptoManager, RevisionRetentionPolicyType.KeepOne);
+            string documentName = "Test document";
             string initialValue = "this is my initial value";
-            var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);
+            var textDocument = container.CreateTextDocument(documentName, _identity, initialValue);
             string newValue = initialValue + " and this is a revised value";
-            textDocument.SetContent(newValue, _identity);
+            container.ModifyTextDocument(documentName, _identity, newValue);
 
-            Assert.IsTrue(textDocument.Content == newValue);
-            Assert.IsTrue(textDocument.Revisions.Count == 1);
+            Assert.IsTrue(textDocument.DocumentContent == newValue);
+            Assert.IsTrue(container.GetAvailableVersions("Test document").Count == 1);
         }
 
         [TestMethod]
         public void Container_retains_one_revision_when_using_default_retention_policy()
         {
             var container = Container.Create("Container that keeps one revision", _cryptoManager);
+            string documentName = "Test document";
             string initialValue = "this is my initial value";
             var textDocument = container.CreateTextDocument("Test document", _identity, initialValue);
             string newValue = initialValue + " and this is a revised value";
-            textDocument.SetContent(newValue, _identity);
+            container.ModifyTextDocument(documentName, _identity, newValue);
 
-            Assert.IsTrue(textDocument.Content == newValue);
-            Assert.IsTrue(textDocument.Revisions.Count == 1);
+            Assert.IsTrue(textDocument.DocumentContent == newValue);
+            Assert.IsTrue(container.GetAvailableVersions("Test document").Count == 1);
         }
 
         [TestMethod]
@@ -99,8 +104,8 @@ namespace Mercurio.Domain.UnitTests
             var textDocument2 = container.CreateTextDocument("Test document 2", _identity, initialValue);
             
             Assert.IsTrue(container.Documents.Count == 2);
-            Assert.IsTrue(container.Documents.Where(s => s.Name == "Test document 1").SingleOrDefault() != null);
-            Assert.IsTrue(container.Documents.Where(s => s.Name == "Test document 2").SingleOrDefault() != null);
+            Assert.IsTrue(container.Documents.Where(s => s == "Test document 1").SingleOrDefault() != null);
+            Assert.IsTrue(container.Documents.Where(s => s == "Test document 2").SingleOrDefault() != null);
         }
 
         [TestMethod]

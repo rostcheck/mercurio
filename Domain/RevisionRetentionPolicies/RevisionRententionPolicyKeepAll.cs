@@ -8,9 +8,9 @@ namespace Mercurio.Domain
 {
     public class RevisionRententionPolicyKeepAll : IRevisionRetentionPolicy
     {
-        public List<Revision> RevisionsToDelete(List<Revision> currentRevisions)
+        public List<DocumentVersionMetadata> RevisionsToDelete(List<DocumentVersionMetadata> currentRevisions)
         {
-            return new List<Revision>();
+            return new List<DocumentVersionMetadata>();
         }
     }
 }

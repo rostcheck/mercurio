@@ -15,15 +15,13 @@ namespace Mercurio.Domain
         protected ICryptoManager _cryptoManager;
         protected ContainerMetadata _metadata;
         protected ContainerPrivateMetadata _privateMetadata;
-        private List<IDocument> _documents;
 
         protected Container(string containerName, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
             Id = Guid.NewGuid().ToString();
-            _documents = new List<IDocument>();
             _cryptoManager = cryptoManager;
-            _metadata = ContainerMetadata.Create(containerName, cryptoManager.ManagerType, cryptoManager.GetActiveIdentity(), retentionPolicyType);
-            _privateMetadata = ContainerPrivateMetadata.Create(containerName, "");
+            _metadata = ContainerMetadata.Create(containerName, cryptoManager.ManagerType, cryptoManager.GetActiveIdentity());
+            _privateMetadata = ContainerPrivateMetadata.Create(containerName, "", retentionPolicyType);
             ChangeRevisionRetentionPolicy(retentionPolicyType);
         }
 
@@ -37,20 +35,6 @@ namespace Mercurio.Domain
         public static Container Create(string name, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
             return new Container(name, cryptoManager, retentionPolicy);
-        }
-
-        public List<IDocument> Documents
-        {
-            get
-            {
-                VerifyIsUnlocked();
-                return new List<IDocument>(_documents);
-            }
-            private set
-            {
-                VerifyIsUnlocked();
-                _documents = value;
-            }
         }
 
         public virtual string Id { get; protected set; }
@@ -106,25 +90,94 @@ namespace Mercurio.Domain
             return (_metadata.KeyFingerprint == uniqueIdentifier); // TODO: generalize to support multiple identities
         }
 
+        public virtual void AddIdentity(Identity identity, AccessPermissionType accessPermissionType)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual IRevisionRetentionPolicy RevisionRetentionPolicy
         {
             get
             {
-                return Mercurio.Domain.RevisionRetentionPolicy.Create((RevisionRetentionPolicyType)_metadata.RevisionRetentionPolicyType);
+                VerifyIsUnlocked();
+                return Mercurio.Domain.RevisionRetentionPolicy.Create((RevisionRetentionPolicyType)_privateMetadata.RevisionRetentionPolicyType);
             }
         }
 
         public virtual void ChangeRevisionRetentionPolicy(RevisionRetentionPolicyType revisionRetentionPolicyType)
         {
-            _metadata.RevisionRetentionPolicyType = (int)revisionRetentionPolicyType;
+            VerifyIsUnlocked();
+            _privateMetadata.RevisionRetentionPolicyType = (int)revisionRetentionPolicyType;
         }
 
-        public virtual TextDocument CreateTextDocument(string documentName, Identity creatorIdentity, string initialData = null)
+        public ICollection<string> Documents
+        {
+            get
+            {
+                VerifyIsUnlocked();
+                return _privateMetadata.GetAvailableDocuments();
+            }
+        }
+
+        public ICollection<DocumentVersionMetadata> GetAvailableVersions(string documentName)
         {
             VerifyIsUnlocked();
-            var document = TextDocument.Create(documentName, this.RevisionRetentionPolicy, creatorIdentity, initialData);
-            _documents.Add(document);
-            return document;
+            return _privateMetadata.GetAvailableVersions(documentName);
+        }
+
+        public DocumentVersionMetadata GetLatestDocumentVersion(string documentName)
+        {
+            VerifyIsUnlocked();
+            var availableVersions = _privateMetadata.GetAvailableVersions(documentName);
+            return (availableVersions == null) ? null : availableVersions.OrderByDescending(s => s.CreatedDateTime).First();
+        }
+
+        public virtual DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData)
+        {
+            var latestVersion = GetLatestDocumentVersion(documentName);
+            if (latestVersion != null)
+                throw new MercurioException(string.Format("Document {0} already exists in this container", documentName));
+
+            var document = DocumentVersion.Create(Guid.Empty, creatorIdentity.UniqueIdentifier, initialData);
+
+            var newVersion = _privateMetadata.CreateDocumentVersion(documentName, creatorIdentity.UniqueIdentifier);
+            var textDocument = StoreDocumentVersion(documentName, newVersion, initialData);
+            _privateMetadata.AddDocumentVersion(documentName, newVersion);
+            return textDocument;
+        }
+
+        public virtual DocumentVersion ModifyTextDocument(string documentName, Identity modifierIdentity, string modifiedData)
+        {
+            var latestVersion = GetLatestDocumentVersion(documentName);
+            if (latestVersion == null)
+                throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
+
+            var document = DocumentVersion.Create(latestVersion.Id, modifierIdentity.UniqueIdentifier, modifiedData);
+
+            var newVersion = _privateMetadata.CreateDocumentVersion(documentName, modifierIdentity.UniqueIdentifier);
+            var textDocument = StoreDocumentVersion(documentName, newVersion, modifiedData);
+            _privateMetadata.AddDocumentVersion(documentName, newVersion);
+            return textDocument;
+        }
+
+        public virtual DocumentVersion RetrieveDocument(string documentName)
+        {
+            return RetrieveDocument(documentName, Guid.Empty);
+        }
+
+        public virtual DocumentVersion RetrieveDocument(string documentName, Guid specificVersionId)
+        {          
+            var latestVersion = GetLatestDocumentVersion(documentName);
+            if (latestVersion == null)
+                throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
+            if (specificVersionId == Guid.Empty)
+                specificVersionId = latestVersion.Id;
+            else
+            {
+                if (_privateMetadata.GetAvailableVersions(documentName).Where(s => s.Id == specificVersionId).Count() < 1)
+                    throw new MercurioException(string.Format("Version {0} of doument {1} was not found in this container", specificVersionId.ToString(), documentName));
+            }
+            return RetrieveDocumentVersion(documentName, specificVersionId);
         }
 
         public virtual void DeleteRecord(string recordId)
@@ -139,9 +192,14 @@ namespace Mercurio.Domain
             throw new NotImplementedException();
         }
 
-        public virtual void AddIdentity(Identity identity, AccessPermissionType accessPermissionType)
+        protected virtual DocumentVersion StoreDocumentVersion(string documentName, DocumentVersionMetadata newVersion, string initialData)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(); // Defer to storage substrate
+        }
+
+        protected virtual DocumentVersion RetrieveDocumentVersion(string documentName, Guid versionId)
+        {
+            throw new NotImplementedException(); // Defer to storage substrate
         }
 
         private void VerifyIsUnlocked()
