@@ -19,8 +19,9 @@ namespace Mercurio.Domain
         private Func<string, NetworkCredential> _passphraseFunction;
         private NetworkCredential _activeCredential;
         private string _userHomeDirectory = null;
+        private Serializer _serializer;
 
-        public static MercurioEnvironment Create(IEnvironmentScanner scanner, Func<string, NetworkCredential> passphraseFunction)
+        public static MercurioEnvironment Create(IEnvironmentScanner scanner, Serializer serializer, Func<string, NetworkCredential> passphraseFunction)
         {
             var cryptographicServiceProviders = scanner.GetCryptographicProviders();
             var storageSubstrates = scanner.GetStorageSubstrates();
@@ -38,15 +39,17 @@ namespace Mercurio.Domain
             {
                 throw new ArgumentNullException("Must provide a valid passphrase function");
             }
-            return new MercurioEnvironment(cryptographicServiceProviders, storageSubstrates, passphraseFunction);
+            return new MercurioEnvironment(cryptographicServiceProviders, serializer, storageSubstrates, passphraseFunction);
         }
 
         private MercurioEnvironment(IEnumerable<ICryptographicServiceProvider> cryptographicServiceProviders, 
+            Serializer serializer,
             IEnumerable<IStorageSubstrate> storageSubstrates, Func<string, NetworkCredential> passphraseFunction)
         {
             this._cryptographicServiceProviders = new List<ICryptographicServiceProvider>(cryptographicServiceProviders);
             this._storageSubstrates = new List<IStorageSubstrate>(storageSubstrates);
             this._passphraseFunction = passphraseFunction;
+            this._serializer = serializer;
         }
 
         // Generally only needed for testing
@@ -62,7 +65,7 @@ namespace Mercurio.Domain
             var returnList = new List<IContainer>();
             foreach(var substrate in this._storageSubstrates)
             {
-                returnList.AddRange(substrate.GetAccessibleContainers(_activeIdentity.UniqueIdentifier, _activeCryptoManager));
+                returnList.AddRange(Container.GetAccessibleContainers(substrate, _activeIdentity.UniqueIdentifier, _activeCryptoManager.ManagerType));
             }
             return returnList;
         }
@@ -82,7 +85,7 @@ namespace Mercurio.Domain
             {
                 throw new ArgumentException(string.Format("Invalid storage substrate name {0}", storageSubstrateName));
             }
-            return substrate.CreateContainer(containerName, _activeIdentity.UniqueIdentifier, _activeCryptoManager, revisionRetentionPolicyType);
+            return substrate.CreateContainer(containerName, _activeCryptoManager, revisionRetentionPolicyType);
         }
 
         public IContainer GetContainer(string newContainerName)
@@ -101,8 +104,11 @@ namespace Mercurio.Domain
             {
                 throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Container {0} requires crypto provider {1} to unlock, but the current identity {3} does not have it available.", container.Name, container.CryptoManagerType, _activeIdentity.Name));
             }
-
-            container.Unlock(_activeCryptoManager);
+            // Find the substrate(s) where the container is stored
+            var hostSubstrates = _storageSubstrates.Where(s => s.HostsContainer(container.Id.ToString()));
+            // Unlock the container (TODO: consider whether a container can live on multiple substrates)
+            foreach (var hostSubstrate in hostSubstrates)
+                container.Unlock(hostSubstrate.GetPrivateMetadataBytes(container.Id.ToString()), _activeCryptoManager, _serializer);
         }
 
         public void LockContainer(IContainer container)

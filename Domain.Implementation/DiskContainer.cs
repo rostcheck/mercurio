@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Mercurio.Domain.Implementation
 {
+    /*
     /// <summary>
     /// A DiskContainer is essentially a private filesystem. It contains a public metadata section, 
     /// a private metadata section, a directory section, and a data section. All sections other than 
@@ -47,18 +48,7 @@ namespace Mercurio.Domain.Implementation
             return container;
         }
 
-        /// <summary>
-        /// Create a DiskContainer from an (existing) disk representation. The container is locked (only public metadata is loaded)
-        /// </summary>
-        public static DiskContainer CreateFrom(string folderPath, Serializer serializer)
-        {
-            var id = Path.GetFileName(folderPath);
-            var metadata = LoadMetadata(GetMetadataFilePath(folderPath, id), serializer);
-
-            return new DiskContainer(metadata, serializer, id, folderPath);
-        }
-
-        public string FolderName
+        protected string FolderName
         {
             get
             {
@@ -66,7 +56,7 @@ namespace Mercurio.Domain.Implementation
             }
         }
 
-        public string MetadataFilePath
+        protected string MetadataFilePath
         {
             get
             {
@@ -135,10 +125,7 @@ namespace Mercurio.Domain.Implementation
             return Path.Combine(directoryName, id);
         }
 
-        private static ContainerMetadata LoadMetadata(string filePath, Serializer serializer)
-        {
-            return serializer.Deserialize<ContainerMetadata>(filePath);
-        }
+
 
         private static ContainerPrivateMetadata LoadPrivateMetadata(string diskPath, Serializer serializer, ICryptoManager cryptoManager)
         {
@@ -155,6 +142,7 @@ namespace Mercurio.Domain.Implementation
                 throw new MercurioException(string.Format("Container located at {0} is missing", folderName));
             }
             //TODO: check individual files exist
-        }       
+        }    
     }
+   */
 }

@@ -18,12 +18,24 @@ namespace Mercurio.Domain
             throw new NotImplementedException();
         }
 
-        public IContainer CreateContainer(string containerName, string keyFingerprint, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+
+        public byte[] GetPrivateMetadataBytes(string containerId)
         {
-            return Container.Create(containerName, cryptoManager, retentionPolicy);
+            throw new NotImplementedException();
         }
 
-        public IEnumerable<IContainer> GetAccessibleContainers(string identity, ICryptoManager cryptoManager)
+        public bool HostsContainer(string containerId)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StoreContainer(IContainer container)
         {
             throw new NotImplementedException();
         }

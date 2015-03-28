@@ -15,20 +15,23 @@ namespace Mercurio.Domain
     {
         private const string ContainerNameSerializationName = "ContainerName";
         private const string ContainerDescriptionSerializationName = "ContainerDescription";
-        private const string DirectorySerializationName = "Directory";
+        private const string DocumentDirectorySerializationName = "DocumentDirectory";
+        private const string VersionDirectorySerializationName = "DocumentVersionDirectory";
         private const string RevisionRetentionPolicyTypeSerializationName = "RevisionRetentionPolicyType"; //TODO: move to private metadata
 
         public string ContainerName { get; private set; }
         public string ContainerDescription { get; private set; }
         public int RevisionRetentionPolicyType { get; set; }
-        private Dictionary<string, List<DocumentVersionMetadata>> _directory;
+        private Dictionary<string, DocumentMetadata> _documentDirectory; // By document name
+        private Dictionary<Guid, List<DocumentVersionMetadata>> _documentVersionDirectory; // By document id
 
         // Needed for serialization
         protected ContainerPrivateMetadata(SerializationInfo info, StreamingContext context)
         {
             this.ContainerName = info.GetString(ContainerNameSerializationName);
             this.ContainerDescription = info.GetString(ContainerDescriptionSerializationName);
-            this._directory = info.GetValue(DirectorySerializationName, typeof(Dictionary<string, List<DocumentVersionMetadata>>)) as Dictionary<string, List<DocumentVersionMetadata>>;
+            this._documentVersionDirectory = info.GetValue(VersionDirectorySerializationName, typeof(Dictionary<Guid, List<DocumentVersionMetadata>>)) as Dictionary<Guid, List<DocumentVersionMetadata>>;
+            this._documentDirectory = info.GetValue(DocumentDirectorySerializationName, typeof(Dictionary<string, DocumentMetadata>)) as Dictionary<string, DocumentMetadata>;
             this.RevisionRetentionPolicyType = info.GetInt32(RevisionRetentionPolicyTypeSerializationName);
         }
 
@@ -36,7 +39,8 @@ namespace Mercurio.Domain
         {
             this.ContainerName = name;
             this.ContainerDescription = description;
-            _directory = new Dictionary<string, List<DocumentVersionMetadata>>();
+            _documentDirectory = new Dictionary<string, DocumentMetadata>();
+            _documentVersionDirectory = new Dictionary<Guid, List<DocumentVersionMetadata>>();
             this.RevisionRetentionPolicyType = (int)retentionPolicyType;
         }
 
@@ -49,42 +53,115 @@ namespace Mercurio.Domain
         {
             info.AddValue(ContainerNameSerializationName, ContainerName);
             info.AddValue(ContainerDescriptionSerializationName, ContainerDescription);
-            info.AddValue(DirectorySerializationName, _directory);
+            info.AddValue(DocumentDirectorySerializationName, _documentDirectory);
+            info.AddValue(VersionDirectorySerializationName, _documentVersionDirectory);
             info.AddValue(RevisionRetentionPolicyTypeSerializationName, RevisionRetentionPolicyType);
         }
 
         public ICollection<string> GetAvailableDocuments()
         {
-            return _directory.Keys.ToList();
+            return _documentDirectory.Keys.ToList();
+        }
+
+        private DocumentMetadata GetDocumentMetadata(string documentName)
+        {
+            return _documentDirectory.ContainsKey(documentName) ? _documentDirectory[documentName] : null;
+        }
+
+        public Guid GetDocumentId(string documentName)
+        {
+            var documentMetadata = GetDocumentMetadata(documentName);
+            return documentMetadata == null ? Guid.Empty : documentMetadata.Id;
         }
 
         public ICollection<DocumentVersionMetadata> GetAvailableVersions(string documentName)
         {
-            return _directory.ContainsKey(documentName) ? new List<DocumentVersionMetadata>(_directory[documentName]) : null;
+            var documentMetadata = GetDocumentMetadata(documentName);
+            return documentMetadata == null ? null : GetAvailableVersions(documentMetadata.Id);
         }
 
-
-        public DocumentVersionMetadata CreateDocumentVersion(string documentName, string revisorId)
+        public ICollection<DocumentVersionMetadata> GetAvailableVersions(Guid documentId)
         {
-            if (!_directory.ContainsKey(documentName))
-                _directory.Add(documentName, new List<DocumentVersionMetadata>());
-
-            var lastVersion = _directory[documentName].OrderBy(s => s.CreatedDateTime).FirstOrDefault();
-            Guid parentVersionId = (lastVersion == null) ? Guid.Empty : lastVersion.Id;
-            return DocumentVersionMetadata.Create(parentVersionId, revisorId);
+            return _documentVersionDirectory.ContainsKey(documentId) ? new List<DocumentVersionMetadata>(_documentVersionDirectory[documentId]) : null;
         }
 
-        public void AddDocumentVersion(string documentName, DocumentVersionMetadata version)
-        {           
-            _directory[documentName].Add(version);
+        public DocumentVersionMetadata GetSpecificVersion(Guid documentId, Guid documentVersionId)
+        {
+            if (!_documentVersionDirectory.ContainsKey(documentId))
+                return null;
+
+            return _documentVersionDirectory[documentId].Where(s => s.Id == documentVersionId).FirstOrDefault();
+        }
+
+        //public DocumentVersionMetadata CreateDocumentVersion(string documentName, string revisorId)
+        //{
+        //    if (!_documentDirectory.ContainsKey(documentName))
+        //        _documentDirectory.Add(documentName, DocumentMetadata.Create(documentName));
+        //    var documentId = GetDocumentMetadata(documentName).Id;
+
+        //    return CreateDocumentVersion(documentId, revisorId);
+        //}
+
+        //public DocumentVersionMetadata CreateDocumentVersion(Guid documentId, string revisorId)
+        //{
+        //    if (_documentDirectory.Values.Where(s => s.Id == documentId).FirstOrDefault() == null)
+        //        throw new MercurioException("No such document found");
+
+        //    if (!_documentVersionDirectory.ContainsKey(documentId))
+        //        _documentVersionDirectory.Add(documentId, new List<DocumentVersionMetadata>());
+
+        //    var lastVersion = _documentVersionDirectory[documentId].OrderBy(s => s.CreatedDateTime).FirstOrDefault();
+        //    Guid parentVersionId = (lastVersion == null) ? Guid.Empty : lastVersion.Id;
+        //    return DocumentVersionMetadata.Create(parentVersionId, revisorId);
+        //}
+
+        //public DocumentVersionMetadata AddDocumentVersion(string documentName, Guid priorVersionId, string creatorId)
+        //{
+        //    var documentMetadata = GetDocumentMetadata(documentName);
+
+        //    var documentVersionMetadata = DocumentVersionMetadata.Create(priorVersionId, creatorId);
+        //    _documentVersionDirectory[documentMetadata.Id].Add(documentVersionMetadata);
+        //    // Apply version retention policy
+        //    _documentVersionDirectory[documentMetadata.Id] = _documentVersionDirectory[documentMetadata.Id].WithoutExcessRevisions((RevisionRetentionPolicyType)this.RevisionRetentionPolicyType);
+        //    return documentVersionMetadata;
+        //}
+
+        //public void AddDocumentVersion(Guid documentId, DocumentVersionMetadata documentVersionMetadata)
+        //{
+        //    if (!_documentDirectory.ContainsKey(documentId))
+        //        _documentDirectory.Add(documentId, DocumentMetadata.Create());
+
+        //    _documentVersionDirectory[documentMetadata.Id].Add(documentVersionMetadata);
+        //    // Apply version retention policy
+        //    _documentVersionDirectory[documentMetadata.Id] = _documentVersionDirectory[documentMetadata.Id].WithoutExcessRevisions((RevisionRetentionPolicyType)this.RevisionRetentionPolicyType);
+        //    return documentVersionMetadata;
+        //}
+
+        public void AddDocumentVersion(string documentName, DocumentVersionMetadata documentVersionMetadata)
+        {
+            var documentMetadata = _documentDirectory.ContainsKey(documentName) ? GetDocumentMetadata(documentName) : null;
+
+            // Create directory entry if it doesn't exist
+            if (documentMetadata == null)
+            {
+                documentMetadata = DocumentMetadata.Create(documentName);
+                _documentDirectory.Add(documentName, documentMetadata);
+                _documentVersionDirectory.Add(documentMetadata.Id, new List<DocumentVersionMetadata>());
+            }
+
+            _documentVersionDirectory[documentMetadata.Id].Add(documentVersionMetadata);
             // Apply version retention policy
-            _directory[documentName] = _directory[documentName].WithoutExcessRevisions((RevisionRetentionPolicyType)this.RevisionRetentionPolicyType);
+            _documentVersionDirectory[documentMetadata.Id] = _documentVersionDirectory[documentMetadata.Id].WithoutExcessRevisions((RevisionRetentionPolicyType)this.RevisionRetentionPolicyType);          
         }
 
         public void DeleteFile(string documentName)
         {
-            _directory.Remove(documentName);
-        }
+            if (!_documentDirectory.ContainsKey(documentName))
+                throw new MercurioException("No such file exists");
 
+            var documentMetadata = GetDocumentMetadata(documentName);
+            _documentVersionDirectory.Remove(documentMetadata.Id);
+            _documentDirectory.Remove(documentName);
+        }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Mercurio.Domain.Implementation
 {
-    public class DiskStorageSubstrate : IStorageSubstrate
+    public class DiskStorageSubstrate : StorageSubstrateBase, IStorageSubstrate
     {
         private string _path;
         private SerializerType _serializerType;
@@ -42,23 +42,77 @@ namespace Mercurio.Domain.Implementation
             var containerPaths = Directory.GetDirectories(_path);
             foreach (var containerPath in containerPaths)
             {
-                returnList.Add(DiskContainer.CreateFrom(containerPath, serializer));
+                var metadata = LoadMetadata(containerPath, serializer);
+                var container = Container.CreateFrom(metadata);
+                HookEvents(container);
+                returnList.Add(container);
             }
 
             return returnList;
         }
 
-        public IEnumerable<IContainer> GetAccessibleContainers(string identity, ICryptoManager cryptoManager)
+        // Attach this substrate to the events the container publishes when it needs access to storage
+        private void HookEvents(IContainer container)
         {
-            return GetAllContainers().Where(s => (s.CryptoManagerType == cryptoManager.ManagerType && s.IsAvailableToIdentity(identity)));
+            container.StoreDocumentVersionEvent += container_StoreDocumentVersionEvent;
         }
 
-        public IContainer CreateContainer(string containerName, string keyFingerprint, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        void container_StoreDocumentVersionEvent(Guid containerId, DocumentVersion documentVersion)
         {
-            if (cryptoManager.GetActiveIdentity() == string.Empty)
-                throw new MercurioExceptionIdentityNotSet("Identity not set on cryptoManager");
+            File.WriteAllText(GetDocumentVersionPath(containerId, documentVersion.DocumentId, documentVersion.Id), documentVersion.DocumentContent);
+        }
 
-            return DiskContainer.Create(_path, containerName, SerializerFactory.Create(_serializerType), cryptoManager, retentionPolicy);
+        public bool HostsContainer(string containerId)
+        {
+            return (GetContainerPath(containerId) != null);
+        }
+
+        private string GetContainerPath(string containerId)
+        {
+            var containerPaths = Directory.GetDirectories(_path);
+            foreach (var containerPath in containerPaths)
+            {
+                if (containerPath.Contains(containerId))
+                    return containerPath;
+            }
+            return null;
+        }
+
+        public string GetDocumentPath(Guid containerId, Guid documentId)
+        {
+            return Path.Combine(GetContainerPath(containerId.ToString()), documentId.ToString());
+        }
+
+        public string GetDocumentVersionPath(Guid containerId, Guid documentId, Guid versionId)
+        {
+            return Path.Combine(GetDocumentPath(containerId, documentId), versionId.ToString());
+        }
+
+        public byte[] GetPrivateMetadataBytes(string containerId)
+        {
+            var diskPath = GetContainerPath(containerId);
+            if (diskPath == null || diskPath == string.Empty)
+                throw new MercurioException(string.Format("Container with id {0} is not hosted on this substrate ({1})", containerId, this.Name));
+
+            return File.ReadAllBytes(diskPath);
+        }
+
+        private ContainerMetadata LoadMetadata(string filePath, Serializer serializer)
+        {
+            return serializer.Deserialize<ContainerMetadata>(filePath);
+        }
+
+        //public byte[] GetPrivateMetadataBytes(string containerId)
+        //{
+        //    var fileStream = File.OpenRead(diskPath);
+        //    var privateMetadata = base.LoadPrivateMetadata(fileStream, serializer, cryptoManager);
+        //    fileStream.Close();
+        //    return privateMetadata;
+        //}
+
+        public IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
+        {
+            return Container.Create(this, containerName, cryptoManager, retentionPolicy);
         }
     }
 }

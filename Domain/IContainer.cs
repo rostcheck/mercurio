@@ -11,25 +11,28 @@ namespace Mercurio.Domain
     /// </summary>
     public interface IContainer
     {
-        string Id { get; }
+        Guid Id { get; }
         string Name { get; }
         string CryptoManagerType { get; }
         bool IsLocked { get; }
         void Lock();
-        void Unlock(ICryptoManager cryptoManager);
+        void Unlock(byte[] privateMetadataBytes, ICryptoManager cryptoManager, Serializer serializer);
         bool IsAvailableToIdentity(string uniqueIdentifier);
         void AddIdentity(Identity identity, AccessPermissionType accessPermissionType);
         IRevisionRetentionPolicy RevisionRetentionPolicy { get;  }
         void ChangeRevisionRetentionPolicy(RevisionRetentionPolicyType revisionRetentionPolicyType);
         ICollection<string> Documents { get; }
-        ICollection<DocumentVersionMetadata> GetAvailableVersions(string documentName);
-        DocumentVersionMetadata GetLatestDocumentVersion(string documentName);
+        ICollection<DocumentVersionMetadata> ListAvailableVersions(string documentName);
+        DocumentVersion GetDocumentVersion(DocumentVersionMetadata versionMetadata);
+        DocumentVersion GetLatestDocumentVersion(string documentName);
 
         DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData);
         DocumentVersion ModifyTextDocument(string documentName, Identity modifierIdentity, string modifiedData);
-        DocumentVersion RetrieveDocument(string documentName); // latest version
-        DocumentVersion RetrieveDocument(string documentName, Guid specificVersionId);
         void DeleteRecord(string recordId);
         void ChangeRecord(Record changedRecord);
+
+        // Events published by the container
+        event StoreDocumentVersionHandler StoreDocumentVersionEvent;
+        event RetrieveDocumentVersionHandler RetrieveDocumentVersionEvent;
     }
 }

@@ -15,7 +15,14 @@ namespace Mercurio.Domain
         //private List<AtomicDataElementChange> _changeList;
         public string DocumentContent { get; private set; }
 
-        public string DocumentName { get; private set; }
+        public Guid DocumentId 
+        { 
+            get
+            {
+                return Metadata.DocumentId;
+            }
+        }
+
         public Guid Id
         {
             get
@@ -48,9 +55,9 @@ namespace Mercurio.Domain
             }
         }
 
-        protected DocumentVersion(Guid priorVersionId, string creatorId)
+        protected DocumentVersion(Guid documentId, Guid priorVersionId, string creatorId)
         {
-            this.Metadata = DocumentVersionMetadata.Create(priorVersionId, creatorId);
+            this.Metadata = DocumentVersionMetadata.Create(documentId, priorVersionId, creatorId);
         }
 
         //private DocumentVersion(Guid priorRevisionId, string creatorId, List<AtomicDataElementChange> changes)
@@ -59,8 +66,8 @@ namespace Mercurio.Domain
         //    this._changeList = new List<AtomicDataElementChange>(changes);
         //}
 
-        protected DocumentVersion(Guid priorVersionId, string creatorId, string documentContent)
-            : this(priorVersionId, creatorId)
+        protected DocumentVersion(Guid documentId, Guid priorVersionId, string creatorId, string documentContent)
+            : this(documentId, priorVersionId, creatorId)
         {
             this.DocumentContent = documentContent;
         }
@@ -75,9 +82,9 @@ namespace Mercurio.Domain
         //    return new DocumentVersion(priorRevisionGuid, revisorIdentityUniqueId, changes);
         //}
 
-        internal static DocumentVersion Create(Guid priorVersionId, string creatorId, string documentContent)
+        internal static DocumentVersion Create(Guid documentId, Guid priorVersionId, string creatorId, string documentContent)
         {
-            return new DocumentVersion(priorVersionId, creatorId, documentContent);
+            return new DocumentVersion(documentId, priorVersionId, creatorId, documentContent);
         }
     }
 }

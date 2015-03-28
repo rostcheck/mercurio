@@ -49,6 +49,7 @@
     <Compile Include="ChangeType.cs" />
     <Compile Include="ContactIdentity.cs" />
     <Compile Include="Container.cs" />
+    <Compile Include="ContainerHandlers.cs" />
     <Compile Include="ContainerMetadata.cs" />
     <Compile Include="ContainerPrivateMetadata.cs" />
     <Compile Include="CryptoConfigurationKeyEnum.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="DeletePolicy\DeletePolicyAllowSpecificEntities.cs" />
     <Compile Include="DeletePolicy\IDeletePolicy.cs" />
     <Compile Include="DirectoryNode.cs" />
+    <Compile Include="DocumentMetadata.cs" />
     <Compile Include="DocumentType.cs" />
     <Compile Include="EncryptionAlgorithmEnum.cs" />
     <Compile Include="IContainer.cs" />

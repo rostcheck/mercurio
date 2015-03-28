@@ -5,6 +5,7 @@ using Mercurio.Domain;
 using System.Collections.Generic;
 using System.Net;
 using TestCryptography;
+using Mercurio.Domain.Implementation;
 
 namespace Mercurio.Domain.UnitTests
 {
@@ -166,16 +167,22 @@ namespace Mercurio.Domain.UnitTests
             return new List<IContainer>(_containers);
         }
 
-        public IContainer CreateContainer(string containerName, string keyFingerprint, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy)
+        public bool HostsContainer(string containerId)
         {
-            var container = Container.Create(containerName, cryptoManager, retentionPolicy);
-            _containers.Add(container);
-            return container;
+            throw new NotImplementedException();
         }
 
-        public IEnumerable<IContainer> GetAccessibleContainers(string identity, ICryptoManager cryptoManager)
+        public byte[] GetPrivateMetadataBytes(string containerId)
         {
-            return new List<IContainer>(_containers.Where(s => s.IsAvailableToIdentity(identity)));
+            throw new NotImplementedException();
+        }
+
+
+        public IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy)
+        {
+            var container = Container.Create(this, containerName, cryptoManager, retentionPolicy);
+            _containers.Add(container);
+            return container;
         }
     }
 
@@ -221,7 +228,8 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_Create_creates_successfully_with_valid_arguments()
         {
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
 
             Assert.IsNotNull(environment);
         }
@@ -231,7 +239,8 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_Create_throws_with_invalid_crypto_providers()
         {
             var environmentScanner = new MockEnvironmentScanner(new List<ICryptographicServiceProvider>(), _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
             Assert.IsNotNull(environment);
         }
 
@@ -240,7 +249,8 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_Create_throws_with_invalid_storage_substrates()
         {
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, new List<IStorageSubstrate>());
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
             Assert.IsNotNull(environment);
         }
 
@@ -249,7 +259,8 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_GetContainers_throws_when_identity_not_set()
         {
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
             var containers = environment.GetContainers();
         }
 
@@ -257,7 +268,8 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_GetContainers_returns_successful_value()
         {
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
 
             var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
             Assert.IsNotNull(identity);
@@ -272,7 +284,8 @@ namespace Mercurio.Domain.UnitTests
         public void MercurioEnvironment_GetAvailableStorageSubstrates_returns_successful_value()
         {
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
             var substrates = environment.GetAvailableStorageSubstrateNames();
             Assert.IsNotNull(substrates);
             Assert.IsTrue(substrates.Count >= 0);
@@ -284,7 +297,8 @@ namespace Mercurio.Domain.UnitTests
         {
             string newContainerName = "testContainer";
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
             var substrates = environment.GetAvailableStorageSubstrateNames();
             var newContainer = environment.CreateContainer(newContainerName, substrates[0]);
         }
@@ -294,7 +308,8 @@ namespace Mercurio.Domain.UnitTests
         {
             string newContainerName = "testContainer";
             var environmentScanner = new MockEnvironmentScanner(_cryptoProviders, _storageSubstrates);
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
 
             var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
             Assert.IsNotNull(identity);

@@ -41,7 +41,8 @@ namespace Domain.IntegrationTests
         {
             var environmentScanner = new EnvironmentScanner(TestUtils.GetUserWorkingDir(TestUserName));
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
             environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
             var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
             environment.SetActiveIdentity(identity);
@@ -65,7 +66,8 @@ namespace Domain.IntegrationTests
             const string testDocumentData = @"These are the contents of the test document. One, two, three. Here they are. If you have any questions, you can contact me via telepathy, or Mercurio message.";
             var environmentScanner = new EnvironmentScanner();
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
-            var environment = MercurioEnvironment.Create(environmentScanner, PassphraseFunction);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
             environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
 
             var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
@@ -81,19 +83,19 @@ namespace Domain.IntegrationTests
 
             var documentName = "Thoughts About Test Documents";
             Assert.IsNotNull(identity);
-            var document = container.CreateTextDocument(documentName, identity, testDocumentData);
-            Assert.IsNotNull(document);
+            var documentVersion = container.CreateTextDocument(documentName, identity, testDocumentData);
+            Assert.IsNotNull(documentVersion);
 
             container.Lock();
 
             var container2 = environment.GetContainer(newContainerName);
             Assert.IsNotNull(container2);
             environment.UnlockContainer(container2);
-            var documentVersion = container.Documents.Where(s => s == documentName).FirstOrDefault();;
-            Assert.IsNotNull(documentVersion);
+            var documentVersionAgain = container.Documents.Where(s => s == documentName).FirstOrDefault();;
+            Assert.IsNotNull(documentVersionAgain);
             container2.GetLatestDocumentVersion(documentName);
-            var document2 = container2.RetrieveDocument(documentName);
-            Assert.IsTrue(document2.DocumentContent == document.DocumentContent);
+            var documentVersion2 = container2.GetLatestDocumentVersion(documentName);
+            Assert.IsTrue(documentVersion2.DocumentContent == documentVersion.DocumentContent);
             container.Lock();
         }
     }
