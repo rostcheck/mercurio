@@ -82,7 +82,7 @@ namespace Mercurio.Domain
         //    return new DocumentVersion(priorRevisionGuid, revisorIdentityUniqueId, changes);
         //}
 
-        internal static DocumentVersion Create(Guid documentId, Guid priorVersionId, string creatorId, string documentContent)
+        public static DocumentVersion Create(Guid documentId, Guid priorVersionId, string creatorId, string documentContent)
         {
             return new DocumentVersion(documentId, priorVersionId, creatorId, documentContent);
         }

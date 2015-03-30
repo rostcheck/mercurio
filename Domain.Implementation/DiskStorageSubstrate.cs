@@ -55,6 +55,13 @@ namespace Mercurio.Domain.Implementation
         private void HookEvents(IContainer container)
         {
             container.StoreDocumentVersionEvent += container_StoreDocumentVersionEvent;
+            container.RetrieveDocumentVersionEvent += container_RetrieveDocumentVersionEvent;
+        }
+
+        DocumentVersion container_RetrieveDocumentVersionEvent(Guid containerId, DocumentVersionMetadata documentVersionMetadata)
+        {
+            var fileContent = File.ReadAllText(GetDocumentVersionPath(containerId, documentVersionMetadata.DocumentId, documentVersionMetadata.Id));
+            return DocumentVersion.Create(documentVersionMetadata.DocumentId, documentVersionMetadata.PriorVersionId, documentVersionMetadata.CreatorId, fileContent);
         }
 
         void container_StoreDocumentVersionEvent(Guid containerId, DocumentVersion documentVersion)
@@ -112,7 +119,7 @@ namespace Mercurio.Domain.Implementation
 
         public IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            return Container.Create(this, containerName, cryptoManager, retentionPolicy);
+            return Container.Create(containerName, cryptoManager, retentionPolicy);
         }
     }
 }

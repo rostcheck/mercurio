@@ -14,7 +14,7 @@ namespace Mercurio.Domain
         string Name { get; }
 
         IEnumerable<IContainer> GetAllContainers();
-        IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy);
+        IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne);
         //void StoreContainer(IContainer container);
         bool HostsContainer(string containerId);
         byte[] GetPrivateMetadataBytes(string containerId);

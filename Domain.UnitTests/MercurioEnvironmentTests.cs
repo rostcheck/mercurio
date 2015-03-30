@@ -180,7 +180,7 @@ namespace Mercurio.Domain.UnitTests
 
         public IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy)
         {
-            var container = Container.Create(this, containerName, cryptoManager, retentionPolicy);
+            var container = Container.Create(containerName, cryptoManager, retentionPolicy);
             _containers.Add(container);
             return container;
         }

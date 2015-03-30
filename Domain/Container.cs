@@ -15,13 +15,11 @@ namespace Mercurio.Domain
         protected ICryptoManager _cryptoManager;
         protected ContainerMetadata _metadata;
         protected ContainerPrivateMetadata _privateMetadata;
-        protected IStorageSubstrate _storageSubstrate;
 
-        protected Container(string containerName, IStorageSubstrate storageSubstrate, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
+        protected Container(string containerName, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
             Id = Guid.NewGuid();
             _cryptoManager = cryptoManager;
-            _storageSubstrate = storageSubstrate;
             _metadata = ContainerMetadata.Create(containerName, cryptoManager.ManagerType, cryptoManager.GetActiveIdentity());
             _privateMetadata = ContainerPrivateMetadata.Create(containerName, "", retentionPolicyType);
             ChangeRevisionRetentionPolicy(retentionPolicyType);
@@ -34,12 +32,12 @@ namespace Mercurio.Domain
         }
 
         // Container is created unlocked
-        public static Container Create(IStorageSubstrate storageSubstrate, string name, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
+        public static IContainer Create(string name, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
             if (cryptoManager.GetActiveIdentity() == string.Empty)
                 throw new MercurioExceptionIdentityNotSet("Identity not set on cryptoManager");
 
-            return new Container(name, storageSubstrate, cryptoManager, retentionPolicyType);
+            return new Container(name, cryptoManager, retentionPolicyType);
         }
 
 
