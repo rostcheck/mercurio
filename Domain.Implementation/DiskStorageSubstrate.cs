@@ -30,6 +30,11 @@ namespace Mercurio.Domain.Implementation
             return new DiskStorageSubstrate(diskPath, serializerType);
         }
 
+        // Create a new independent substrate accessor from this one
+        public static DiskStorageSubstrate Create(DiskStorageSubstrate substrate)
+        {
+            return DiskStorageSubstrate.Create(substrate._path, substrate._serializerType);
+        }
         public string Name
         {
             get { return _path; }
@@ -42,47 +47,43 @@ namespace Mercurio.Domain.Implementation
             var containerPaths = Directory.GetDirectories(_path);
             foreach (var containerPath in containerPaths)
             {
-                var metadata = LoadMetadata(containerPath, serializer);
-                var container = Container.CreateFrom(metadata);
-                HookEvents(container);
+                var metadata = RetrieveMetadata(GetMetadataFilePath(Path.GetFileName(containerPath)), serializer);
+                var container = Container.CreateFrom(metadata, DiskStorageSubstrate.Create(this));
                 returnList.Add(container);
             }
 
             return returnList;
         }
 
-        // Attach this substrate to the events the container publishes when it needs access to storage
-        private void HookEvents(IContainer container)
-        {
-            container.StoreDocumentVersionEvent += container_StoreDocumentVersionEvent;
-            container.RetrieveDocumentVersionEvent += container_RetrieveDocumentVersionEvent;
-        }
-
-        DocumentVersion container_RetrieveDocumentVersionEvent(Guid containerId, DocumentVersionMetadata documentVersionMetadata)
+        public DocumentVersion RetrieveDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata)
         {
             var fileContent = File.ReadAllText(GetDocumentVersionPath(containerId, documentVersionMetadata.DocumentId, documentVersionMetadata.Id));
             return DocumentVersion.Create(documentVersionMetadata.DocumentId, documentVersionMetadata.PriorVersionId, documentVersionMetadata.CreatorId, fileContent);
         }
 
-        void container_StoreDocumentVersionEvent(Guid containerId, DocumentVersion documentVersion)
+        public void StoreDocumentVersion(Guid containerId, DocumentVersion documentVersion)
         {
             File.WriteAllText(GetDocumentVersionPath(containerId, documentVersion.DocumentId, documentVersion.Id), documentVersion.DocumentContent);
         }
 
-        public bool HostsContainer(string containerId)
+        public bool HostsContainer(Guid containerId)
         {
-            return (GetContainerPath(containerId) != null);
+            return (GetContainerPath(containerId.ToString()) != null);
         }
 
         private string GetContainerPath(string containerId)
         {
-            var containerPaths = Directory.GetDirectories(_path);
-            foreach (var containerPath in containerPaths)
-            {
-                if (containerPath.Contains(containerId))
-                    return containerPath;
-            }
-            return null;
+            return Path.Combine(_path, containerId);
+        }
+
+        private string GetMetadataFilePath(string containerId)
+        {
+            return Path.Combine(GetContainerPath(containerId), string.Format("{0}.mcn", containerId));
+        }
+
+        private string GetPrivateMetadataFilePath(string containerId)
+        {
+            return Path.Combine(GetContainerPath(containerId), string.Format("{0}.mc0", containerId));
         }
 
         public string GetDocumentPath(Guid containerId, Guid documentId)
@@ -95,16 +96,16 @@ namespace Mercurio.Domain.Implementation
             return Path.Combine(GetDocumentPath(containerId, documentId), versionId.ToString());
         }
 
-        public byte[] GetPrivateMetadataBytes(string containerId)
+        public byte[] RetrievePrivateMetadataBytes(Guid containerId)
         {
-            var diskPath = GetContainerPath(containerId);
+            var diskPath = GetMetadataFilePath(containerId.ToString());
             if (diskPath == null || diskPath == string.Empty)
-                throw new MercurioException(string.Format("Container with id {0} is not hosted on this substrate ({1})", containerId, this.Name));
+                throw new MercurioException(string.Format("Container with id {0} is not hosted on this substrate ({1})", containerId.ToString(), this.Name));
 
             return File.ReadAllBytes(diskPath);
         }
 
-        private ContainerMetadata LoadMetadata(string filePath, Serializer serializer)
+        private ContainerMetadata RetrieveMetadata(string filePath, Serializer serializer)
         {
             return serializer.Deserialize<ContainerMetadata>(filePath);
         }
@@ -119,7 +120,50 @@ namespace Mercurio.Domain.Implementation
 
         public IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
         {
-            return Container.Create(containerName, cryptoManager, retentionPolicy);
+            var serializer = SerializerFactory.Create(_serializerType);
+            return Container.Create(containerName, cryptoManager, DiskStorageSubstrate.Create(this), serializer, retentionPolicy);
+        }
+
+
+        public void StoreMetadata(Guid containerId, ContainerMetadata metadata)
+        {
+            var serializer = SerializerFactory.Create(_serializerType);
+            var folderName = GetFolderName(containerId);
+            if (!Directory.Exists(folderName))
+            {
+                Directory.CreateDirectory(folderName);
+            }
+            serializer.Serialize(GetMetadataFilePath(folderName, containerId), metadata);
+        }
+
+        private string GetFolderName(Guid containerId)
+        {
+            return Path.Combine(_path, containerId.ToString());
+        }
+
+        private static string GetMetadataFilePath(string folderName, Guid containerId)
+        {
+            return Path.Combine(folderName, string.Format("{0}.mcn", containerId.ToString()));
+        }
+
+        private static string GetPrivateMetadataFilePath(string folderName, string id)
+        {
+            return Path.Combine(folderName, string.Format("{0}.mc0", id));
+        }
+
+        public void StorePrivateMetadata(Guid containerId, Stream encryptedPrivateMetadata)
+        {
+            var folderName = GetFolderName(containerId);
+            if (!Directory.Exists(folderName))
+            {
+                Directory.CreateDirectory(folderName);
+            }
+            var path = GetPrivateMetadataFilePath(GetFolderName(containerId), containerId.ToString());
+            using (var fileStream = File.Create(path))
+            {
+                encryptedPrivateMetadata.Seek(0, SeekOrigin.Begin);
+                encryptedPrivateMetadata.CopyTo(fileStream);
+            }
         }
     }
 }

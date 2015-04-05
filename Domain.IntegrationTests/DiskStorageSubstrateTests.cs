@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mercurio.Domain.Implementation;
+using Mercurio.Domain;
 
 namespace Domain.IntegrationTests
 {

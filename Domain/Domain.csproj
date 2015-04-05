@@ -43,6 +43,7 @@
     <Compile Include="AtomicDataElement.cs" />
     <Compile Include="AtomicDataElementChange.cs" />
     <Compile Include="BinaryDocument.cs" />
+    <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="ChangePolicy\ChangePolicyAllowAll.cs" />
     <Compile Include="ChangePolicy\ChangePolicyAllowSpecificIdentities.cs" />
     <Compile Include="ChangePolicy\IChangePolicy.cs" />
@@ -78,6 +79,8 @@
     <Compile Include="MercurioExceptionRequiredCryptoProviderNotAvailable.cs" />
     <Compile Include="RevisionListExtensions.cs" />
     <Compile Include="DocumentVersionMetadata.cs" />
+    <Compile Include="SerializerFactory.cs" />
+    <Compile Include="SerializerType.cs" />
     <Compile Include="UserIdentity.cs" />
     <Compile Include="MercurioEnvironment.cs" />
     <Compile Include="MercurioException.cs" />

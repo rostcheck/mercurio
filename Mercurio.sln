@@ -50,10 +50,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mercurio", "mercurio", "{0C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{A9059213-BB02-4392-B7DB-22238A1B29B7}"
 	ProjectSection(SolutionItems) = preProject
+		DesignThoughts.txt = DesignThoughts.txt
 		FileSystemStrategies.txt = FileSystemStrategies.txt
 		KeyExchangeProtocol.txt = KeyExchangeProtocol.txt
 		Narratives.txt = Narratives.txt
 		ResearchNotes.txt = ResearchNotes.txt
+		SecurityModel.txt = SecurityModel.txt
 		StorageSubstrates.txt = StorageSubstrates.txt
 	EndProjectSection
 EndProject

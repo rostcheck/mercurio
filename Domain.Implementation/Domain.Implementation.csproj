@@ -41,13 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="DiskContainer.cs" />
     <Compile Include="DiskStorageSubstrate.cs" />
     <Compile Include="EnvironmentScanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerializerFactory.cs" />
-    <Compile Include="SerializerType.cs" />
     <Compile Include="StorageSubstrateBase.cs" />
   </ItemGroup>
   <ItemGroup>

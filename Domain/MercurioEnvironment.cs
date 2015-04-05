@@ -105,10 +105,10 @@ namespace Mercurio.Domain
                 throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Container {0} requires crypto provider {1} to unlock, but the current identity {3} does not have it available.", container.Name, container.CryptoManagerType, _activeIdentity.Name));
             }
             // Find the substrate(s) where the container is stored
-            var hostSubstrates = _storageSubstrates.Where(s => s.HostsContainer(container.Id.ToString()));
-            // Unlock the container (TODO: consider whether a container can live on multiple substrates)
+            var hostSubstrates = _storageSubstrates.Where(s => s.HostsContainer(container.Id));
+            // Unlock the container
             foreach (var hostSubstrate in hostSubstrates)
-                container.Unlock(hostSubstrate.GetPrivateMetadataBytes(container.Id.ToString()), _activeCryptoManager, _serializer);
+                container.Unlock(hostSubstrate.RetrievePrivateMetadataBytes(container.Id), _activeCryptoManager);
         }
 
         public void LockContainer(IContainer container)
@@ -117,7 +117,7 @@ namespace Mercurio.Domain
             {
                 throw new ArgumentException("Must supply a container to lock");
             }
-            container.Lock();
+            container.Lock(_activeCryptoManager);
         }
 
         private void VerifyActiveIdentity()

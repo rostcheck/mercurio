@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mercurio.Domain.Implementation
+namespace Mercurio.Domain
 {
     public enum SerializerType
     {

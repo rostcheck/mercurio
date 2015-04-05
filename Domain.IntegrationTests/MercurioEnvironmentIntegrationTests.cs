@@ -86,7 +86,7 @@ namespace Domain.IntegrationTests
             var documentVersion = container.CreateTextDocument(documentName, identity, testDocumentData);
             Assert.IsNotNull(documentVersion);
 
-            container.Lock();
+            environment.LockContainer(container);
 
             var container2 = environment.GetContainer(newContainerName);
             Assert.IsNotNull(container2);
@@ -96,7 +96,7 @@ namespace Domain.IntegrationTests
             container2.GetLatestDocumentVersion(documentName);
             var documentVersion2 = container2.GetLatestDocumentVersion(documentName);
             Assert.IsTrue(documentVersion2.DocumentContent == documentVersion.DocumentContent);
-            container.Lock();
+            environment.LockContainer(container);
         }
     }
 }

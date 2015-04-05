@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -16,7 +17,11 @@ namespace Mercurio.Domain
         IEnumerable<IContainer> GetAllContainers();
         IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne);
         //void StoreContainer(IContainer container);
-        bool HostsContainer(string containerId);
-        byte[] GetPrivateMetadataBytes(string containerId);
+        bool HostsContainer(Guid containerId);
+        byte[] RetrievePrivateMetadataBytes(Guid containerId);
+        void StoreDocumentVersion(Guid containerId, DocumentVersion documentVersion);
+        DocumentVersion RetrieveDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata);
+        void StoreMetadata(Guid containerId, ContainerMetadata metadata);
+        void StorePrivateMetadata(Guid containerId, Stream encryptedPrivateMetadata);
     }
 }

@@ -12,34 +12,46 @@ namespace Mercurio.Domain
     /// </summary>
     public class Container : IContainer
     {
+        protected IStorageSubstrate _substrate;
+        protected Serializer _serializer;
         protected ICryptoManager _cryptoManager;
         protected ContainerMetadata _metadata;
         protected ContainerPrivateMetadata _privateMetadata;
 
-        protected Container(string containerName, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
+        protected Container(string containerName, IStorageSubstrate substrate, Serializer serializer, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
             Id = Guid.NewGuid();
+            _substrate = substrate;
+            _serializer = serializer;
             _cryptoManager = cryptoManager;
             _metadata = ContainerMetadata.Create(containerName, cryptoManager.ManagerType, cryptoManager.GetActiveIdentity());
             _privateMetadata = ContainerPrivateMetadata.Create(containerName, "", retentionPolicyType);
             ChangeRevisionRetentionPolicy(retentionPolicyType);
         }
 
-        protected Container(ContainerMetadata metadata)
+        protected Container(ContainerMetadata metadata, IStorageSubstrate substrate)
         {
             _metadata = metadata;
+            _substrate = substrate;
             _privateMetadata = null; // Created locked
         }
 
         // Container is created unlocked
-        public static IContainer Create(string name, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
+        public static IContainer Create(string name, ICryptoManager cryptoManager, IStorageSubstrate substrate, Serializer serializer, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
             if (cryptoManager.GetActiveIdentity() == string.Empty)
                 throw new MercurioExceptionIdentityNotSet("Identity not set on cryptoManager");
 
-            return new Container(name, cryptoManager, retentionPolicyType);
+            var container = new Container(name, substrate, serializer, cryptoManager, retentionPolicyType);
+            container.EnsureStorageRepresentationExists();
+            return container;
         }
 
+        private void EnsureStorageRepresentationExists()
+        {
+            StoreMetadata();
+            StorePrivateMetadata();
+        }
 
         public static IEnumerable<IContainer> GetAllContainers(IStorageSubstrate storageSubstate)
         {
@@ -55,9 +67,9 @@ namespace Mercurio.Domain
         /// <summary>
         /// Create Container from an existing stored representation. The container is locked (only public metadata is loaded)
         /// </summary>
-        public static Container CreateFrom(ContainerMetadata metadata)
+        public static Container CreateFrom(ContainerMetadata metadata, IStorageSubstrate substrate)
         {
-            return new Container(metadata);
+            return new Container(metadata, substrate);
         }
 
         public virtual Guid Id { get; protected set; }
@@ -93,18 +105,36 @@ namespace Mercurio.Domain
             }
         }
 
-        public virtual void Lock()
+        public virtual void Lock(ICryptoManager cryptoManager)
         {
+            StorePrivateMetadata();
             _privateMetadata = null; //TODO: Secure erase
+        }
+
+        private void StoreMetadata()
+        {
+            _substrate.StoreMetadata(this.Id, _metadata);
+        }
+
+        private void StorePrivateMetadata()
+        {
+            MemoryStream stream = new MemoryStream();
+            _serializer.Serialize(stream, _privateMetadata);
+            stream.Flush();
+            stream.Position = 0;
+            var encryptedStream = _cryptoManager.Encrypt(stream, _metadata.KeyFingerprint);
+            stream.Close();
+            encryptedStream.Position = 0;
+            _substrate.StorePrivateMetadata(this.Id, encryptedStream);
         }
 
         /// <summary>
         /// Unlock the container (read its private metadata). Requires a cryptoManager w/ credentials set
         /// </summary>
         /// <param name="cryptoManager"></param>
-        public virtual void Unlock(byte[] privateMetadataBytes, ICryptoManager cryptoManager, Serializer serializer)
+        public virtual void Unlock(byte[] privateMetadataBytes, ICryptoManager cryptoManager)
         {
-            _privateMetadata = cryptoManager.Decrypt<ContainerPrivateMetadata>(privateMetadataBytes, serializer);
+            _privateMetadata = cryptoManager.Decrypt<ContainerPrivateMetadata>(privateMetadataBytes, _serializer);
         }
 
         public virtual bool IsAvailableToIdentity(string uniqueIdentifier)
@@ -156,7 +186,7 @@ namespace Mercurio.Domain
             if (documentVersionMetadata == null)
                 throw new MercurioException("Document version not found");
 
-            return RetrieveDocumentVersion(documentVersionMetadata);
+            return _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
         }
 
         public DocumentVersion GetLatestDocumentVersion(string documentName)
@@ -170,7 +200,7 @@ namespace Mercurio.Domain
                 return null;
 
             var documentVersionMetadata = availableVersions.OrderByDescending(s => s.CreatedDateTime).First();
-            return RetrieveDocumentVersion(documentVersionMetadata);
+            return _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
         }
 
         public virtual DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData)
@@ -182,7 +212,7 @@ namespace Mercurio.Domain
             var documentMetadata = DocumentMetadata.Create(documentName);
             var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, creatorIdentity.UniqueIdentifier, initialData);
 
-            StoreDocumentVersion(documentVersion);
+            _substrate.StoreDocumentVersion(this.Id, documentVersion);
             _privateMetadata.AddDocumentVersion(documentName, documentVersion.Metadata);
             return documentVersion;
         }
@@ -205,7 +235,7 @@ namespace Mercurio.Domain
 
             var newVersion = DocumentVersion.Create(documentId, latestVersion.Id, modifierIdentity.UniqueIdentifier, modifiedData);
 
-            StoreDocumentVersion(newVersion);
+            _substrate.StoreDocumentVersion(this.Id, newVersion);
             _privateMetadata.AddDocumentVersion(documentName, newVersion.Metadata);
             return newVersion;
         }
@@ -222,19 +252,6 @@ namespace Mercurio.Domain
             throw new NotImplementedException();
         }
 
-        protected virtual void StoreDocumentVersion(DocumentVersion documentVersion)
-        {
-            // Defer to storage substrate
-            if (StoreDocumentVersionEvent != null)
-                StoreDocumentVersionEvent(this.Id, documentVersion);
-        }
-
-        protected virtual DocumentVersion RetrieveDocumentVersion(DocumentVersionMetadata documentVersionMetadata)
-        {
-            // Inform storage substrate we need it
-            return (RetrieveDocumentVersionEvent != null) ? RetrieveDocumentVersionEvent(this.Id, documentVersionMetadata) : null;
-        }
-
         private void VerifyIsUnlocked()
         {
             if (_privateMetadata == null)
@@ -242,10 +259,5 @@ namespace Mercurio.Domain
                 throw new UnauthorizedAccessException("Container is locked");
             }
         }
-
-        #region Events
-        public event StoreDocumentVersionHandler StoreDocumentVersionEvent;
-        public event RetrieveDocumentVersionHandler RetrieveDocumentVersionEvent;
-        #endregion
     }
 }

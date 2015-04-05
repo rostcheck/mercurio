@@ -11,6 +11,6 @@ data and the symmetric encryption key,
 
 The private metadata contains the container name, description, and offsets to the other sections.
 
-The directory section contains a list of the Documents in the Container, with their offsets.
+The directory section contains a list of the Documents in the Container.
 
 The data section contains all the serialized Documents. Data in a Container is normally encrypted.

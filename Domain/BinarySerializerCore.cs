@@ -7,7 +7,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Mercurio.Domain.Implementation
+namespace Mercurio.Domain
 {
     public class BinarySerializerCore : ISerializerCore
     {

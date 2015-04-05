@@ -15,8 +15,8 @@ namespace Mercurio.Domain
         string Name { get; }
         string CryptoManagerType { get; }
         bool IsLocked { get; }
-        void Lock();
-        void Unlock(byte[] privateMetadataBytes, ICryptoManager cryptoManager, Serializer serializer);
+        void Lock(ICryptoManager cryptoManager);
+        void Unlock(byte[] privateMetadataBytes, ICryptoManager cryptoManager);
         bool IsAvailableToIdentity(string uniqueIdentifier);
         void AddIdentity(Identity identity, AccessPermissionType accessPermissionType);
         IRevisionRetentionPolicy RevisionRetentionPolicy { get;  }
@@ -30,9 +30,5 @@ namespace Mercurio.Domain
         DocumentVersion ModifyTextDocument(string documentName, Identity modifierIdentity, string modifiedData);
         void DeleteRecord(string recordId);
         void ChangeRecord(Record changedRecord);
-
-        // Events published by the container
-        event StoreDocumentVersionHandler StoreDocumentVersionEvent;
-        event RetrieveDocumentVersionHandler RetrieveDocumentVersionEvent;
     }
 }

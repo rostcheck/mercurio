@@ -123,7 +123,7 @@ namespace Mercurio.Domain.UnitTests
             var container = _storageSubstrate.CreateContainer("Container that keeps one revision", _cryptoManager);
             string initialValue = "initial value for document 1";
             var textDocument1 = container.CreateTextDocument("Test document 1", _identity, initialValue);
-            container.Lock();
+            container.Lock(_cryptoManager);
             Assert.IsTrue(container.Documents.Count == 1);
         }
 
@@ -132,7 +132,7 @@ namespace Mercurio.Domain.UnitTests
         public void Container_CreateTextDocument_throws_if_not_unlocked()
         {
             var container = _storageSubstrate.CreateContainer("Container that keeps one revision", _cryptoManager);
-            container.Lock();
+            container.Lock(_cryptoManager);
             string initialValue = "initial value for document 1";
             var textDocument1 = container.CreateTextDocument("Test document 1", _identity, initialValue);
             Assert.IsTrue(container.Documents.Count == 1);

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using TestCryptography;
 using Mercurio.Domain.Implementation;
+using System.IO;
 
 namespace Mercurio.Domain.UnitTests
 {
@@ -41,6 +42,12 @@ namespace Mercurio.Domain.UnitTests
     internal class MockCryptoManager : ICryptoManager
     {
         private NetworkCredential _credential = null;
+        Dictionary<byte[], byte[]> _cleartexts;
+
+        public MockCryptoManager()
+        {
+            _cleartexts = new Dictionary<byte[], byte[]>();
+        }
 
         public void SetCredential(NetworkCredential credential)
         {
@@ -67,7 +74,17 @@ namespace Mercurio.Domain.UnitTests
 
         public System.IO.Stream Encrypt(System.IO.Stream messageStream, string identifier)
         {
-            throw new NotImplementedException();
+            var random = new Random();
+            using (var memoryStream = new MemoryStream())
+            {
+                messageStream.Position = 0;
+                messageStream.CopyTo(memoryStream);
+                var clearTextBytes = memoryStream.ToArray();
+                var fakeEncryptedBytes = new byte[(int)(clearTextBytes.Length * 1.3)];
+                random.NextBytes(fakeEncryptedBytes);
+                _cleartexts.Add(fakeEncryptedBytes, clearTextBytes);
+                return new MemoryStream(fakeEncryptedBytes);
+            }
         }
 
         public string Encrypt(string message, string identifier)
@@ -77,7 +94,20 @@ namespace Mercurio.Domain.UnitTests
 
         public System.IO.Stream Decrypt(System.IO.Stream messageStream)
         {
-            throw new NotImplementedException();
+            using (var memoryStream = new MemoryStream())
+            {
+                messageStream.CopyTo(memoryStream);
+                memoryStream.Position = 0;
+                var fakeEncryptedBytes = memoryStream.ToArray();
+                if (_cleartexts.ContainsKey(fakeEncryptedBytes))
+                {
+                    var fakeDecryptedStream = new MemoryStream(_cleartexts[fakeEncryptedBytes]);
+                    fakeDecryptedStream.Position = 0;
+                    return fakeDecryptedStream;
+                }
+                else
+                    throw new Exception("Cannot decrypt");
+            }
         }
 
         public string Sign(string message)
@@ -172,7 +202,7 @@ namespace Mercurio.Domain.UnitTests
             throw new NotImplementedException();
         }
 
-        public byte[] GetPrivateMetadataBytes(string containerId)
+        public byte[] RetrievePrivateMetadataBytes(Guid containerId)
         {
             throw new NotImplementedException();
         }
@@ -180,9 +210,35 @@ namespace Mercurio.Domain.UnitTests
 
         public IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy)
         {
-            var container = Container.Create(containerName, cryptoManager, retentionPolicy);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var container = Container.Create(containerName, cryptoManager, this, serializer, retentionPolicy);
             _containers.Add(container);
             return container;
+        }
+
+        public bool HostsContainer(Guid containerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StoreDocumentVersion(Guid containerId, DocumentVersion documentVersion)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DocumentVersion RetrieveDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StoreMetadata(Guid containerId, ContainerMetadata metadata)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StorePrivateMetadata(Guid containerId, Stream encryptedPrivateMetadata)
+        {
+            throw new NotImplementedException();
         }
     }
 

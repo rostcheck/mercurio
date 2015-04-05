@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Mercurio.Domain
 {
     /// <summary>
-    /// A version of a Document. Versions are immutable; changing a Document produces a new Version.
+    /// A version of a Document. Versions are immutable; changing a Document produces a new DocumentVersion.
     /// </summary>
     public class DocumentVersion
     {
