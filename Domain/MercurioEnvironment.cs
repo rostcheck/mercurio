@@ -65,7 +65,7 @@ namespace Mercurio.Domain
             var returnList = new List<IContainer>();
             foreach(var substrate in this._storageSubstrates)
             {
-                returnList.AddRange(Container.GetAccessibleContainers(substrate, _activeIdentity.UniqueIdentifier, _activeCryptoManager.ManagerType));
+                returnList.AddRange(substrate.GetAllContainers());
             }
             return returnList;
         }

@@ -17,10 +17,7 @@ namespace Mercurio.Domain
 
         public static T Decrypt<T>(this ICryptoManager cryptoManager, byte[] encryptedData, Serializer serializer)
         {
-            MemoryStream encryptedStream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(encryptedStream);
-            writer.Write(encryptedData);
-            writer.Flush();
+            MemoryStream encryptedStream = new MemoryStream(encryptedData);
             encryptedStream.Position = 0;
             return Decrypt<T>(cryptoManager, encryptedStream, serializer);
         }

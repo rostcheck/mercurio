@@ -47,8 +47,9 @@ namespace Mercurio.Domain.Implementation
             var containerPaths = Directory.GetDirectories(_path);
             foreach (var containerPath in containerPaths)
             {
-                var metadata = RetrieveMetadata(GetMetadataFilePath(Path.GetFileName(containerPath)), serializer);
-                var container = Container.CreateFrom(metadata, DiskStorageSubstrate.Create(this));
+                var containerId = Path.GetFileName(containerPath);
+                var metadata = RetrieveMetadata(GetMetadataFilePath(containerId), serializer);
+                var container = Container.CreateFrom(metadata, Guid.Parse(containerId), DiskStorageSubstrate.Create(this), serializer);
                 returnList.Add(container);
             }
 
@@ -63,6 +64,9 @@ namespace Mercurio.Domain.Implementation
 
         public void StoreDocumentVersion(Guid containerId, DocumentVersion documentVersion)
         {
+            var documentPath = GetDocumentPath(containerId, documentVersion.DocumentId);
+            if (!Directory.Exists(documentPath))
+                Directory.CreateDirectory(documentPath);
             File.WriteAllText(GetDocumentVersionPath(containerId, documentVersion.DocumentId, documentVersion.Id), documentVersion.DocumentContent);
         }
 
@@ -98,7 +102,7 @@ namespace Mercurio.Domain.Implementation
 
         public byte[] RetrievePrivateMetadataBytes(Guid containerId)
         {
-            var diskPath = GetMetadataFilePath(containerId.ToString());
+            var diskPath = GetPrivateMetadataFilePath(containerId.ToString());
             if (diskPath == null || diskPath == string.Empty)
                 throw new MercurioException(string.Format("Container with id {0} is not hosted on this substrate ({1})", containerId.ToString(), this.Name));
 

@@ -23,14 +23,15 @@ namespace Domain.IntegrationTests
             var storageDir = ConfigurationManager.AppSettings["StorageSubstrate"];
             if (storageDir != null)
             {
+                foreach (var directory in Directory.EnumerateDirectories(storageDir, "*.*", SearchOption.AllDirectories))
+                {
+                    Directory.Delete(directory, true);
+                }
                 foreach (var file in Directory.EnumerateFiles(storageDir, "*.*", SearchOption.AllDirectories))
                 {
                     File.Delete(file);
                 }
-                foreach (var directory in Directory.EnumerateDirectories(storageDir, "*.*", SearchOption.AllDirectories))
-                {
-                    Directory.Delete(directory);
-                }
+
             }
             TestUtils.SetupUserDir(TestUserName);
             TestUtils.SwitchUser(null, TestUserName);
@@ -75,7 +76,7 @@ namespace Domain.IntegrationTests
 
             var originalContainerList = environment.GetContainers();
             var newContainerName = string.Format("TestContainer-{0}", Guid.NewGuid().ToString());
-            environment.CreateContainer(newContainerName, storageSubstrates[0].Name);
+            var c1 = environment.CreateContainer(newContainerName, storageSubstrates[0].Name);
 
             var container = environment.GetContainer(newContainerName);
             Assert.IsNotNull(container);
@@ -91,7 +92,7 @@ namespace Domain.IntegrationTests
             var container2 = environment.GetContainer(newContainerName);
             Assert.IsNotNull(container2);
             environment.UnlockContainer(container2);
-            var documentVersionAgain = container.Documents.Where(s => s == documentName).FirstOrDefault();;
+            var documentVersionAgain = container2.Documents.Where(s => s == documentName).FirstOrDefault();;
             Assert.IsNotNull(documentVersionAgain);
             container2.GetLatestDocumentVersion(documentName);
             var documentVersion2 = container2.GetLatestDocumentVersion(documentName);

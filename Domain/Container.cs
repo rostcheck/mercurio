@@ -29,10 +29,12 @@ namespace Mercurio.Domain
             ChangeRevisionRetentionPolicy(retentionPolicyType);
         }
 
-        protected Container(ContainerMetadata metadata, IStorageSubstrate substrate)
+        protected Container(Guid id, ContainerMetadata metadata, IStorageSubstrate substrate, Serializer serializer)
         {
+            Id = id;
             _metadata = metadata;
             _substrate = substrate;
+            _serializer = serializer;
             _privateMetadata = null; // Created locked
         }
 
@@ -58,18 +60,12 @@ namespace Mercurio.Domain
             return storageSubstate.GetAllContainers();
         }
 
-         // cryptoManager must have credential set
-        public static IEnumerable<IContainer> GetAccessibleContainers(IStorageSubstrate storageSubstrate, string identity, string cryptoManagerType)
-        {
-            return storageSubstrate.GetAllContainers().Where(s => (s.CryptoManagerType == cryptoManagerType && s.IsAvailableToIdentity(identity)));
-        }
-
         /// <summary>
         /// Create Container from an existing stored representation. The container is locked (only public metadata is loaded)
         /// </summary>
-        public static Container CreateFrom(ContainerMetadata metadata, IStorageSubstrate substrate)
+        public static Container CreateFrom(ContainerMetadata metadata, Guid id, IStorageSubstrate substrate, Serializer serializer)
         {
-            return new Container(metadata, substrate);
+            return new Container(id, metadata, substrate, serializer);
         }
 
         public virtual Guid Id { get; protected set; }
@@ -107,6 +103,9 @@ namespace Mercurio.Domain
 
         public virtual void Lock(ICryptoManager cryptoManager)
         {
+            if (IsLocked)
+                return; // already locked
+
             StorePrivateMetadata();
             _privateMetadata = null; //TODO: Secure erase
         }
@@ -135,6 +134,7 @@ namespace Mercurio.Domain
         public virtual void Unlock(byte[] privateMetadataBytes, ICryptoManager cryptoManager)
         {
             _privateMetadata = cryptoManager.Decrypt<ContainerPrivateMetadata>(privateMetadataBytes, _serializer);
+            _cryptoManager = cryptoManager;
         }
 
         public virtual bool IsAvailableToIdentity(string uniqueIdentifier)

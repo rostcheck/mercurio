@@ -233,12 +233,12 @@ namespace Mercurio.Domain.UnitTests
 
         public void StoreMetadata(Guid containerId, ContainerMetadata metadata)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public void StorePrivateMetadata(Guid containerId, Stream encryptedPrivateMetadata)
         {
-            throw new NotImplementedException();
+            return;
         }
     }
 
