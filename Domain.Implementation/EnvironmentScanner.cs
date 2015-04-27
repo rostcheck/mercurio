@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mercurio.Domain;
-using System.Configuration;
 using System.Reflection;
 using Cryptography.GPG;
 
@@ -53,9 +52,10 @@ namespace Mercurio.Domain.Implementation
         public List<IStorageSubstrate> GetStorageSubstrates()
         {
             var returnList = new List<IStorageSubstrate>();
-            if (ConfigurationManager.AppSettings["StorageSubstrate"] != null)
+            var storageSubstrate = ConfigurationManager.GetConfigurationValue("StorageSubstrate");
+            if (storageSubstrate != null)
             {
-                returnList.Add(DiskStorageSubstrate.Create(ConfigurationManager.AppSettings["StorageSubstrate"], SerializerType.BinarySerializer));
+                returnList.Add(DiskStorageSubstrate.Create(storageSubstrate, SerializerType.BinarySerializer));
             }
             return returnList;
         }

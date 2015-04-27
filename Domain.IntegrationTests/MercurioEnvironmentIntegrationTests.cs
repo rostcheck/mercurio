@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mercurio.Domain;
 using Mercurio.Domain.Implementation;
@@ -20,7 +19,7 @@ namespace Domain.IntegrationTests
         [TestInitialize]
         public void TestInitialize()
         {
-            var storageDir = ConfigurationManager.AppSettings["StorageSubstrate"];
+            var storageDir = ConfigurationManager.GetConfigurationValue("StorageSubstrate");
             if (storageDir != null)
             {
                 foreach (var directory in Directory.EnumerateDirectories(storageDir, "*.*", SearchOption.AllDirectories))

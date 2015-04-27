@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -90,7 +89,7 @@ namespace MercurioAppServiceLayer
             this.cryptoManager = CryptoManagerFactory.Create(GetCryptoManagerType(cryptoManagerType).ToString(), configuration);
             this.logger = new FileLogger("mercurio_log.txt");
             
-            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration(ConfigurationManager.AppSettings["StorageConnectionString"]);
+            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration(ConfigurationManager.GetConfigurationValue("StorageConnectionString"));
             queue = PersistentQueueFactory.Create(PeristentQueueType.CloudQueueStorage, 
                 queueConfiguration, serializer);
             this.messageService = new MessageService(queue, cryptoManager, serializer);
