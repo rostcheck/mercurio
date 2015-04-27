@@ -1,0 +1,113 @@
+About the relationship between Documents, Containers, and Substrates
+
+The Container provides operational boundaries for the Mercurio user. The intent is that
+the user creates different Containers for different functions (ex. container Silver might
+be for personal info, Red might be for work, and Yellow might be family info). In principle,
+Containers may be shared.
+
+From the point of view of the user, the Container provides a place to store Documents that 
+all have the same security considerations. Each Container must be separately unlocked to 
+access its Documents. All Documents in the Container are always encrypted.
+
+The Mercurio Environment is the environment with which the user interacts. It is intended
+to, at least at first, be accessible through the command line.
+
+The Storage Substrate is (almost) invisible to the user and provides a physical location 
+where the (encrypted) Containers and their Documents are stored. The user could potentially 
+view the configured Storage Substrates, create a new one, and/or move Containers between
+Substrates through interactions with the Environment. However the user generally interacts
+with Containers, not Storage Substrates.
+
+A Container can only be accessed via the Environment from the user point of view. In 
+pracice the Environment interacts with a Storage Substrate for operations that require
+manipulating the Container. Because the user interacts with Containers through the Environent 
+and is only dimly aware of the Substrate, the Environment attaches the Substrate to the 
+Container indirectly through events. For example, when the Container is locked, and thus
+needs to store its private metadata before clearing it, the Container publishes events
+that the listening Storage Substrate to which it is attached listens.
+
+Some design thoughts:
+
+Question: How should the Container and Storage Substrate be 
+
+- Container is currently coupled to the Storage Substrate loosely and indirectly through 
+  events. However, the Container needs to check the return status of the events, 
+  because it needs to know if its requested storage operations complete. What are the pros
+  and cons from using this model vs. injecting an IStorageSubstrate into the Container?
+  
+  - A Container could currently belong to multiple Storage Substrates. This could be a 
+  feature - for example, you could mirror a Container onto several Storage Substrates.
+  However, the .NET event implementation returns only the last return value when
+  event handlers are chained. This is not ideal for mirroring, because the Container
+  needs to know if any of its mirror writers fail. It would be a better design to 
+  instead give it a MirrorSubstrate that executes its operations simultaneously against
+  several associated internal Substrates.
+
+  - Because user triggered interactions happen to the Container (ex. CreateDocumentVersion),
+  the control flow is really imperative and it might be better to have the Container 
+  imperatively act against an injected Substrate. Events are a weak linkage - for example, a
+  Storage Substrate might neglect to hook an event that the Container needs it to respond
+  to.
+
+  - The user interacts with the Mercurio Environment, which in turn uses its configured
+  Storage Substrates to find Containers. For that reason, injecting the Storage Substrate
+  into the Container creates a circular reference, which prevents garbage collection.
+  However, this could be resolved by creating a new Storage Substrate instance for the 
+  Container, or by breaking the Storage Substrate into a higher-level piece for browsing
+  Containers and a lower-level piece for writing files.
+
+  Decision: Because we need more control over events (ability to detect responses from all
+  events in the chain) and the model favors imperative behavior, let's switch from 
+  events to an injected IStorageSubstrate for the Container.
+
+Note: - Switching a Container to a different Storage Substrate is an explicit operation.
+
+Quesion: - Should the Container send data to the Storage Substrate as mercurio objects (ex. 
+ContainerMetadata) or in terms of lower-level abstractions (ex. Stream)?
+
+  - The storage abstractions (ex. DocumentVersionMetadata) package all the needed ids 
+  together (ex. ContainerId, DocumentId, DocumentVersionId), which is convenient.
+
+  - We already have the storage abstractions and it is clearer in API terms to make
+  use of them.
+
+  - On the other hand, operations that require encrypted data *must* deal in Stream
+  or byte[]. Since storing the private metadata and the document contents requires
+  encryption, if the encryption is done in the container, at least those functions 
+  need to deal in Stream or byte[].
+
+  - Consistency is valuable, but clarity and ease of use are together more valuable. 
+  
+Decision: IStorageSubstrate should use abstractions where data need not be encrypted 
+(for convenience) and Stream or byte[] where it must be (for necessity).
+
+Question: Should encryption happen in the Container or the StorageSubstrate?
+
+ - This question requires reference to the security model (see Security Model)
+
+ - The actual encryption happens in GPG; Mercurio simply calls out to it.
+
+ - Where it calls out from is not very important from a security perspective because
+ both the Substrate and Container have similar security properties. 
+ 
+ - The user has more direct access to the Container than to the Substrate, because the 
+ Mercurio Environment will return a Container. However, the threat model does not
+ include defending the Container against its own user. 
+ 
+ - The user's operations on the Container are, however, mediated through the Mercurio 
+ Environment, however, and we could return a proxy Container instead of the real 
+ Container to further protect it.
+
+ - Encryption is intended to be distinct at the Container level (each Container will
+ be encrypted internally by distinct session keys via GPG's SymmetricEncrypt) and
+ Containers could conceivably use different Identities (public keys) as well. The 
+ Environment is responsible for changing to the correct Identity and passing in an
+ unlocked ICryptoManager to be used by the Container. If the Container then contains
+ an injected Storage Substrate that it calls to for the purpose of storing data, 
+ encapsulation generally argues that the decrypted data be contained to the smallest
+ set of objects. Therefore, it is better to have the Container encrypt the data
+ before passing it on to the Storage Substrate. 
+ 
+ 
+ From this perspective, 
+

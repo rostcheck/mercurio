@@ -1,0 +1,96 @@
+The Mercurio Security Model
+
+We define the threat model with respect to threats in three areas:
+
+- "Data at rest" is defined as data on a hard disk, USB drive, or similar persistent
+  storage mechanism. The attacker is assumed to have access to the storage mechanism,
+  including possibly the entire OS, from cold boot, but not have any of the passwords
+  necessary to unlock the encryption keys.
+
+- "Data in motion" is defined as data moving across a network. The attacker is 
+  assumed to be able to observe the network traffic (ex. wifi or internet) and to
+  be able to break any lower-level transport encryption by exploiting pre-planted
+  vulnerabilities or by possessing the ability to create certificates signed by
+  common top-level registrars.
+
+- "Data in use" is defined as data stored in working memory (RAM).
+
+Security Goals:
+
+- Data at rest: 
+
+  Goal: Protect data at rest to the same level as GPG (very strong protection).
+
+  Requirement: An attacker who has access to the encrypted encryption keys but does not 
+  have access to the passphrase used to encrypt them should not be able to break the 
+  passwords to extract the encryption keys without expending computationally unfeasable
+  amounts of effort in a brute-force attack, use of advanced computational attacks 
+  not publically known, or use of advanced technology (quantum computation) not 
+  generally available to organizations other than the highest-end nation state 
+  attackers.
+
+  Notes: GPG is the strongest and best tested pubically available cryptosystem. Mercurio 
+  leverages GPG directly to protect data at rest (data in Containers)
+
+  Implications: GPG passphrases cannot be stored on the same machine.
+
+  Observations: Provided the implementation does not compromise GPG's security, 
+  the easiest attack vectors involve obtaining the GPG passphrases through other means
+  (side-channel attacks) such as keyboard loggers or other exploits on the user's 
+  machine.
+  
+- Data in motion: 
+
+  Goal: Protect data in motion to the same level as GPG (very strong protection).
+
+  Requirement: An attacker who can break any underlying network security to directly
+  observe Mercurio messages but does not have access to the keys used to encrypt them
+  should not be able to decode the messages without expending computationally unfeasable
+  amounts of effort in a brute-force attack, use of advanced computational attacks 
+  not publically known, or use of advanced technology (quantum computation) not 
+  generally available to organizations other than the highest-end nation state 
+  attackers.
+
+  Notes: GPG is the strongest and best tested pubically available cryptosystem. Mercurio 
+  leverages GPG directly to protect data in motion (Mercurio Messages). GPG does not
+  implement Perfect Forward Secrecy, so there is the risk that an attacker who 
+  successfully compromises a key can decrypt past and future messages created using that
+  key.
+  
+  Observations: The only known weak points in GPG-encrypted communications are the
+  initial key exchange and vulnerability to traffic analysis. Mercurio is intended to
+  improve key exchange protocol by adding rich evidence to better assess identity.
+  Protecting against traffic analysis requires use of a relay network such as Tor.
+
+  Implications: Mercurio must provide solid user-friendly mechanisms for initial
+  key exchange and fingerprint verification, preferably multichannel. Advanced future
+  development of the Mercurio ecosystem may attempt to use relay network technology
+  to protect against traffic analysis, but that is not in initial scope.
+
+- Data in use: 
+
+  Goal: Provide some limited protection for data in use.
+
+  Requirement: On a properly secured system, attackers should not be able to gain access
+  to passphrases or extract unencrypted data other than by using a debugger or software
+  with administrative privileges (ex. admin tools, drivers).
+
+  Observations: Unfortunately, all common computing platforms are currently highly 
+  vulnerable to compromise through many vectors such as software update trojans. It
+  is possible future systems using dedicated hardware, highly restricted OS, and a
+  solid vetted open-source .NET runtime will evolve; Mercurio is developed with the
+  hope that such systems will evolve and the realization that, short of their 
+  availability, the weak point of the Mercurio ecosystem will remain the OS and
+  computing substrate itself. Mecurio is developed in .NET because its modern runtime
+  protects against many common exploits that become security problems and because its
+  authors believe that .NET will develop into an open, publically reviewed system 
+  with strong cross-platform support and a strong security system. This view is, at
+  the time of Mercurio's initial development, controversial, but there are encouraging
+  signs. However, the platform sufficiently advanced to allow flexibility in 
+  method of deployment (for example, for iOS devices, .NET can be compiled down to
+  .exes).
+
+  Implications: Mercurio should maintain a minimal surface area by maintaining 
+  cleartext data in as few places as possible, encrypting it whenever it is not in use,
+  and clearing it from memory. Mercurio should maintain best-practice .NET security
+  standards.

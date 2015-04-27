@@ -1,0 +1,13 @@
+Design thoughts on the Mercurio Shell:
+
+The shell is intended to be a command-line interface to Mercurio. 
+
+Its general command syntax should follow the Windows PowerShell model, including its command-object
+syntax, under the thinking that PowerShell is the most modern major shell and draws heavily from 
+successful Unix shell models, and with the expectation that as .NET becomes a major cross-platform 
+open-source framework, PowerShell will follow. 
+
+Input and output must be redirectable, to facilitate building unit tests.
+
+Adding audio events would improve the shell user experience.
+ 
