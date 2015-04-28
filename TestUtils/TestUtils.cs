@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -66,6 +67,27 @@ namespace TestUtilities
                 string destinationPath = destinationDirectory + "\\" + fileName;
                 File.Copy(sourcePath, destinationPath, true); // overwrite
             }
+        }
+
+        public static void CleanupSubstrate(string storageDir)
+        {
+            if (storageDir != null)
+            {
+                foreach (var directory in Directory.EnumerateDirectories(storageDir, "*.*", SearchOption.AllDirectories))
+                {
+                    Directory.Delete(directory, true);
+                }
+                foreach (var file in Directory.EnumerateFiles(storageDir, "*.*", SearchOption.AllDirectories))
+                {
+                    File.Delete(file);
+                }
+
+            }
+        }
+
+        public static NetworkCredential PassphraseFunction(string identifier)
+        {
+            return new NetworkCredential(identifier, CryptoTestConstants.HermesPassphrase);
         }
     }
 }

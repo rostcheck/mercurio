@@ -7,8 +7,8 @@
     <ProjectGuid>{C2CE5A3F-C0BF-419C-9466-388047104F0C}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DomainShell</RootNamespace>
-    <AssemblyName>DomainShell</AssemblyName>
+    <RootNamespace>MercurioShell</RootNamespace>
+    <AssemblyName>MercurioShell</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -41,12 +41,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MercurioCommandInterpreter.cs" />
+    <Compile Include="ShowContainerCommand.cs" />
+    <Compile Include="IExecutableMercurioCommand.cs" />
+    <Compile Include="MercurioCommandBuilder.cs" />
+    <Compile Include="MercurioCommandShell.cs" />
+    <Compile Include="MercurioShellContext.cs" />
+    <Compile Include="MercurioShellException.cs" />
+    <Compile Include="MercurioShellSyntaxException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F26EDA80-C4C8-4623-89E5-6D75D615B26E}</ProjectGuid>
+    <ProjectGuid>{0B5663D9-7F2E-47E2-A2E7-BF537A626DAB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Domain.UnitTests</RootNamespace>
-    <AssemblyName>Domain.UnitTests</AssemblyName>
+    <RootNamespace>MercurioShell.UnitTests</RootNamespace>
+    <AssemblyName>MercurioShell.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -50,11 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="ContainerTests.cs" />
-    <Compile Include="IdentityTests.cs" />
-    <Compile Include="AtomicDataElementTest.cs" />
-    <Compile Include="MercurioEnvironmentTests.cs" />
-    <Compile Include="UserTests.cs" />
+    <Compile Include="ShowContainerCommandTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -66,10 +62,17 @@
       <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
       <Name>Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MercurioShell\MercurioShell.csproj">
+      <Project>{c2ce5a3f-c0bf-419c-9466-388047104f0c}</Project>
+      <Name>MercurioShell</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TestUtils\TestUtilities.csproj">
       <Project>{8e90eeaa-8440-456f-b682-ae0e35c8095d}</Project>
       <Name>TestUtilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

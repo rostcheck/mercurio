@@ -4,9 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mercurio.Domain;
 using System.Collections.Generic;
 using System.Net;
-using TestCryptography;
 using Mercurio.Domain.Implementation;
 using System.IO;
+using TestUtilities;
 
 namespace Mercurio.Domain.UnitTests
 {

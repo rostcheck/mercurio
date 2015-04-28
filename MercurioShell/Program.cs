@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DomainShell
+namespace MercurioShell
 {
     /// <summary>
     /// MercurioShell allows the user to manipulate a Mercurio environment from the command line 

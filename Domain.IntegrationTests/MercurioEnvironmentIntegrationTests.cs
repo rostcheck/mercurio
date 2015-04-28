@@ -19,19 +19,7 @@ namespace Domain.IntegrationTests
         [TestInitialize]
         public void TestInitialize()
         {
-            var storageDir = ConfigurationManager.GetConfigurationValue("StorageSubstrate");
-            if (storageDir != null)
-            {
-                foreach (var directory in Directory.EnumerateDirectories(storageDir, "*.*", SearchOption.AllDirectories))
-                {
-                    Directory.Delete(directory, true);
-                }
-                foreach (var file in Directory.EnumerateFiles(storageDir, "*.*", SearchOption.AllDirectories))
-                {
-                    File.Delete(file);
-                }
-
-            }
+            TestUtils.CleanupSubstrate(ConfigurationManager.GetConfigurationValue("StorageSubstrate"));
             TestUtils.SetupUserDir(TestUserName);
             TestUtils.SwitchUser(null, TestUserName);
         }
@@ -42,7 +30,7 @@ namespace Domain.IntegrationTests
             var environmentScanner = new EnvironmentScanner(TestUtils.GetUserWorkingDir(TestUserName));
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, TestUtils.PassphraseFunction);
             environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
             var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
             environment.SetActiveIdentity(identity);
@@ -55,11 +43,6 @@ namespace Domain.IntegrationTests
             Assert.IsTrue(environment.GetContainers().Where(s => s.Name == newContainerName).FirstOrDefault() != null);
         }
 
-        private static NetworkCredential PassphraseFunction(string identifier)
-        {
-            return new NetworkCredential(identifier, CryptoTestConstants.HermesPassphrase);
-        }
-
         [TestMethod]
         public void CreateTextDocument_creates_document()
         {
@@ -67,7 +50,7 @@ namespace Domain.IntegrationTests
             var environmentScanner = new EnvironmentScanner();
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            var environment = MercurioEnvironment.Create(environmentScanner, serializer, PassphraseFunction);
+            var environment = MercurioEnvironment.Create(environmentScanner, serializer, TestUtils.PassphraseFunction);
             environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
 
             var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
