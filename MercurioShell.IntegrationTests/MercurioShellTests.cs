@@ -11,9 +11,12 @@ namespace MercurioShell.IntegrationTests
         public void MercurioShell_constructs_and_executes_commands()
         {
             var commands = "Show-Containers";
-            var shell = new MercurioShell.MercurioCommandShell(commands);
+            var shell = new MercurioShell.MercurioCommandShell();
             var result = shell.ExecuteCommand(commands);
-            Assert.IsNotNull(result);
+            Assert.IsNull(result);
+
+            commands = "Create-Container";
+            result = shell.ExecuteCommand("Create-Container White");
            // Assert.IsTrue(result)
         }
     }

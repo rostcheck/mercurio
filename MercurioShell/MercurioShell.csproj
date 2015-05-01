@@ -41,9 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandLineUtility.cs" />
+    <Compile Include="CreateContainerCommand.cs" />
     <Compile Include="ShowContainerCommand.cs" />
     <Compile Include="IExecutableMercurioCommand.cs" />
-    <Compile Include="MercurioCommandBuilder.cs" />
     <Compile Include="MercurioCommandShell.cs" />
     <Compile Include="MercurioShellContext.cs" />
     <Compile Include="MercurioShellException.cs" />
