@@ -72,6 +72,7 @@
     <Compile Include="ICryptoManager.cs" />
     <Compile Include="Identity.cs" />
     <Compile Include="IEnvironmentScanner.cs" />
+    <Compile Include="IMercurioEnvironment.cs" />
     <Compile Include="InMemoryStorageSubstrate.cs" />
     <Compile Include="ISerializerCore.cs" />
     <Compile Include="MercurioExceptionIdentityNotSet.cs" />

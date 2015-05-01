@@ -10,7 +10,7 @@ namespace Mercurio.Domain
     /// <summary>
     /// Represents an operating environment in which you can do persistent Mercurio storage operations
     /// </summary>
-    public class MercurioEnvironment
+    public class MercurioEnvironment : IMercurioEnvironment
     {
         private List<ICryptographicServiceProvider> _cryptographicServiceProviders;
         private List<IStorageSubstrate> _storageSubstrates;

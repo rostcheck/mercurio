@@ -16,6 +16,7 @@ namespace MercurioShell
 
         public MercurioCommandShell()
         {
+            _commands = new List<IExecutableMercurioCommand>();
             InstallBasicCommands();
         }
 

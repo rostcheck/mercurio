@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C2CE5A3F-C0BF-419C-9466-388047104F0C}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{A3E7562B-A21D-49D6-8BEA-3E7FFC88F65A}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MercurioShell</RootNamespace>
-    <AssemblyName>MercurioShell</AssemblyName>
+    <RootNamespace>Domain.TestMocks</RootNamespace>
+    <AssemblyName>Domain.TestMocks</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -41,25 +39,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandLineUtility.cs" />
-    <Compile Include="CreateContainerCommand.cs" />
-    <Compile Include="ShowContainerCommand.cs" />
-    <Compile Include="IExecutableMercurioCommand.cs" />
-    <Compile Include="MercurioCommandShell.cs" />
-    <Compile Include="MercurioShellContext.cs" />
-    <Compile Include="MercurioShellException.cs" />
-    <Compile Include="MercurioShellSyntaxException.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="MockCryptographicServiceProvider.cs" />
+    <Compile Include="MockCryptoManager.cs" />
+    <Compile Include="MockEnvironmentScanner.cs" />
+    <Compile Include="MockMercurioEnvironment.cs" />
+    <Compile Include="MockStorageSubstrate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ShowSubstratesCommand.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
       <Name>Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestUtils\TestUtilities.csproj">
+      <Project>{8e90eeaa-8440-456f-b682-ae0e35c8095d}</Project>
+      <Name>TestUtilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -82,6 +82,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercurioShell.UnitTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercurioShell", "MercurioShell\MercurioShell.csproj", "{C2CE5A3F-C0BF-419C-9466-388047104F0C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.TestMocks", "Domain.TestMocks\Domain.TestMocks.csproj", "{A3E7562B-A21D-49D6-8BEA-3E7FFC88F65A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -164,6 +166,10 @@ Global
 		{C2CE5A3F-C0BF-419C-9466-388047104F0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2CE5A3F-C0BF-419C-9466-388047104F0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2CE5A3F-C0BF-419C-9466-388047104F0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3E7562B-A21D-49D6-8BEA-3E7FFC88F65A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3E7562B-A21D-49D6-8BEA-3E7FFC88F65A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3E7562B-A21D-49D6-8BEA-3E7FFC88F65A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3E7562B-A21D-49D6-8BEA-3E7FFC88F65A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

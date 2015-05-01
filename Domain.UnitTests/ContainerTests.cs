@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Net;
+using Mercurio.Domain.TestMocks;
 
 namespace Mercurio.Domain.UnitTests
 {
