@@ -13,5 +13,6 @@ namespace MercurioShell
         void ValidateSyntax(string commandName, Arguments args); // Can throw MercurioShellSyntaxException
         string ShowHelp();
         ICollection<string> ExecuteCommand(string command, Arguments args, MercurioShellContext context);
+        string Name { get; }
     }
 }

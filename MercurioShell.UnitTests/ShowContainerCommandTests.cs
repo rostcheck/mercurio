@@ -16,7 +16,6 @@ namespace MercurioShell.UnitTests
     {
         private IMercurioEnvironment _environment;
         private MercurioShellContext _context;
-        private List<IStorageSubstrate> _substrates;
         public const string TestUserName = "mercurio";
 
         [TestInitialize]

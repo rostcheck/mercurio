@@ -10,9 +10,16 @@ namespace MercurioShell
 {
     public class CreateContainerCommand : IExecutableMercurioCommand
     {
-
         public CreateContainerCommand()
         {
+        }
+
+        public string Name
+        {
+            get
+            {
+                return "Create-Container";
+            }
         }
 
         public bool RecognizeCommand(string commandName)
@@ -26,7 +33,8 @@ namespace MercurioShell
                 throw new MercurioShellSyntaxException(string.Format("Invalid command name {0}, expected Create-Container", commandName.ToLower().Trim()));
             if (!args.Contains("container-name"))
                 throw new MercurioShellSyntaxException("Argument container-name is required");
-
+            if (!args.Contains("substrate-name"))
+                throw new MercurioShellSyntaxException("Argument substrate-name is required");
         }
 
         public string ShowHelp()

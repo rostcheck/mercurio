@@ -9,6 +9,14 @@ namespace MercurioShell
 {
     public class ShowSubstratesCommand : IExecutableMercurioCommand
     {
+        public string Name
+        {
+            get
+            {
+                return "Show-Substrates";
+            }
+        }
+
         public ShowSubstratesCommand()
         {
         }

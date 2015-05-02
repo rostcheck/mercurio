@@ -47,7 +47,7 @@ namespace Mercurio.Domain
             IEnumerable<IStorageSubstrate> storageSubstrates, Func<string, NetworkCredential> passphraseFunction)
         {
             this._cryptographicServiceProviders = new List<ICryptographicServiceProvider>(cryptographicServiceProviders);
-            this._storageSubstrates = new List<IStorageSubstrate>(storageSubstrates);
+            this._storageSubstrates = storageSubstrates.ToList();
             this._passphraseFunction = passphraseFunction;
             this._serializer = serializer;
         }

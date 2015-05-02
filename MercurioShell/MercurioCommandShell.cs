@@ -1,4 +1,5 @@
 ﻿using CommandLine.Utility;
+using Mercurio.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,16 @@ namespace MercurioShell
     public class MercurioCommandShell
     {
         List<IExecutableMercurioCommand> _commands;
+        MercurioShellContext _context;
 
-        public MercurioCommandShell()
+        public MercurioCommandShell(IMercurioEnvironment environment)
         {
             _commands = new List<IExecutableMercurioCommand>();
             InstallBasicCommands();
+            _context = new MercurioShellContext() { Environment = environment };
         }
 
-        public object ExecuteCommand(string commandString)
+        public ICollection<string> ExecuteCommand(string commandString)
         {
             if (string.IsNullOrEmpty(commandString))
                 return null;
@@ -36,14 +39,7 @@ namespace MercurioShell
             }
 
             command.ValidateSyntax(commandName, arguments);
-            //command.ExecuteCommand()
-            //TODO: dispatch command
-            return DispatchCommand();
-        }
-
-        public object DispatchCommand()
-        {
-            return null;
+            return command.ExecuteCommand(commandName, arguments, _context);
         }
 
         public void InstallCommand(string dllPath)
@@ -69,6 +65,15 @@ namespace MercurioShell
                 if (command.RecognizeCommand(commandName))
                     return command;
             return null;
+        }
+
+        internal void ShowHelp()
+        {
+            Console.WriteLine("Available commands are:");
+            foreach (var command in _commands)
+            {
+                Console.WriteLine(command.Name);
+            }
         }
     }
 }

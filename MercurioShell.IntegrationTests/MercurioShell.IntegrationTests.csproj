@@ -54,10 +54,27 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Domain.Implementation\Domain.Implementation.csproj">
+      <Project>{2825b70c-e747-4066-b327-23229c1ac60d}</Project>
+      <Name>Domain.Implementation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MercurioShell\MercurioShell.csproj">
       <Project>{c2ce5a3f-c0bf-419c-9466-388047104f0c}</Project>
       <Name>MercurioShell</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestUtils\TestUtilities.csproj">
+      <Project>{8e90eeaa-8440-456f-b682-ae0e35c8095d}</Project>
+      <Name>TestUtilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

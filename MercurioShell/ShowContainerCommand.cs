@@ -13,6 +13,14 @@ namespace MercurioShell
         {
         }
 
+        public string Name
+        {
+            get
+            {
+                return "Show-Container";
+            }
+        }
+
         public bool RecognizeCommand(string commandName)
         {
             return (commandName.ToLower().Contains("show-containers"));

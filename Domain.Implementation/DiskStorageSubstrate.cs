@@ -37,7 +37,7 @@ namespace Mercurio.Domain.Implementation
         }
         public string Name
         {
-            get { return _path; }
+            get { return Path.GetFileName(_path); }
         }
 
         public IEnumerable<IContainer> GetAllContainers()
