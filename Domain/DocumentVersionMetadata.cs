@@ -35,18 +35,20 @@ namespace Mercurio.Domain
             this.CreatorId = info.GetString(CreatorIdSerializationName);
         }
 
-        private DocumentVersionMetadata(Guid documentId, Guid priorVersionId, string creatorId)
+        private DocumentVersionMetadata(Guid documentId, Guid priorVersionId, long priorVersionCreatedTimeTicks, string creatorId)
         {
             this.DocumentId = documentId;
             this.Id = Guid.NewGuid();
             this.PriorVersionId = priorVersionId;
             this.CreatedDateTime = DateTimeOffset.UtcNow;
+            if (priorVersionCreatedTimeTicks != 0 && this.CreatedDateTime.UtcTicks == priorVersionCreatedTimeTicks)
+                this.CreatedDateTime = this.CreatedDateTime.AddTicks(1000); // Guard against creation in same clock tick
             this.CreatorId = creatorId;
         }
 
-        internal static DocumentVersionMetadata Create(Guid documentId, Guid priorVersionId, string creatorId)
+        internal static DocumentVersionMetadata Create(Guid documentId, Guid priorVersionId, long priorVersionCreatedTimeTicks, string creatorId)
         {
-            return new DocumentVersionMetadata(documentId, priorVersionId, creatorId);
+            return new DocumentVersionMetadata(documentId, priorVersionId, priorVersionCreatedTimeTicks, creatorId);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)

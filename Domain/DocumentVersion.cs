@@ -55,9 +55,9 @@ namespace Mercurio.Domain
             }
         }
 
-        protected DocumentVersion(Guid documentId, Guid priorVersionId, string creatorId)
+        protected DocumentVersion(Guid documentId, Guid priorVersionId, long priorVersionCreatedTimeTicks, string creatorId)
         {
-            this.Metadata = DocumentVersionMetadata.Create(documentId, priorVersionId, creatorId);
+            this.Metadata = DocumentVersionMetadata.Create(documentId, priorVersionId, priorVersionCreatedTimeTicks, creatorId);
         }
 
         //private DocumentVersion(Guid priorRevisionId, string creatorId, List<AtomicDataElementChange> changes)
@@ -66,8 +66,8 @@ namespace Mercurio.Domain
         //    this._changeList = new List<AtomicDataElementChange>(changes);
         //}
 
-        protected DocumentVersion(Guid documentId, Guid priorVersionId, string creatorId, string documentContent)
-            : this(documentId, priorVersionId, creatorId)
+        protected DocumentVersion(Guid documentId, Guid priorVersionId, long priorVersionCreatedTimeTicks, string creatorId, string documentContent)
+            : this(documentId, priorVersionId, priorVersionCreatedTimeTicks, creatorId)
         {
             this.DocumentContent = documentContent;
         }
@@ -82,9 +82,9 @@ namespace Mercurio.Domain
         //    return new DocumentVersion(priorRevisionGuid, revisorIdentityUniqueId, changes);
         //}
 
-        public static DocumentVersion Create(Guid documentId, Guid priorVersionId, string creatorId, string documentContent)
+        public static DocumentVersion Create(Guid documentId, Guid priorVersionId, long priorVersionCreatedTimeTicks, string creatorId, string documentContent)
         {
-            return new DocumentVersion(documentId, priorVersionId, creatorId, documentContent);
+            return new DocumentVersion(documentId, priorVersionId, priorVersionCreatedTimeTicks, creatorId, documentContent);
         }
     }
 }

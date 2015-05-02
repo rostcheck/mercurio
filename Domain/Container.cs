@@ -210,7 +210,7 @@ namespace Mercurio.Domain
                 throw new MercurioException(string.Format("Document {0} already exists in this container", documentName));
 
             var documentMetadata = DocumentMetadata.Create(documentName);
-            var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, creatorIdentity.UniqueIdentifier, initialData);
+            var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, 0, creatorIdentity.UniqueIdentifier, initialData);
 
             _substrate.StoreDocumentVersion(this.Id, documentVersion);
             _privateMetadata.AddDocumentVersion(documentName, documentVersion.Metadata);
@@ -233,7 +233,7 @@ namespace Mercurio.Domain
             if (latestVersion == null)
                 throw new MercurioException(string.Format("Document {0} does not have any versions in this container", documentName)); // internal inconsistency
 
-            var newVersion = DocumentVersion.Create(documentId, latestVersion.Id, modifierIdentity.UniqueIdentifier, modifiedData);
+            var newVersion = DocumentVersion.Create(documentId, latestVersion.Id, latestVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier, modifiedData);
 
             _substrate.StoreDocumentVersion(this.Id, newVersion);
             _privateMetadata.AddDocumentVersion(documentName, newVersion.Metadata);
