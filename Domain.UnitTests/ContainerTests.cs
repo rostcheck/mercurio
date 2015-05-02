@@ -56,6 +56,7 @@ namespace Mercurio.Domain.UnitTests
             string newValue = initialValue + " and this is a revised value";
             container.ModifyTextDocument(documentName, _identity, newValue);
             var newVersion = container.GetLatestDocumentVersion(documentName);
+            Assert.AreNotEqual(textDocumentVersion.CreatedDateTime.UtcTicks, newVersion.CreatedDateTime.UtcTicks);
             Assert.IsFalse(textDocumentVersion.DocumentContent == newValue);
             Assert.IsTrue(newVersion.DocumentContent == newValue);
         }

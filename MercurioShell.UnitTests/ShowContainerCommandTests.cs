@@ -7,13 +7,14 @@ using TestUtilities;
 using System.Collections.Generic;
 using System.Linq;
 using CommandLine.Utility;
+using Mercurio.Domain.TestMocks;
 
 namespace MercurioShell.UnitTests
 {
     [TestClass]
     public class ShowContainerCommandTests
     {
-        private MercurioEnvironment _environment;
+        private IMercurioEnvironment _environment;
         private MercurioShellContext _context;
         private List<IStorageSubstrate> _substrates;
         public const string TestUserName = "mercurio";
@@ -21,19 +22,20 @@ namespace MercurioShell.UnitTests
         [TestInitialize]
         public void SetupTest()
         {
-            TestUtils.CleanupSubstrate(ConfigurationManager.GetConfigurationValue("StorageSubstrate"));
-            TestUtils.SetupUserDir(TestUserName);
-            TestUtils.SwitchUser(null, TestUserName);
+            //TestUtils.CleanupSubstrate(ConfigurationManager.GetConfigurationValue("StorageSubstrate"));
+            //TestUtils.SetupUserDir(TestUserName);
+            //TestUtils.SwitchUser(null, TestUserName);
 
-            var environmentScanner = new EnvironmentScanner(TestUtils.GetUserWorkingDir(TestUserName));
-            _substrates = environmentScanner.GetStorageSubstrates();
-            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            _environment = MercurioEnvironment.Create(environmentScanner, serializer, TestUtils.PassphraseFunction);
-            _environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
+            //var environmentScanner = new EnvironmentScanner(TestUtils.GetUserWorkingDir(TestUserName));
+            //_substrates = environmentScanner.GetStorageSubstrates();
+            //var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            //_environment = MercurioEnvironment.Create(environmentScanner, serializer, TestUtils.PassphraseFunction);
+            //_environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
+
+            //var identity = _environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
+            //_environment.SetActiveIdentity(identity);
+            _environment = new MockMercurioEnvironment();
             _context = new MercurioShellContext() { Environment = _environment };
-
-            var identity = _environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
-            _environment.SetActiveIdentity(identity);
         }
 
         [TestMethod]
@@ -78,7 +80,8 @@ namespace MercurioShell.UnitTests
             var command = new ShowContainerCommand();
             var result = command.ExecuteCommand("Show-Containers", new Arguments(string.Empty.Split()), _context);
             Assert.IsTrue(result.Count == 0);
-            _environment.CreateContainer("White", _substrates[0].Name);
+            _environment.SetActiveIdentity(_environment.GetAvailableIdentities().FirstOrDefault());
+            _environment.CreateContainer("White",_environment.GetAvailableStorageSubstrateNames().First());
             result = command.ExecuteCommand("Show-Containers",  new Arguments(string.Empty.Split()), _context);
             Assert.IsTrue(result.Count == 1);
             Assert.IsTrue(result.Contains("White"));

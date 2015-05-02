@@ -50,7 +50,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="MockMercurioEnvironment.cs" />
     <Compile Include="ShowContainerCommandTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -58,6 +57,10 @@
     <ProjectReference Include="..\Domain.Implementation\Domain.Implementation.csproj">
       <Project>{2825b70c-e747-4066-b327-23229c1ac60d}</Project>
       <Name>Domain.Implementation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Domain.TestMocks\Domain.TestMocks.csproj">
+      <Project>{a3e7562b-a21d-49d6-8bea-3e7ffc88f65a}</Project>
+      <Name>Domain.TestMocks</Name>
     </ProjectReference>
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>

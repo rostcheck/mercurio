@@ -22,7 +22,7 @@ namespace Mercurio.Domain
 
         public string Name
         {
-            get { throw new NotImplementedException(); }
+            get { return "Memory"; }
         }
 
         public IEnumerable<IContainer> GetAllContainers()

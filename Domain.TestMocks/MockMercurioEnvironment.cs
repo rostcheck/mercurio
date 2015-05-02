@@ -12,11 +12,13 @@ namespace Mercurio.Domain.TestMocks
         private List<IContainer> _containers;
         private List<IStorageSubstrate> _storageSubstrates;
         private UserIdentity _activeUserIdentity;
+        private ICryptoManager _cryptoManager;
 
         public MockMercurioEnvironment()
         {
             _containers = new List<IContainer>();
-            _storageSubstrates = new List<IStorageSubstrate>();
+            _storageSubstrates = new List<IStorageSubstrate>() { new InMemoryStorageSubstrate() };
+            _cryptoManager = new MockCryptoManager();
         }
 
         public void SetUserHomeDirectory(string userHomeDirectory)
@@ -36,7 +38,14 @@ namespace Mercurio.Domain.TestMocks
 
         public IContainer CreateContainer(string containerName, string storageSubstrateName, RevisionRetentionPolicyType revisionRetentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
-            throw new NotImplementedException();
+            var substrate =  _storageSubstrates.Where(s => s.Name == storageSubstrateName).FirstOrDefault();
+            if (substrate == null)
+                throw new MercurioException("Unrecognized storage substrate");
+
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+            var container = Container.Create(containerName, _cryptoManager, substrate, serializer, revisionRetentionPolicyType);
+            _containers.Add(container);
+            return container;
         }
 
         public IContainer GetContainer(string newContainerName)
@@ -56,12 +65,12 @@ namespace Mercurio.Domain.TestMocks
 
         public List<UserIdentity> GetAvailableIdentities()
         {
-            throw new NotImplementedException();
+            return _cryptoManager.GetAvailableIdentities();
         }
 
         public void SetActiveIdentity(UserIdentity identity)
         {
-            _activeUserIdentity = identity;
+            _cryptoManager.SetCredential(TestUtilities.TestUtils.PassphraseFunction(identity.UniqueIdentifier));
         }
     }
 }

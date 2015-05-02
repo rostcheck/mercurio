@@ -9,6 +9,6 @@ namespace MercurioShell
 {
     public class MercurioShellContext
     {
-        public MercurioEnvironment Environment { get; set; }
+        public IMercurioEnvironment Environment { get; set; }
     }
 }
