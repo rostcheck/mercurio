@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MercurioShell
 {
-    public class HelpCommand : CommandBase, IExecutableMercurioCommand
+    public class HelpCommand : CommandBase
     {
         public HelpCommand()
         {
@@ -37,7 +37,7 @@ namespace MercurioShell
             return commandString;
         }
 
-        public ICollection<string> ExecuteCommand(string commandString, Arguments arguments, MercurioShellContext context)
+        protected override ICollection<string> Execute(string commandString, Arguments arguments, MercurioShellContext context)
         {
             if (!string.IsNullOrEmpty(arguments["subject"]))
             {

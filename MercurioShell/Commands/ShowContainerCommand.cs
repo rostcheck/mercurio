@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MercurioShell
 {
-    public class ShowContainerCommand : CommandBase, IExecutableMercurioCommand
+    public class ShowContainerCommand : CommandBase
     {
         public override string Name
         {
@@ -17,10 +17,8 @@ namespace MercurioShell
             }
         }
 
-        public ICollection<string> ExecuteCommand(string command, Arguments args, MercurioShellContext context)
+        protected override ICollection<string> Execute(string command, Arguments args, MercurioShellContext context)
         {
-            ValidateContext(context);
-
             return context.Environment.GetContainers().Select(s => s.Name).ToList();
         }
     }

@@ -37,9 +37,6 @@ namespace MercurioShell
                         Console.WriteLine("Goodbye");
                         exit = true;
                         break;
-                    //case "help":
-                    //    shell.ShowHelp();
-                        break;
                     default:
                         try
                         {
@@ -52,7 +49,7 @@ namespace MercurioShell
                                 }
                             }
                         }
-                        catch (MercurioShellException ex)
+                        catch (Exception ex)
                         {
                             Console.WriteLine(ex.Message);
                         }

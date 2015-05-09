@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MercurioShell
 {
-    public class ShowSubstratesCommand : CommandBase, IExecutableMercurioCommand
+    public class ShowSubstratesCommand : CommandBase
     {
-        public string Name
+        public override string Name
         {
             get
             {
@@ -17,32 +17,8 @@ namespace MercurioShell
             }
         }
 
-        public ShowSubstratesCommand()
+        protected override ICollection<string> Execute(string command, Arguments args, MercurioShellContext context)
         {
-        }
-
-        public bool RecognizeCommand(string commandName)
-        {
-            return (commandName.ToLower().Contains("show-substrates"));
-        }
-
-        public void ValidateSyntax(string commandName, Arguments args)
-        {
-            // Valid synax is show-substrates w/ no args
-            if (commandName.ToLower().Trim() != "show-substrates")
-                throw new MercurioShellSyntaxException(string.Format("Invalid command name {0}, expected Show-Substrates", commandName.ToLower().Trim()));
-        }
-
-        public string ShowHelp()
-        {
-            return "Usage: Show-Substrates";
-        }
-
-        public ICollection<string> ExecuteCommand(string command, Arguments args, MercurioShellContext context)
-        {
-            if (context == null || context.Environment == null)
-                throw new ArgumentException("Invalid context passed to command");
-
             return context.Environment.GetAvailableStorageSubstrateNames();
         }
     }

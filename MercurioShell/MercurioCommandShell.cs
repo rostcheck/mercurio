@@ -54,6 +54,7 @@ namespace MercurioShell
             InstallCommand(new HelpCommand());
             InstallCommand(new CreateContainerCommand());
             InstallCommand(new ShowContainerCommand());
+            InstallCommand(new ShowSubstratesCommand());
         }
 
         public void InstallCommand(IExecutableMercurioCommand command)
@@ -68,10 +69,5 @@ namespace MercurioShell
                     return command;
             return null;
         }
-
-        //internal void ShowHelp()
-        //{
-
-        //}
     }
 }

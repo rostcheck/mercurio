@@ -25,12 +25,7 @@ namespace MercurioShell
             }
         }
 
-        //public string ShowHelp()
-        //{
-        //    return "Usage: Create-Container [-container-name <name>] [-substrate-name <name>] <-revision-retention-policy [KeepOne | KeepAll]>";
-        //}
-
-        public ICollection<string> ExecuteCommand(string command, Arguments arguments, MercurioShellContext context)
+        protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
             ValidateContext(context);
 

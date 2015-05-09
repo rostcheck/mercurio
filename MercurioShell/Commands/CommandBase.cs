@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MercurioShell
 {
-    public class CommandBase
+    public abstract class CommandBase : IExecutableMercurioCommand
     {
         private List<CommandArgument> _arguments;
         public CommandBase()
@@ -60,7 +60,7 @@ namespace MercurioShell
 
             foreach (var argument in _arguments.Where(s => s.Required == true))
             {
-                if (!args.Contains(this.Name))
+                if (!args.Contains(argument.Name))
                     throw new MercurioShellSyntaxException(string.Format("Argument {0} is required", argument.Name));
             }
         }
@@ -89,6 +89,15 @@ namespace MercurioShell
         internal void AddRequiredParameter(string name, string[] allowedValues)
         {
             _arguments.Add(new CommandArgument(name, true, "", allowedValues));
+        }
+
+        protected abstract ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context);
+
+        public ICollection<string> ExecuteCommand(string commandName, Arguments arguments, MercurioShellContext context)
+        {
+            ValidateContext(context);
+            ValidateSyntax(commandName, arguments);
+            return Execute(commandName, arguments, context);
         }
     }
 }
