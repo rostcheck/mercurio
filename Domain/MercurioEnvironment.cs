@@ -82,9 +82,11 @@ namespace Mercurio.Domain
 
             var substrate = _storageSubstrates.SingleOrDefault(s => s.Name.ToLower() == storageSubstrateName.ToLower());
             if (substrate == null)
-            {
                 throw new ArgumentException(string.Format("Invalid storage substrate name {0}", storageSubstrateName));
-            }
+
+            if (GetContainers().Where(s => s.Name.ToLower() == containerName.ToLower()).FirstOrDefault() != null)
+                throw new ArgumentException(string.Format("Container {0} already exists in the environment", containerName));
+
             return substrate.CreateContainer(containerName, _activeCryptoManager, revisionRetentionPolicyType);
         }
 
@@ -163,24 +165,30 @@ namespace Mercurio.Domain
             var cryptoProvider = _cryptographicServiceProviders.Where(s => s.GetProviderType() == identity.CryptoManagerType).FirstOrDefault();
             if (cryptoProvider == null)
             {
-                throw new MercurioException(string.Format("Cannot find cryptographic provider for {0} in the current environment", identity.CryptoManagerType));
+                throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Cannot find cryptographic provider for {0} in the current environment", identity.CryptoManagerType));
             }
 
             var credential = _passphraseFunction(identity.UniqueIdentifier);
             if (credential == null)
             {
-                throw new MercurioException(string.Format("Cannot change to requested identity {0} - bad login", identity));
+                throw new MercurioExceptionIdentityNotSet(string.Format("Cannot change to requested identity {0} - bad login", identity.Name));
             }
-            _activeCredential = credential;
 
-            _activeCryptoManager = cryptoProvider.CreateManager(GetCryptoManagerConfiguration(cryptoProvider));
-            _activeCryptoManager.SetCredential(_activeCredential);
-
-            if (_activeCryptoManager.GetFingerprint(identity.UniqueIdentifier) == null)
+            var cryptoManager = cryptoProvider.CreateManager(GetCryptoManagerConfiguration(cryptoProvider));
+            if (cryptoManager.GetFingerprint(identity.UniqueIdentifier) == null)
             {
-                throw new MercurioException(string.Format("Specified identity {0} is not available", identity));
+                throw new MercurioExceptionNoIdentitiesAvailable(string.Format("Specified identity {0} is not available", identity.Name));
             }
+            if (!cryptoManager.ValidateCredential(credential))
+            {
+                throw new MercurioExceptionIdentityNotSet(string.Format("Cannot change to requested identity {0} - invalid password", identity.Name));
+            }
+            cryptoManager.SetCredential(credential);
+
+
             _activeIdentity = identity;
+            _activeCredential = credential;
+            _activeCryptoManager = cryptoManager;
         }
     }
 }

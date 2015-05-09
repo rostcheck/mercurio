@@ -73,12 +73,12 @@ namespace MercurioShell
             {
                 Console.WriteLine(identity.Name);
             }
-            Console.WriteLine("Enter desired identity or 'quit' to exit: ");
-            Console.Write("> ");
             bool done = false;
             bool success = false;
             do
             {
+                Console.WriteLine("Enter desired identity or 'quit' to exit: ");
+                Console.Write("> ");
                 var identityName = Console.ReadLine().Trim();
                 var identityNameLowercase = identityName.ToLower();
                 if (identityNameLowercase == "quit")
