@@ -9,10 +9,11 @@ namespace MercurioShell
 {
     public interface IExecutableMercurioCommand
     {
+        string Name { get; }
+        string RewriteBeforeParsing(string commandString);
         bool RecognizeCommand(string commandName);
         void ValidateSyntax(string commandName, Arguments args); // Can throw MercurioShellSyntaxException
         string ShowHelp();
         ICollection<string> ExecuteCommand(string command, Arguments args, MercurioShellContext context);
-        string Name { get; }
     }
 }

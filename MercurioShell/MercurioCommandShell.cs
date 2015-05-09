@@ -20,7 +20,7 @@ namespace MercurioShell
         {
             _commands = new List<IExecutableMercurioCommand>();
             InstallBasicCommands();
-            _context = new MercurioShellContext() { Environment = environment };
+            _context = new MercurioShellContext() { Environment = environment, Commands = _commands };
         }
 
         public ICollection<string> ExecuteCommand(string commandString)
@@ -30,13 +30,14 @@ namespace MercurioShell
 
             var args = commandString.Split();
             var commandName = args[0];
-            var arguments = new Arguments(args);
             var command = RecognizeCommand(commandName);
             if (command == null)
             {
                 Console.WriteLine("Command not recognized");
                 return null;
             }
+
+            var arguments = new Arguments(command.RewriteBeforeParsing(commandString).Split());
 
             command.ValidateSyntax(commandName, arguments);
             return command.ExecuteCommand(commandName, arguments, _context);
@@ -50,6 +51,7 @@ namespace MercurioShell
 
         public void InstallBasicCommands()
         {
+            InstallCommand(new HelpCommand());
             InstallCommand(new CreateContainerCommand());
             InstallCommand(new ShowContainerCommand());
         }
@@ -67,13 +69,9 @@ namespace MercurioShell
             return null;
         }
 
-        internal void ShowHelp()
-        {
-            Console.WriteLine("Available commands are:");
-            foreach (var command in _commands)
-            {
-                Console.WriteLine(command.Name);
-            }
-        }
+        //internal void ShowHelp()
+        //{
+
+        //}
     }
 }

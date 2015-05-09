@@ -10,5 +10,6 @@ namespace MercurioShell
     public class MercurioShellContext
     {
         public IMercurioEnvironment Environment { get; set; }
+        public List<IExecutableMercurioCommand> Commands { get; set; }
     }
 }

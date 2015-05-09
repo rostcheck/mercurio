@@ -42,8 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineUtility.cs" />
+    <Compile Include="Commands\CommandArgument.cs" />
+    <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="CreateContainerCommand.cs" />
-    <Compile Include="ShowContainerCommand.cs" />
+    <Compile Include="Commands\ShowContainerCommand.cs" />
     <Compile Include="IExecutableMercurioCommand.cs" />
     <Compile Include="MercurioCommandShell.cs" />
     <Compile Include="MercurioShellContext.cs" />
@@ -51,7 +54,7 @@
     <Compile Include="MercurioShellSyntaxException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ShowSubstratesCommand.cs" />
+    <Compile Include="Commands\ShowSubstratesCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

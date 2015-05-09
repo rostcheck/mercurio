@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MercurioShell
 {
-    public class ShowSubstratesCommand : IExecutableMercurioCommand
+    public class ShowSubstratesCommand : CommandBase, IExecutableMercurioCommand
     {
         public string Name
         {
