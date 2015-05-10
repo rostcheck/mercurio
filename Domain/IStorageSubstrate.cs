@@ -23,5 +23,6 @@ namespace Mercurio.Domain
         DocumentVersion RetrieveDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata);
         void StoreMetadata(Guid containerId, ContainerMetadata metadata);
         void StorePrivateMetadata(Guid containerId, Stream encryptedPrivateMetadata);
+        void DeleteContainer(Guid containerId);
     }
 }

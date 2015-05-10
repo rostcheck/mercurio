@@ -38,7 +38,7 @@ namespace MercurioShell.IntegrationTests
         public void MercurioShell_constructs_and_executes_commands()
         {
             var commands = "Show-Containers";
-            var shell = new MercurioCommandShell(_environment);
+            var shell = MercurioCommandShell.Create(_environment, ConfirmAction);
             var result = shell.ExecuteCommand(commands);
             Assert.IsTrue(result.Count == 0);
 
@@ -47,6 +47,11 @@ namespace MercurioShell.IntegrationTests
 
             result = shell.ExecuteCommand("Show-Containers");
             Assert.IsFalse(result.Count == 0);
+        }
+
+        private static bool ConfirmAction(string prompt, IMercurioEnvironment environment)
+        {
+            return true;
         }
     }
 }

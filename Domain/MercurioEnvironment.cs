@@ -70,6 +70,20 @@ namespace Mercurio.Domain
             return returnList;
         }
 
+        public IStorageSubstrate GetSubstrateHostingContainer(string containerName)
+        {
+            VerifyActiveIdentity();
+
+            var returnList = new List<IContainer>();
+            foreach (var substrate in this._storageSubstrates)
+            {
+                var container = substrate.GetAllContainers().FirstOrDefault(s => s.Name.ToLower() == containerName.ToLower());
+                if (container != null)
+                    return substrate;
+            }
+            return null;
+        }
+
         public List<string> GetAvailableStorageSubstrateNames()
         {
             return new List<string>(_storageSubstrates.Select(s => s.Name));
@@ -88,6 +102,19 @@ namespace Mercurio.Domain
                 throw new ArgumentException(string.Format("Container {0} already exists in the environment", containerName));
 
             return substrate.CreateContainer(containerName, _activeCryptoManager, revisionRetentionPolicyType);
+        }
+
+        public void DeleteContainer(string containerName)
+        {
+            var container = GetContainer(containerName);
+            if (container == null)
+                throw new ArgumentException(string.Format("Cannot find a container with name {0}", containerName));
+
+            var substrate = GetSubstrateHostingContainer(containerName);
+            if (substrate == null)
+                throw new ArgumentException(string.Format("Cannot identify substrate hosting container with name {0}", containerName));
+
+            substrate.DeleteContainer(container.Id);
         }
 
         public IContainer GetContainer(string newContainerName)
@@ -151,6 +178,35 @@ namespace Mercurio.Domain
                 configuration.Merge(userEnvironmentConfiguration);            
             }
             return configuration;
+        }
+
+        public UserIdentity GetActiveIdentity()
+        {
+            return new UserIdentity(_activeIdentity);
+        }
+
+        public bool ConfirmActiveIdentity()
+        {
+            if (_activeIdentity == null)
+                throw new MercurioExceptionIdentityNotSet("No active identity is set");
+
+            var credential = _passphraseFunction(_activeIdentity.UniqueIdentifier);
+            if (credential == null)
+                return false;
+
+            var cryptoProvider = _cryptographicServiceProviders.Where(s => s.GetProviderType() == _activeIdentity.CryptoManagerType).FirstOrDefault();
+            if (cryptoProvider == null)
+            {
+                throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Cannot find cryptographic provider for {0} in the current environment", _activeIdentity.CryptoManagerType));
+            }
+
+            var cryptoManager = cryptoProvider.CreateManager(GetCryptoManagerConfiguration(cryptoProvider));
+            if (cryptoManager.GetFingerprint(_activeIdentity.UniqueIdentifier) == null)
+            {
+                throw new MercurioExceptionNoIdentitiesAvailable(string.Format("Specified identity {0} is not available", _activeIdentity.Name));
+            }
+
+            return cryptoManager.ValidateCredential(credential);
         }
 
         public void SetActiveIdentity(UserIdentity identity)

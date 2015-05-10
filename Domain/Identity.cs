@@ -26,6 +26,15 @@ namespace Mercurio.Domain
             this.CryptoManagerType = cryptoManagerType;
         }
 
+        protected Identity(Identity otherIdentity)
+        {
+            this.UniqueIdentifier = otherIdentity.UniqueIdentifier;
+            this.Name = otherIdentity.Name;
+            this.Address = otherIdentity.Address;
+            this.Description = otherIdentity.Description;
+            this.CryptoManagerType = otherIdentity.CryptoManagerType;
+        }
+
         public static Identity Create(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
         {
             ValidateRequiredString(uniqueIdentifier, "Unique identifier");

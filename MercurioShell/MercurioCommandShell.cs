@@ -16,11 +16,22 @@ namespace MercurioShell
         List<IExecutableMercurioCommand> _commands;
         MercurioShellContext _context;
 
-        public MercurioCommandShell(IMercurioEnvironment environment)
+        protected MercurioCommandShell(IMercurioEnvironment environment, Func<string, IMercurioEnvironment, bool> confirmAction)
         {
             _commands = new List<IExecutableMercurioCommand>();
             InstallBasicCommands();
-            _context = new MercurioShellContext() { Environment = environment, Commands = _commands };
+            _context = new MercurioShellContext() { Environment = environment, Commands = _commands, ConfirmAction = confirmAction };            
+        }
+
+        public static MercurioCommandShell Create(IMercurioEnvironment environment, Func<string, IMercurioEnvironment, bool> confirmAction)
+        {
+            if (environment == null)
+                throw new ArgumentNullException("Must supply a valid Mercurio environment");
+
+            if (confirmAction == null)
+                throw new ArgumentNullException("Must supply a valid callback to confirm actions");
+
+            return new MercurioCommandShell(environment, confirmAction);
         }
 
         public ICollection<string> ExecuteCommand(string commandString)
@@ -55,6 +66,7 @@ namespace MercurioShell
             InstallCommand(new CreateContainerCommand());
             InstallCommand(new ShowContainerCommand());
             InstallCommand(new ShowSubstratesCommand());
+            InstallCommand(new DeleteContainerCommand());
         }
 
         public void InstallCommand(IExecutableMercurioCommand command)

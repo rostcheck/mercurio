@@ -23,7 +23,7 @@ namespace MercurioShell
                 Console.WriteLine("Unable to set up a Mercurio environment. Goodbye.");
                 return;
             }
-            var shell = new MercurioCommandShell(environment);
+            var shell = MercurioCommandShell.Create(environment, ConfirmAction);
             bool exit = false;
             Console.WriteLine("Welcome to Project Mercurio. Type 'help' for help or 'quit' to exit.");
             do
@@ -107,6 +107,20 @@ namespace MercurioShell
                 }
             } while (done == false);
             return (success == true) ? environment : null;
+        }
+
+        private static bool ConfirmAction(string prompt, IMercurioEnvironment environment)
+        {
+            var activeIdentity = environment.GetActiveIdentity();
+            if (activeIdentity == null)
+            {
+                Console.WriteLine("Active identity is not set");
+                return false;
+            }
+
+            Console.WriteLine(prompt);
+            Console.WriteLine(string.Format("Current identity is {0}. Enter passphrase to confirm action:", activeIdentity.Name));
+            return environment.ConfirmActiveIdentity();
         }
 
         private static NetworkCredential GetLoginInfo(string userName)

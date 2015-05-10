@@ -128,6 +128,12 @@ namespace Mercurio.Domain.Implementation
             return Container.Create(containerName, cryptoManager, DiskStorageSubstrate.Create(this), serializer, retentionPolicy);
         }
 
+        public void DeleteContainer(Guid containerId)
+        {
+            var folderName = GetFolderName(containerId);
+            if (Directory.Exists(folderName))
+                Directory.Delete(folderName, true);
+        }
 
         public void StoreMetadata(Guid containerId, ContainerMetadata metadata)
         {

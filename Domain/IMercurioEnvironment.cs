@@ -15,9 +15,12 @@ namespace Mercurio.Domain
         IContainer CreateContainer(string containerName, string storageSubstrateName,
             RevisionRetentionPolicyType revisionRetentionPolicyType = RevisionRetentionPolicyType.KeepOne);
         IContainer GetContainer(string newContainerName);
+        void DeleteContainer(string containerName);
         void UnlockContainer(IContainer container);
         void LockContainer(IContainer container);
         List<UserIdentity> GetAvailableIdentities();
         void SetActiveIdentity(UserIdentity identity);
+        UserIdentity GetActiveIdentity();
+        bool ConfirmActiveIdentity();
     }
 }

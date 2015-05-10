@@ -70,5 +70,10 @@ namespace Mercurio.Domain.TestMocks
         {
             return;
         }
+
+        public void DeleteContainer(Guid containerId)
+        {
+            return;
+        }
     }
 }

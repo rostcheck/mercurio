@@ -31,6 +31,13 @@ namespace Mercurio.Domain.TestMocks
             return new List<IContainer>(_containers);
         }
 
+        public void DeleteContainer(string containerName)
+        {
+            var container = _containers.Where(s => s.Name.ToLower() == containerName.ToLower()).FirstOrDefault();
+            if (container != null)
+                _containers.Remove(container);
+        }
+
         public List<string> GetAvailableStorageSubstrateNames()
         {
             return _storageSubstrates.Select(s => s.Name).ToList();
@@ -71,6 +78,17 @@ namespace Mercurio.Domain.TestMocks
         public void SetActiveIdentity(UserIdentity identity)
         {
             _cryptoManager.SetCredential(TestUtilities.TestUtils.PassphraseFunction(identity.UniqueIdentifier));
+            _activeUserIdentity = identity;
+        }
+
+        public UserIdentity GetActiveIdentity()
+        {
+            return _activeUserIdentity;
+        }
+
+        public bool ConfirmActiveIdentity()
+        {
+            return true;
         }
     }
 }

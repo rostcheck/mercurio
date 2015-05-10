@@ -47,6 +47,11 @@ namespace Mercurio.Domain
             return Container.Create(containerName, cryptoManager, this, serializer, retentionPolicy);
         }
 
+        public void DeleteContainer(Guid containerId)
+        {
+            throw new NotImplementedException();
+        }
+
         public void StoreContainer(IContainer container)
         {
             throw new NotImplementedException();
