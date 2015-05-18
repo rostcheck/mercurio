@@ -32,7 +32,7 @@ namespace Mercurio.Domain.TestMocks
 
         public bool ValidateCredential(NetworkCredential credential)
         {
-            if (_credential == null)
+            if (credential == null)
                 return false;
 
             return true;

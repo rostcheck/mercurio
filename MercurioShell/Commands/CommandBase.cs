@@ -32,7 +32,7 @@ namespace MercurioShell
             foreach (var argument in _arguments.Where(s => s.Required == false))
                 sb.Append(string.Format("[-{0} {1}] ", argument.Name, FormatArgumentHelp(argument)));
 
-            return string.Format("Usage: {0} {1}", Name, sb.ToString());
+            return string.Format("Usage: {0} {1}", Name, sb.ToString()).TrimEnd();
         }
 
         private string FormatArgumentHelp(CommandArgument argument)
