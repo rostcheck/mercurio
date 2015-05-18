@@ -42,7 +42,9 @@ namespace MercurioShell.UnitTests
         public void CreateContainer_ValidateSyntax_validates_valid_syntax()
         {
             var command = new CreateContainerCommand();
-            command.ValidateSyntax("Create-Container", new Arguments("-container-name Red -substrate-name MySubstrate".Split()));
+            var substrateName = _environment.GetAvailableStorageSubstrateNames().First();
+            var arguments = string.Format("-container-name Red -substrate-name {0}", substrateName);
+            command.ValidateSyntax("Create-Container", new Arguments(arguments.Split()));
         }
 
         [TestMethod]
@@ -61,17 +63,18 @@ namespace MercurioShell.UnitTests
             Assert.IsTrue(command.ShowHelp() == "Usage: Create-Container -container-name <name> -substrate-name <name> [-revision-retention-policy <KeepOne | KeepAll>]");
         }
 
-       // [TestMethod]
+        [TestMethod]
         public void CreateContainer_ExecuteCommand_finds_existing_containers()
         {
             var command = new CreateContainerCommand();
-            var result = command.ExecuteCommand("Create-Container", new Arguments(string.Empty.Split()), _context);
-            Assert.IsTrue(result.Count == 0);
             _environment.SetActiveIdentity(_environment.GetAvailableIdentities().FirstOrDefault());
-            _environment.CreateContainer("White", _environment.GetAvailableStorageSubstrateNames().First());
-            result = command.ExecuteCommand("Create-Container", new Arguments(string.Empty.Split()), _context);
+            var containers = _environment.GetContainers();
+            Assert.IsTrue(containers.Count == 0);
+            var substrateName = _environment.GetAvailableStorageSubstrateNames().First();
+            var arguments = string.Format("-container-name Red -substrate-name {0}", substrateName);
+            var result = command.ExecuteCommand("Create-Container", new Arguments(arguments.Split()), _context);
+            containers = _environment.GetContainers();
             Assert.IsTrue(result.Count == 1);
-            Assert.IsTrue(result.Contains("White"));
         }
     }
 }
