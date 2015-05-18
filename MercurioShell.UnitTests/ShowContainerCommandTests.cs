@@ -21,18 +21,6 @@ namespace MercurioShell.UnitTests
         [TestInitialize]
         public void SetupTest()
         {
-            //TestUtils.CleanupSubstrate(ConfigurationManager.GetConfigurationValue("StorageSubstrate"));
-            //TestUtils.SetupUserDir(TestUserName);
-            //TestUtils.SwitchUser(null, TestUserName);
-
-            //var environmentScanner = new EnvironmentScanner(TestUtils.GetUserWorkingDir(TestUserName));
-            //_substrates = environmentScanner.GetStorageSubstrates();
-            //var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            //_environment = MercurioEnvironment.Create(environmentScanner, serializer, TestUtils.PassphraseFunction);
-            //_environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
-
-            //var identity = _environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
-            //_environment.SetActiveIdentity(identity);
             _environment = new MockMercurioEnvironment();
             _context = new MercurioShellContext() { Environment = _environment };
         }
