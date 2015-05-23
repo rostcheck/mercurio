@@ -50,7 +50,7 @@ namespace MercurioShell
 
         public virtual bool RecognizeCommand(string commandName)
         {
-            return (commandName.ToLower().Contains(Name.ToLower()));
+            return (commandName.ToLower().Trim() == Name.ToLower());
         }
 
         public virtual void ValidateSyntax(string commandName, Arguments args)

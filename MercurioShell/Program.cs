@@ -66,7 +66,7 @@ namespace MercurioShell
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             var environment = MercurioEnvironment.Create(environmentScanner, serializer, GetLoginInfo);
-           // environment.SetUserHomeDirectory(userHome);
+            // environment.SetUserHomeDirectory(userHome);
             var identities = environment.GetAvailableIdentities();
             Console.WriteLine("Available identities are:");
             foreach(var identity in identities)

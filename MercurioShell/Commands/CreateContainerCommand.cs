@@ -30,7 +30,7 @@ namespace MercurioShell
             ValidateContext(context);
 
             var container = context.Environment.CreateContainer(arguments["container-name"], arguments["substrate-name"], GetRetentionPolicy(arguments["revision-retention"]));
-            return new List<string> { container.Name };
+            return new List<string> { string.Format("Created container {0}", container.Name) };
         }
 
         private RevisionRetentionPolicyType GetRetentionPolicy(string policyName)

@@ -67,6 +67,8 @@ namespace MercurioShell
             InstallCommand(new ShowContainerCommand());
             InstallCommand(new ShowSubstratesCommand());
             InstallCommand(new DeleteContainerCommand());
+            InstallCommand(new LockContainerCommand());
+            InstallCommand(new UnlockContainerCommand());
         }
 
         public void InstallCommand(IExecutableMercurioCommand command)
