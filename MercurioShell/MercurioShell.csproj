@@ -47,6 +47,7 @@
     <Compile Include="Commands\DeleteContainerCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\CreateContainerCommand.cs" />
+    <Compile Include="Commands\ListDocumentsCommand.cs" />
     <Compile Include="Commands\LockContainerCommand.cs" />
     <Compile Include="Commands\ShowContainerCommand.cs" />
     <Compile Include="IExecutableMercurioCommand.cs" />
@@ -57,7 +58,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands\ShowSubstratesCommand.cs" />
-    <Compile Include="UnlockContainerCommand.cs" />
+    <Compile Include="Commands\UnlockContainerCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

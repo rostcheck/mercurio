@@ -12,5 +12,6 @@ namespace MercurioShell
         public IMercurioEnvironment Environment { get; set; }
         public List<IExecutableMercurioCommand> Commands { get; set; }
         public Func<string, IMercurioEnvironment, bool> ConfirmAction { get; set; }
+        public IContainer OpenContainer { get; set; }
     }
 }

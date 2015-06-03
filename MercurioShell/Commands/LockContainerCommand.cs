@@ -31,6 +31,7 @@ namespace MercurioShell
                 return new List<string>() { string.Format("Container named {0} was not found", arguments["container-name"]) };
 
             context.Environment.LockContainer(container);
+            context.OpenContainer = null;
             return new List<string> { string.Format("Locked container {0}", container.Name) };
         }
     }

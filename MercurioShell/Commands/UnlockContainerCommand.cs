@@ -25,13 +25,25 @@ namespace MercurioShell
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
             ValidateContext(context);
+            var returnStrings = new List<string>();
 
+            if (context.OpenContainer != null) {
+                var lockCommand = new LockContainerCommand();
+                var lockArguments = new Arguments(string.Format("-container-name {0}", context.OpenContainer.Name).Split());
+                returnStrings = lockCommand.ExecuteCommand(lockCommand.Name, lockArguments, context).ToList();
+            }
+                
             var container = context.Environment.GetContainer(arguments["container-name"]);
             if (container == null)
-                return new List<string>() { string.Format("Container named {0} was not found", arguments["container-name"]) };
+            {
+                returnStrings.Add(string.Format("Container named {0} was not found", arguments["container-name"]));
+                return returnStrings;
+            }
 
             context.Environment.UnlockContainer(container);
-            return new List<string> { string.Format("Unlocked container {0}", container.Name) };
+            context.OpenContainer = container;
+            returnStrings.Add(string.Format("Unlocked container {0}", container.Name));
+            return returnStrings;
         }
     }
 }
