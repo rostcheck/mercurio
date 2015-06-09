@@ -90,5 +90,11 @@ namespace Mercurio.Domain.TestMocks
         {
             return true;
         }
+
+
+        public string EditDocument(string documentId, string clearTextContent)
+        {
+            return clearTextContent;
+        }
     }
 }

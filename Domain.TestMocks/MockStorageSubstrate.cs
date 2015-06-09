@@ -22,7 +22,7 @@ namespace Mercurio.Domain.TestMocks
             get { return "MockStorageSubstate"; }
         }
 
-        public IEnumerable<IContainer> GetAllContainers()
+        public List<IContainer> GetAllContainers()
         {
             return new List<IContainer>(_containers);
         }

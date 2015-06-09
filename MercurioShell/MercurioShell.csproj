@@ -45,6 +45,7 @@
     <Compile Include="Commands\CommandArgument.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\DeleteContainerCommand.cs" />
+    <Compile Include="Commands\EditDocumentCommand.cs" />
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\CreateContainerCommand.cs" />
     <Compile Include="Commands\ListDocumentsCommand.cs" />

@@ -44,6 +44,7 @@
     <Compile Include="MockEnvironmentScanner.cs" />
     <Compile Include="MockMercurioEnvironment.cs" />
     <Compile Include="MockStorageSubstrate.cs" />
+    <Compile Include="MockTempStorageSubstrate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

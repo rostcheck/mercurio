@@ -75,6 +75,7 @@
     <Compile Include="IMercurioEnvironment.cs" />
     <Compile Include="InMemoryStorageSubstrate.cs" />
     <Compile Include="ISerializerCore.cs" />
+    <Compile Include="ITempStorageSubstrate.cs" />
     <Compile Include="MercurioExceptionIdentityNotSet.cs" />
     <Compile Include="MercurioExceptionNoIdentitiesAvailable.cs" />
     <Compile Include="MercurioExceptionRequiredCryptoProviderNotAvailable.cs" />

@@ -25,7 +25,7 @@ namespace Mercurio.Domain
             get { return "Memory"; }
         }
 
-        public IEnumerable<IContainer> GetAllContainers()
+        public List<IContainer> GetAllContainers()
         {
             throw new NotImplementedException();
         }

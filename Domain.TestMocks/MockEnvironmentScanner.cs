@@ -28,5 +28,16 @@ namespace Mercurio.Domain.TestMocks
         {
             return _storageSubstrateList;
         }
+
+
+        public ITempStorageSubstrate GetTemporaryStorageSubstrate()
+        {
+            return new MockTempStorageSubstrate();
+        }
+
+        public string GetEditor()
+        {
+            return "notepad.exe";
+        }
     }
 }

@@ -22,5 +22,6 @@ namespace Mercurio.Domain
         void SetActiveIdentity(UserIdentity identity);
         UserIdentity GetActiveIdentity();
         bool ConfirmActiveIdentity();
+        string EditDocument(string documentId, string clearTextContent); // Shell out to system editor to edit a document
     }
 }

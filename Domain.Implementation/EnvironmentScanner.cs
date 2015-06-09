@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Mercurio.Domain;
 using System.Reflection;
 using Cryptography.GPG;
+using System.IO;
 
 namespace Mercurio.Domain.Implementation
 {
@@ -15,6 +16,7 @@ namespace Mercurio.Domain.Implementation
     public class EnvironmentScanner : IEnvironmentScanner
     {
         private List<ICryptographicServiceProvider> possibleCryptoProviderList;
+        private ITempStorageSubstrate _tempDiskStorageSubstrate;
 
         public EnvironmentScanner(string userHome = null)
         {
@@ -52,12 +54,29 @@ namespace Mercurio.Domain.Implementation
         public List<IStorageSubstrate> GetStorageSubstrates()
         {
             var returnList = new List<IStorageSubstrate>();
-            var storageSubstrate = ConfigurationManager.GetConfigurationValue("StorageSubstrate");
-            if (storageSubstrate != null)
+            var storageSubstratePath = ConfigurationManager.GetConfigurationValue("StorageSubstrate");
+            if (storageSubstratePath != null)
             {
-                returnList.Add(DiskStorageSubstrate.Create(storageSubstrate, SerializerType.BinarySerializer));
+                returnList.Add(DiskStorageSubstrate.Create(storageSubstratePath, SerializerType.BinarySerializer));
             }
             return returnList;
+        }
+
+        public ITempStorageSubstrate GetTemporaryStorageSubstrate()
+        {
+            if (_tempDiskStorageSubstrate == null)
+            {
+                var tempStorageSubstratePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Guid.NewGuid().ToString()).ToString();
+                Directory.CreateDirectory(tempStorageSubstratePath);
+                _tempDiskStorageSubstrate = DiskTempStorageSubstrate.Create(tempStorageSubstratePath);
+            }
+            return _tempDiskStorageSubstrate;
+        }
+
+        public string GetEditor()
+        {
+            // hard-coded to Notepad for now
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows).ToString(), "Notepad.exe").ToString(); 
         }
     }
 }

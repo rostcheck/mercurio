@@ -13,5 +13,7 @@ namespace Mercurio.Domain
     {
          List<ICryptographicServiceProvider> GetCryptographicProviders();
          List<IStorageSubstrate> GetStorageSubstrates();
+         ITempStorageSubstrate GetTemporaryStorageSubstrate();
+         string GetEditor();
     }
 }

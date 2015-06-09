@@ -40,7 +40,7 @@ namespace Mercurio.Domain.Implementation
             get { return Path.GetFileName(_path); }
         }
 
-        public IEnumerable<IContainer> GetAllContainers()
+        public List<IContainer> GetAllContainers()
         {
             var serializer = SerializerFactory.Create(_serializerType);
             var returnList = new List<IContainer>();

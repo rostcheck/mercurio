@@ -30,5 +30,7 @@ namespace Mercurio.Domain
         DocumentVersion ModifyTextDocument(string documentName, Identity modifierIdentity, string modifiedData);
         void DeleteRecord(string recordId);
         void ChangeRecord(Record changedRecord);
+
+        bool ContainsDocument(string documentName);
     }
 }

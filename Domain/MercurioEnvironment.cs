@@ -20,11 +20,15 @@ namespace Mercurio.Domain
         private NetworkCredential _activeCredential;
         private string _userHomeDirectory = null;
         private Serializer _serializer;
+        private ITempStorageSubstrate _tempStorageSubstrate;
+        private string _editor;
 
         public static MercurioEnvironment Create(IEnvironmentScanner scanner, Serializer serializer, Func<string, NetworkCredential> passphraseFunction)
         {
             var cryptographicServiceProviders = scanner.GetCryptographicProviders();
             var storageSubstrates = scanner.GetStorageSubstrates();
+            var tempStorageSubstrate = scanner.GetTemporaryStorageSubstrate();
+            var editor = scanner.GetEditor();
 
             if (cryptographicServiceProviders == null || storageSubstrates == null)
                 throw new ArgumentNullException();
@@ -34,22 +38,33 @@ namespace Mercurio.Domain
 
             if (!storageSubstrates.Any())
                 throw new ArgumentException("Must provide at least one storage substrate");
-            
+
+            if (tempStorageSubstrate == null)
+                throw new ArgumentException("Cannot construct a temporary storage substrate");
+
+            if (editor == null)
+                throw new ArgumentException("Cannot locate an editor");
+
             if (passphraseFunction == null)
             {
                 throw new ArgumentNullException("Must provide a valid passphrase function");
             }
-            return new MercurioEnvironment(cryptographicServiceProviders, serializer, storageSubstrates, passphraseFunction);
+            return new MercurioEnvironment(cryptographicServiceProviders, serializer, storageSubstrates, tempStorageSubstrate, editor, passphraseFunction);
         }
 
         private MercurioEnvironment(IEnumerable<ICryptographicServiceProvider> cryptographicServiceProviders, 
             Serializer serializer,
-            IEnumerable<IStorageSubstrate> storageSubstrates, Func<string, NetworkCredential> passphraseFunction)
+            IEnumerable<IStorageSubstrate> storageSubstrates, 
+            ITempStorageSubstrate tempStorageSubstrate, 
+            string editor,
+            Func<string, NetworkCredential> passphraseFunction)
         {
             this._cryptographicServiceProviders = new List<ICryptographicServiceProvider>(cryptographicServiceProviders);
             this._storageSubstrates = storageSubstrates.ToList();
             this._passphraseFunction = passphraseFunction;
             this._serializer = serializer;
+            this._tempStorageSubstrate = tempStorageSubstrate;
+            this._editor = editor;
         }
 
         // Generally only needed for testing
@@ -245,6 +260,15 @@ namespace Mercurio.Domain
             _activeIdentity = identity;
             _activeCredential = credential;
             _activeCryptoManager = cryptoManager;
+        }
+
+        public string EditDocument(string fileName, string clearTextContent)
+        {           
+            _tempStorageSubstrate.StoreData(fileName, clearTextContent);
+            //ProcessInfo.Start // TODO: launch the editor
+            var result = _tempStorageSubstrate.RetrieveData(fileName);
+            _tempStorageSubstrate.EraseData(fileName);
+            return result;
         }
     }
 }

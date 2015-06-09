@@ -187,6 +187,7 @@ namespace Mercurio.Domain
                 throw new MercurioException("Document version not found");
 
             return _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
+            //TODO: Decrypt the document content
         }
 
         public DocumentVersion GetLatestDocumentVersion(string documentName)
@@ -201,6 +202,7 @@ namespace Mercurio.Domain
 
             var documentVersionMetadata = availableVersions.OrderByDescending(s => s.CreatedDateTime).First();
             return _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
+            // TODO: Decrypt the document content
         }
 
         public virtual DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData)
@@ -258,6 +260,17 @@ namespace Mercurio.Domain
             {
                 throw new UnauthorizedAccessException("Container is locked");
             }
+        }
+
+        public bool ContainsDocument(string documentName)
+        {
+            documentName = documentName.ToLower();
+            foreach (var containedDocument in _privateMetadata.GetAvailableDocuments())
+            {
+                if (documentName == containedDocument.ToLower())
+                    return true;
+            }
+            return false;
         }
     }
 }
