@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace MercurioShell
 {
-    public class ListDocumentsCommand : CommandBase, IExecutableMercurioCommand
+    public class ShowDocumentsCommand : CommandBase, IExecutableMercurioCommand
     {
         public override string Name
         {
             get
             {
-                return "List-Documents";
+                return "Show-Documents";
             }
         }
 

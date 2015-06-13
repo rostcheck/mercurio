@@ -49,7 +49,7 @@
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\CreateContainerCommand.cs" />
     <Compile Include="Commands\ImportDocumentCommand.cs" />
-    <Compile Include="Commands\ListDocumentsCommand.cs" />
+    <Compile Include="Commands\ShowDocumentsCommand.cs" />
     <Compile Include="Commands\LockContainerCommand.cs" />
     <Compile Include="Commands\ShowContainerCommand.cs" />
     <Compile Include="Commands\InspectDocumentCommand.cs" />
