@@ -24,7 +24,7 @@ namespace MercurioShell
             if (context.OpenContainer == null)
                 return new List<string>() { string.Format("No container is unlocked") };
 
-            var returnList = new List<string>() { string.Format("Available documents in container {0} are:", context.OpenContainer) };
+            var returnList = new List<string>() { string.Format("Available documents in container {0} are:", context.OpenContainer.Name) };
             returnList.AddRange(context.OpenContainer.Documents);
             return returnList;
         }

@@ -62,13 +62,13 @@ namespace MercurioShell
 
         public void InstallBasicCommands()
         {
-            InstallCommand(new HelpCommand());
-            InstallCommand(new CreateContainerCommand());
-            InstallCommand(new ShowContainerCommand());
-            InstallCommand(new ShowSubstratesCommand());
-            InstallCommand(new DeleteContainerCommand());
-            InstallCommand(new LockContainerCommand());
-            InstallCommand(new UnlockContainerCommand());
+            var assembly = System.Reflection.Assembly.GetAssembly(typeof(MercurioCommandShell));
+            var commandTypes = assembly.ExportedTypes.Where(s => s.Name.EndsWith("Command") && s.IsClass);
+
+            foreach (var commandType in commandTypes)
+            {
+                InstallCommand(Activator.CreateInstance(commandType) as IExecutableMercurioCommand);
+            }
         }
 
         public void InstallCommand(IExecutableMercurioCommand command)
@@ -79,8 +79,10 @@ namespace MercurioShell
         private IExecutableMercurioCommand RecognizeCommand(string commandName)
         {
             foreach (var command in _commands)
+            {
                 if (command.RecognizeCommand(commandName))
                     return command;
+            }
             return null;
         }
     }

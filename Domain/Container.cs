@@ -160,6 +160,7 @@ namespace Mercurio.Domain
         {
             VerifyIsUnlocked();
             _privateMetadata.RevisionRetentionPolicyType = (int)revisionRetentionPolicyType;
+            StorePrivateMetadata();
         }
 
         public ICollection<string> Documents
@@ -211,11 +212,12 @@ namespace Mercurio.Domain
             if (latestVersion != null)
                 throw new MercurioException(string.Format("Document {0} already exists in this container", documentName));
 
-            var documentMetadata = DocumentMetadata.Create(documentName);
+            var documentMetadata = DocumentMetadata.Create(documentName);StorePrivateMetadata();            
             var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, 0, creatorIdentity.UniqueIdentifier, initialData);
 
             _substrate.StoreDocumentVersion(this.Id, documentVersion);
             _privateMetadata.AddDocumentVersion(documentName, documentVersion.Metadata);
+            StorePrivateMetadata();
             return documentVersion;
         }
 
@@ -239,6 +241,7 @@ namespace Mercurio.Domain
 
             _substrate.StoreDocumentVersion(this.Id, newVersion);
             _privateMetadata.AddDocumentVersion(documentName, newVersion.Metadata);
+            StorePrivateMetadata();
             return newVersion;
         }
 
