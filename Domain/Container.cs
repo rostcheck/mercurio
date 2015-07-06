@@ -55,11 +55,6 @@ namespace Mercurio.Domain
             StorePrivateMetadata();
         }
 
-        public static IEnumerable<IContainer> GetAllContainers(IStorageSubstrate storageSubstate)
-        {
-            return storageSubstate.GetAllContainers();
-        }
-
         /// <summary>
         /// Create Container from an existing stored representation. The container is locked (only public metadata is loaded)
         /// </summary>
@@ -183,12 +178,15 @@ namespace Mercurio.Domain
             if (versionMetadata == null)
                 throw new ArgumentNullException();
 
+            VerifyIsUnlocked();
+
             var documentVersionMetadata = _privateMetadata.GetSpecificVersion(versionMetadata.DocumentId, versionMetadata.Id);
             if (documentVersionMetadata == null)
                 throw new MercurioException("Document version not found");
 
-            return _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
-            //TODO: Decrypt the document content
+            var documentVersion = _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
+            var unencryptedDocumentContent = _cryptoManager.Decrypt(documentVersion.DocumentContent);
+            return DocumentVersion.CreateWithUnencryptedContent(documentVersion, unencryptedDocumentContent);
         }
 
         public DocumentVersion GetLatestDocumentVersion(string documentName)
@@ -202,8 +200,9 @@ namespace Mercurio.Domain
                 return null;
 
             var documentVersionMetadata = availableVersions.OrderByDescending(s => s.CreatedDateTime).First();
-            return _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
-            // TODO: Decrypt the document content
+            var documentVersion = _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
+            var unencryptedDocumentContent = _cryptoManager.Decrypt(documentVersion.DocumentContent);
+            return DocumentVersion.CreateWithUnencryptedContent(documentVersion, unencryptedDocumentContent);
         }
 
         public virtual DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData)
@@ -212,13 +211,16 @@ namespace Mercurio.Domain
             if (latestVersion != null)
                 throw new MercurioException(string.Format("Document {0} already exists in this container", documentName));
 
-            var documentMetadata = DocumentMetadata.Create(documentName);StorePrivateMetadata();            
-            var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, 0, creatorIdentity.UniqueIdentifier, initialData);
+            VerifyIsUnlocked();
+
+            var documentMetadata = DocumentMetadata.Create(documentName);
+            var encryptedInitialData = _cryptoManager.Encrypt(initialData, creatorIdentity.UniqueIdentifier);
+            var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, 0, creatorIdentity.UniqueIdentifier, encryptedInitialData);
 
             _substrate.StoreDocumentVersion(this.Id, documentVersion);
             _privateMetadata.AddDocumentVersion(documentName, documentVersion.Metadata);
-            StorePrivateMetadata();
-            return documentVersion;
+            StorePrivateMetadata();            
+            return DocumentVersion.CreateWithUnencryptedContent(documentVersion, initialData);
         }
 
         private Guid GetDocumentId(string documentName)
@@ -229,6 +231,8 @@ namespace Mercurio.Domain
 
         public virtual DocumentVersion ModifyTextDocument(string documentName, Identity modifierIdentity, string modifiedData)
         {
+            VerifyIsUnlocked();
+
             var documentId = GetDocumentId(documentName);
             if (documentId == null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
@@ -243,6 +247,67 @@ namespace Mercurio.Domain
             _privateMetadata.AddDocumentVersion(documentName, newVersion.Metadata);
             StorePrivateMetadata();
             return newVersion;
+        }
+
+        public virtual DocumentVersion DeleteDocumentSoft(string documentName, Identity modifierIdentity)
+        {
+            VerifyIsUnlocked();
+
+            var documentId = GetDocumentId(documentName);
+            if (documentId == null)
+                throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
+
+            var latestVersion = GetLatestDocumentVersion(documentName);
+            if (latestVersion == null)
+                throw new MercurioException(string.Format("Document {0} does not have any versions in this container", documentName)); // internal inconsistency
+
+            var newVersion = DocumentVersion.CreateDeleted(documentId, latestVersion.Id, latestVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier);
+
+            _substrate.StoreDocumentVersion(this.Id, newVersion);
+            _privateMetadata.AddDocumentVersion(documentName, newVersion.Metadata);
+            StorePrivateMetadata();
+            return newVersion;
+        }
+
+        public virtual DocumentVersion UnDeleteDocument(string documentName, Identity modifierIdentity)
+        {
+            VerifyIsUnlocked();
+
+            var documentId = GetDocumentId(documentName);
+            if (documentId == null)
+                throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
+
+            var latestVersion = GetLatestDocumentVersion(documentName);
+            if (latestVersion == null)
+                throw new MercurioException(string.Format("Document {0} does not have any versions in this container", documentName)); // internal inconsistency
+
+            if (!latestVersion.Metadata.IsDeleted)
+                throw new MercurioException(string.Format("Document {0} is not marked as deleted", documentName));
+
+            // Delete the empty version that serves as a delete marker
+            _substrate.DeleteDocumentVersion(this.Id, latestVersion);
+            _privateMetadata.RemoveDocumentVersion(documentName, latestVersion.Metadata);
+            StorePrivateMetadata();
+            return GetLatestDocumentVersion(documentName);
+        }
+
+        public virtual void DeleteDocumentHard(string documentName, Identity modifierIdentity)
+        {
+            VerifyIsUnlocked();
+
+            var documentId = GetDocumentId(documentName);
+            if (documentId == null)
+                throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
+
+            var latestVersion = GetLatestDocumentVersion(documentName);
+            while (latestVersion != null)
+            {
+                _substrate.DeleteDocumentVersion(this.Id, latestVersion);
+                latestVersion = GetLatestDocumentVersion(documentName);
+            }
+            _privateMetadata.RemoveDocument(documentName);
+
+            StorePrivateMetadata();
         }
 
         public virtual void DeleteRecord(string recordId)
@@ -267,6 +332,8 @@ namespace Mercurio.Domain
 
         public bool ContainsDocument(string documentName)
         {
+            VerifyIsUnlocked();
+
             documentName = documentName.ToLower();
             foreach (var containedDocument in _privateMetadata.GetAvailableDocuments())
             {

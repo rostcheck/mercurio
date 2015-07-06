@@ -9,14 +9,6 @@ namespace MercurioShell
 {
     public class ShowDocumentsCommand : CommandBase, IExecutableMercurioCommand
     {
-        public override string Name
-        {
-            get
-            {
-                return "Show-Documents";
-            }
-        }
-
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
             ValidateContext(context);

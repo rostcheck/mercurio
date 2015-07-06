@@ -70,6 +70,11 @@ namespace Mercurio.Domain.Implementation
             File.WriteAllText(GetDocumentVersionPath(containerId, documentVersion.DocumentId, documentVersion.Id), documentVersion.DocumentContent);
         }
 
+        public void DeleteDocumentVersion(Guid containerId, DocumentVersion documentVersion)
+        {
+            File.Delete(GetDocumentVersionPath(containerId, documentVersion.DocumentId, documentVersion.Id));
+        }
+
         public bool HostsContainer(Guid containerId)
         {
             return (GetContainerPath(containerId.ToString()) != null);

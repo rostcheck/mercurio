@@ -14,14 +14,6 @@ namespace MercurioShell
             AddOptionalParameter("Subject", "name");
         }
 
-        public override string Name 
-        { 
-            get 
-            { 
-                return "Help";  
-            } 
-        }
-
         public override string RewriteBeforeParsing(string commandString)
         {
             var args = new List<string>(commandString.Split());

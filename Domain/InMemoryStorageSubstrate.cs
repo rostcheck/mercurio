@@ -81,5 +81,10 @@ namespace Mercurio.Domain
                 _privateMetadata[containerId] = memoryStream.ToArray();
             }
         }
+
+        public void DeleteDocumentVersion(Guid containerId, DocumentVersion documentVersion)
+        {
+            _documentVersions.Remove(documentVersion.Metadata.Id);
+        }
     }
 }

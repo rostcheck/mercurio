@@ -16,14 +16,6 @@ namespace MercurioShell
             AddRequiredParameter("document-name", "name");
         }
 
-        public override string Name
-        {
-            get
-            {
-                return "Inspect-Document";
-            }
-        }
-
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
             ValidateContext(context);

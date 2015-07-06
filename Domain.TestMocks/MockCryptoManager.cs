@@ -43,7 +43,7 @@ namespace Mercurio.Domain.TestMocks
             return (_credential == null) ? string.Empty : _credential.UserName;
         }
 
-        public System.IO.Stream Encrypt(System.IO.Stream messageStream, string identifier)
+        public Stream Encrypt(Stream messageStream, string identifier)
         {
             var random = new Random();
             using (var memoryStream = new MemoryStream())
@@ -51,7 +51,8 @@ namespace Mercurio.Domain.TestMocks
                 messageStream.Position = 0;
                 messageStream.CopyTo(memoryStream);
                 var clearTextBytes = memoryStream.ToArray();
-                var fakeEncryptedBytes = new byte[(int)(clearTextBytes.Length * 1.3)];
+                int bufferLength = (int)(clearTextBytes.Length * 1.3); 
+                var fakeEncryptedBytes = new byte[bufferLength];
                 random.NextBytes(fakeEncryptedBytes);
                 _cleartexts.Add(fakeEncryptedBytes, clearTextBytes);
                 return new MemoryStream(fakeEncryptedBytes);
@@ -60,10 +61,22 @@ namespace Mercurio.Domain.TestMocks
 
         public string Encrypt(string message, string identifier)
         {
-            throw new NotImplementedException();
+            var random = new Random();
+            using (var memoryStream = new MemoryStream())
+            {
+                var writer = new StreamWriter(memoryStream);
+                writer.Write(message);
+                writer.Flush();
+                memoryStream.Position = 0;
+                var clearTextBytes = memoryStream.ToArray();
+                var fakeEncryptedBytes = new byte[(int)(clearTextBytes.Length * 1.3)];
+                random.NextBytes(fakeEncryptedBytes);
+                _cleartexts.Add(fakeEncryptedBytes, clearTextBytes);
+                return Encoding.UTF8.GetString(fakeEncryptedBytes);
+            }
         }
 
-        public System.IO.Stream Decrypt(System.IO.Stream messageStream)
+        public Stream Decrypt(Stream messageStream)
         {
             using (var memoryStream = new MemoryStream())
             {
@@ -75,6 +88,20 @@ namespace Mercurio.Domain.TestMocks
                     var fakeDecryptedStream = new MemoryStream(_cleartexts[fakeEncryptedBytes]);
                     fakeDecryptedStream.Position = 0;
                     return fakeDecryptedStream;
+                }
+                else
+                    throw new Exception("Cannot decrypt");
+            }
+        }
+
+        public string Decrypt(string encryptedMessage)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                var fakeEncryptedBytes = Encoding.UTF8.GetBytes(encryptedMessage);
+                if (_cleartexts.ContainsKey(fakeEncryptedBytes))
+                {
+                    return Encoding.UTF8.GetString(_cleartexts[fakeEncryptedBytes]);
                 }
                 else
                     throw new Exception("Cannot decrypt");

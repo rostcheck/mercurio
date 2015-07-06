@@ -93,50 +93,6 @@ namespace Mercurio.Domain
             return _documentVersionDirectory[documentId].Where(s => s.Id == documentVersionId).FirstOrDefault();
         }
 
-        //public DocumentVersionMetadata CreateDocumentVersion(string documentName, string revisorId)
-        //{
-        //    if (!_documentDirectory.ContainsKey(documentName))
-        //        _documentDirectory.Add(documentName, DocumentMetadata.Create(documentName));
-        //    var documentId = GetDocumentMetadata(documentName).Id;
-
-        //    return CreateDocumentVersion(documentId, revisorId);
-        //}
-
-        //public DocumentVersionMetadata CreateDocumentVersion(Guid documentId, string revisorId)
-        //{
-        //    if (_documentDirectory.Values.Where(s => s.Id == documentId).FirstOrDefault() == null)
-        //        throw new MercurioException("No such document found");
-
-        //    if (!_documentVersionDirectory.ContainsKey(documentId))
-        //        _documentVersionDirectory.Add(documentId, new List<DocumentVersionMetadata>());
-
-        //    var lastVersion = _documentVersionDirectory[documentId].OrderBy(s => s.CreatedDateTime).FirstOrDefault();
-        //    Guid parentVersionId = (lastVersion == null) ? Guid.Empty : lastVersion.Id;
-        //    return DocumentVersionMetadata.Create(parentVersionId, revisorId);
-        //}
-
-        //public DocumentVersionMetadata AddDocumentVersion(string documentName, Guid priorVersionId, string creatorId)
-        //{
-        //    var documentMetadata = GetDocumentMetadata(documentName);
-
-        //    var documentVersionMetadata = DocumentVersionMetadata.Create(priorVersionId, creatorId);
-        //    _documentVersionDirectory[documentMetadata.Id].Add(documentVersionMetadata);
-        //    // Apply version retention policy
-        //    _documentVersionDirectory[documentMetadata.Id] = _documentVersionDirectory[documentMetadata.Id].WithoutExcessRevisions((RevisionRetentionPolicyType)this.RevisionRetentionPolicyType);
-        //    return documentVersionMetadata;
-        //}
-
-        //public void AddDocumentVersion(Guid documentId, DocumentVersionMetadata documentVersionMetadata)
-        //{
-        //    if (!_documentDirectory.ContainsKey(documentId))
-        //        _documentDirectory.Add(documentId, DocumentMetadata.Create());
-
-        //    _documentVersionDirectory[documentMetadata.Id].Add(documentVersionMetadata);
-        //    // Apply version retention policy
-        //    _documentVersionDirectory[documentMetadata.Id] = _documentVersionDirectory[documentMetadata.Id].WithoutExcessRevisions((RevisionRetentionPolicyType)this.RevisionRetentionPolicyType);
-        //    return documentVersionMetadata;
-        //}
-
         public void AddDocumentVersion(string documentName, DocumentVersionMetadata documentVersionMetadata)
         {
             var documentMetadata = _documentDirectory.ContainsKey(documentName) ? GetDocumentMetadata(documentName) : null;
@@ -154,7 +110,20 @@ namespace Mercurio.Domain
             _documentVersionDirectory[documentMetadata.Id] = _documentVersionDirectory[documentMetadata.Id].WithoutExcessRevisions((RevisionRetentionPolicyType)this.RevisionRetentionPolicyType);          
         }
 
-        public void DeleteFile(string documentName)
+        public void RemoveDocumentVersion(string documentName, DocumentVersionMetadata documentVersionMetadata)
+        {            
+            var documentMetadata = _documentDirectory.ContainsKey(documentName) ? GetDocumentMetadata(documentName) : null;
+            if (documentMetadata == null)
+                throw new MercurioException(string.Format("Directory does not contain an entry for document {0}", documentName));
+
+            var documentVersion = _documentVersionDirectory[documentMetadata.Id].Where(s => s.Id == documentVersionMetadata.Id).FirstOrDefault();
+            if (documentVersion == null)
+                throw new MercurioException(string.Format("Document version list does not contain an entry for document {0} version {1}", documentName, documentVersionMetadata.Id));
+
+            _documentVersionDirectory[documentMetadata.Id].Remove(documentVersion);           
+        }
+
+        public void RemoveDocument(string documentName)
         {
             if (!_documentDirectory.ContainsKey(documentName))
                 throw new MercurioException("No such file exists");

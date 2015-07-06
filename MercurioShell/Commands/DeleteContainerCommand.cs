@@ -14,14 +14,6 @@ namespace MercurioShell
             AddRequiredParameter("container-name", "name");
         }
 
-        public override string Name
-        {
-            get
-            {
-                return "Delete-Container";
-            }
-        }
-
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)
         {
             if (context.ConfirmAction("WARNING: Deleting a container will delete all its contents forever. Are you sure you want to do this?", context.Environment))
@@ -30,7 +22,7 @@ namespace MercurioShell
                 return new List<string>() { string.Format("Container {0} was deleted", arguments["container-name"]) };
             }
             else
-                return null;
+                return new List<string>() { "Passphrase not correct - container not deleted" };
         }
     }
 }

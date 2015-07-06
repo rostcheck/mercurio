@@ -10,16 +10,37 @@ namespace MercurioShell
     public abstract class CommandBase : IExecutableMercurioCommand
     {
         private List<CommandArgument> _arguments;
+        private string _commandName;
+
         public CommandBase()
         {
             _arguments = new List<CommandArgument>();
+            _commandName = ParseCommandName();
         }
 
-        public virtual string Name
+        private string ParseCommandName()
+        {
+            var name = this.GetType().Name.Replace("Command", "");
+            bool inLowerCase = false;
+            var sb = new StringBuilder();
+            for (int counter = 0; counter < name.Length; counter++)
+            {
+                // If we're going from lower to upper case, add a hyphen
+                if (char.IsUpper(name[counter]) && inLowerCase == true)
+                {
+                    sb.Append("-");
+                }
+                inLowerCase = char.IsLower(name[counter]);
+                sb.Append(name[counter]);
+            }
+            return sb.ToString();
+        }
+
+        public string Name
         {
             get
             {
-                return "";
+                return _commandName;
             }
         }
 

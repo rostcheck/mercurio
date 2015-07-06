@@ -21,6 +21,7 @@ namespace Mercurio.Domain
         byte[] RetrievePrivateMetadataBytes(Guid containerId);
         void StoreDocumentVersion(Guid containerId, DocumentVersion documentVersion);
         DocumentVersion RetrieveDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata);
+        void DeleteDocumentVersion(Guid containerId, DocumentVersion documentVersion);
         void StoreMetadata(Guid containerId, ContainerMetadata metadata);
         void StorePrivateMetadata(Guid containerId, Stream encryptedPrivateMetadata);
         void DeleteContainer(Guid containerId);

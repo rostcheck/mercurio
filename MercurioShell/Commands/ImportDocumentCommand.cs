@@ -15,14 +15,6 @@ namespace MercurioShell
             AddRequiredParameter("document-path", "path");
         }
 
-        public override string Name
-        {
-            get
-            {
-                return "Import-Document";
-            }
-        }
-
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
             ValidateContext(context);

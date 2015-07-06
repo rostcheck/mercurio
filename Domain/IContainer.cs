@@ -32,5 +32,8 @@ namespace Mercurio.Domain
         void ChangeRecord(Record changedRecord);
 
         bool ContainsDocument(string documentName);
+        DocumentVersion DeleteDocumentSoft(string documentName, Identity modifierIdentity);
+        void DeleteDocumentHard(string documentName, Identity modifierIdentity);
+        DocumentVersion UnDeleteDocument(string documentName, Identity modifierIdentity); // Can only undelete soft-deleted documents
     }
 }

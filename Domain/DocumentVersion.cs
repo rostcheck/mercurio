@@ -55,9 +55,15 @@ namespace Mercurio.Domain
             }
         }
 
-        protected DocumentVersion(Guid documentId, Guid priorVersionId, long priorVersionCreatedTimeTicks, string creatorId)
+        protected DocumentVersion(Guid documentId, Guid priorVersionId, long priorVersionCreatedTimeTicks, string creatorId, bool isDeleted = false)
         {
-            this.Metadata = DocumentVersionMetadata.Create(documentId, priorVersionId, priorVersionCreatedTimeTicks, creatorId);
+            this.Metadata = DocumentVersionMetadata.Create(documentId, priorVersionId, priorVersionCreatedTimeTicks, creatorId, isDeleted);
+        }
+
+        protected DocumentVersion(DocumentVersion documentVersion, string unencryptedDocumentContent)
+        {
+            this.Metadata = documentVersion.Metadata;
+            this.DocumentContent = unencryptedDocumentContent;
         }
 
         //private DocumentVersion(Guid priorRevisionId, string creatorId, List<AtomicDataElementChange> changes)
@@ -85,6 +91,16 @@ namespace Mercurio.Domain
         public static DocumentVersion Create(Guid documentId, Guid priorVersionId, long priorVersionCreatedTimeTicks, string creatorId, string documentContent)
         {
             return new DocumentVersion(documentId, priorVersionId, priorVersionCreatedTimeTicks, creatorId, documentContent);
+        }
+
+        public static DocumentVersion CreateWithUnencryptedContent(DocumentVersion documentVersion, string unencryptedDocumentContent)
+        {
+            return new DocumentVersion(documentVersion, unencryptedDocumentContent);
+        }
+
+        public static DocumentVersion CreateDeleted(Guid documentId, Guid priorVersionId, long priorVersionCreatedTimeTicks, string creatorId)
+        {
+            return new DocumentVersion(documentId, priorVersionId, priorVersionCreatedTimeTicks, creatorId, true);
         }
     }
 }

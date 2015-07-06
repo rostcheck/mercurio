@@ -9,14 +9,6 @@ namespace MercurioShell
 {
     public class ShowContainerCommand : CommandBase
     {
-        public override string Name
-        {
-            get
-            {
-                return "Show-Containers";
-            }
-        }
-
         protected override ICollection<string> Execute(string command, Arguments args, MercurioShellContext context)
         {
             return context.Environment.GetContainers().Select(s => s.Name).ToList();

@@ -19,7 +19,8 @@ namespace Mercurio.Domain
         bool ValidateCredential(NetworkCredential credential);
         Stream Encrypt(Stream messageStream, string identifier);
         string Encrypt(string message, string identifier);
-        Stream Decrypt(Stream messageStream);
+        Stream Decrypt(Stream encryptedMessageStream);
+        string Decrypt(string encryptedMessage);
         string Sign(string message);
         bool Validate(string message);
         string GetPublicKey(string identifier); // for a single key

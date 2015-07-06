@@ -14,14 +14,6 @@ namespace MercurioShell.Commands
             AddRequiredParameter("document-name", "name");
         }
 
-        public override string Name
-        {
-            get
-            {
-                return "Edit-Document";
-            }
-        }
-
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)
         {
             string documentName = arguments["document-name"];

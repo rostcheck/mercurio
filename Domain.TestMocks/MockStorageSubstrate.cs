@@ -75,5 +75,11 @@ namespace Mercurio.Domain.TestMocks
         {
             return;
         }
+
+
+        public void DeleteDocumentVersion(Guid containerId, DocumentVersion documentVersion)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
