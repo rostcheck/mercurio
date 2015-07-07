@@ -12,6 +12,8 @@ namespace MercurioShell
         public LockContainerCommand()
         {
             AddRequiredParameter("container-name", "name");
+            AddAlias("Close-Container");
+            AddAlias("Close");
         }
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)

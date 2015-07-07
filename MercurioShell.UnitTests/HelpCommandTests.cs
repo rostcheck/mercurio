@@ -65,7 +65,7 @@ namespace MercurioShell.UnitTests
         public void Help_ExecuteCommand_calls_GetHelp_on_argument()
         {
             var command = new HelpCommand();
-            var targetCommand = new ShowContainerCommand();
+            var targetCommand = new ShowContainersCommand();
             _context.Commands.Add(targetCommand);
             // Verify calling help with explicit -subject
             var result = command.ExecuteCommand("Help", new Arguments(new string[] {"-subject", "Show-Containers"}), _context);

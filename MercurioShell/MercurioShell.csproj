@@ -52,7 +52,7 @@
     <Compile Include="Commands\ImportDocumentCommand.cs" />
     <Compile Include="Commands\ShowDocumentsCommand.cs" />
     <Compile Include="Commands\LockContainerCommand.cs" />
-    <Compile Include="Commands\ShowContainerCommand.cs" />
+    <Compile Include="Commands\ShowContainersCommand.cs" />
     <Compile Include="Commands\InspectDocumentCommand.cs" />
     <Compile Include="IExecutableMercurioCommand.cs" />
     <Compile Include="MercurioCommandShell.cs" />

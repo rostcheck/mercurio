@@ -43,7 +43,8 @@ namespace MercurioShell
             {
                 var result = new List<string>();
                 result.Add("Available commands are:");
-                foreach (var command in context.Commands)
+                result.Add("Help");
+                foreach (var command in context.Commands.Where(s => s.Name != "Help").OrderBy(s => s.Name))
                 {
                     result.Add(command.Name);
                 }

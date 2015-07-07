@@ -11,6 +11,7 @@ namespace MercurioShell
     {
         private List<CommandArgument> _arguments;
         private string _commandName;
+        public List<string> _aliases;
 
         public CommandBase()
         {
@@ -47,13 +48,25 @@ namespace MercurioShell
         public virtual string ShowHelp()
         {
             var sb = new StringBuilder();
+            sb.AppendFormat("Usage: {0} ", Name);
             foreach (var argument in _arguments.Where(s => s.Required == true))
                 sb.Append(string.Format("-{0} {1} ", argument.Name, FormatArgumentHelp(argument)));
 
             foreach (var argument in _arguments.Where(s => s.Required == false))
                 sb.Append(string.Format("[-{0} {1}] ", argument.Name, FormatArgumentHelp(argument)));
 
-            return string.Format("Usage: {0} {1}", Name, sb.ToString()).TrimEnd();
+            if (_aliases != null)
+            {
+                sb.AppendLine();
+                sb.AppendFormat("Aliases: ");
+                for (int aliasNumber = 0; aliasNumber < _aliases.Count; aliasNumber++)
+                {
+                    sb.Append(_aliases[aliasNumber]);
+                    if (aliasNumber < _aliases.Count - 1)
+                        sb.Append(", ");
+                }
+            }
+            return sb.ToString();
         }
 
         private string FormatArgumentHelp(CommandArgument argument)
@@ -71,13 +84,37 @@ namespace MercurioShell
 
         public virtual bool RecognizeCommand(string commandName)
         {
-            return (commandName.ToLower().Trim() == Name.ToLower());
+            if (commandName.ToLower().Trim() == Name.ToLower())
+                return true;
+            else
+            {
+                if (_aliases == null)
+                    return false;
+                else
+                {
+                    foreach (var alias in _aliases)
+                    {
+                        if (commandName.ToLower() == alias.ToLower())
+                            return true;
+                    }
+                    return false;
+                }
+            }
         }
 
         public virtual void ValidateSyntax(string commandName, Arguments args)
         {
-            if (commandName.ToLower().Trim() != Name.ToLower())
-                throw new MercurioShellSyntaxException(string.Format("Invalid command name {0}, expected {1}", commandName.ToLower().Trim(), Name));
+            if (!RecognizeCommand(commandName))
+            {
+                var sb = new StringBuilder();
+                sb.AppendFormat("Invalid command name {0}, expected {1}", commandName.ToLower().Trim(), Name);
+                if (_aliases != null)
+                {
+                    sb.Append(" or aliases ");
+                    sb.Append(string.Join(", ", _aliases));
+                }
+                throw new MercurioShellSyntaxException(sb.ToString());
+            }                
 
             foreach (var argument in _arguments.Where(s => s.Required == true))
             {
@@ -110,6 +147,14 @@ namespace MercurioShell
         internal void AddRequiredParameter(string name, string[] allowedValues)
         {
             _arguments.Add(new CommandArgument(name, true, "", allowedValues));
+        }
+
+        internal void AddAlias(string alias)
+        {
+            if (_aliases == null)
+                _aliases = new List<string>();
+
+            _aliases.Add(alias);
         }
 
         protected abstract ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context);

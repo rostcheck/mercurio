@@ -12,6 +12,8 @@ namespace MercurioShell
         public UnlockContainerCommand()
         {
             AddRequiredParameter("container-name", "name");
+            AddAlias("Open-Container");
+            AddAlias("Open");
         }
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MercurioShell
 {
-    public class ShowContainerCommand : CommandBase
+    public class ShowContainersCommand : CommandBase
     {
         protected override ICollection<string> Execute(string command, Arguments args, MercurioShellContext context)
         {
