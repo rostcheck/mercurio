@@ -15,5 +15,6 @@ namespace Mercurio.Domain
         void StoreData(string fileName, string clearTextData);
         string RetrieveData(string fileName);
         void EraseData(string fileName);
+        string GetPath(string fileName);
     }
 }

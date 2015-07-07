@@ -31,5 +31,11 @@ namespace Mercurio.Domain.TestMocks
             if (_dataStore.ContainsKey(fileName.ToLower()))
                 _dataStore[fileName.ToLower()] = "";
         }
+
+
+        public string GetPath(string fileName)
+        {
+            return fileName;
+        }
     }
 }

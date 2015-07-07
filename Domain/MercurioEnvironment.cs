@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -265,7 +266,7 @@ namespace Mercurio.Domain
         public string EditDocument(string fileName, string clearTextContent)
         {           
             _tempStorageSubstrate.StoreData(fileName, clearTextContent);
-            //ProcessInfo.Start // TODO: launch the editor
+            Process.Start(_tempStorageSubstrate.GetPath(fileName));
             var result = _tempStorageSubstrate.RetrieveData(fileName);
             _tempStorageSubstrate.EraseData(fileName);
             return result;

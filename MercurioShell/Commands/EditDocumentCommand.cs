@@ -17,8 +17,8 @@ namespace MercurioShell.Commands
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)
         {
             string documentName = arguments["document-name"];
-            if (!documentName.ToLower().Contains(".txt"))
-                documentName = string.Format("{0}.txt", documentName);
+            //if (!documentName.ToLower().Contains(".txt"))
+            //    documentName = string.Format("{0}.txt", documentName);
 
             bool editing = context.OpenContainer.ContainsDocument(documentName);
             var existingDocumentVersion =  (editing == true) ? context.OpenContainer.GetLatestDocumentVersion(documentName) : null;

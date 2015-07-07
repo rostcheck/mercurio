@@ -18,7 +18,7 @@ namespace MercurioShell
         {
             if (context.ConfirmAction("WARNING: Deleting a document will delete all its contents forever. Are you sure you want to do this?", context.Environment))
             {
-                context.OpenContainer.DeleteDocumentSoft(arguments["container-name"], context.Environment.GetActiveIdentity());
+                context.OpenContainer.DeleteDocumentSoft(arguments["document-name"], context.Environment.GetActiveIdentity());
                 return new List<string>() { string.Format("Document {0} was deleted", arguments["document-name"]) };
             }
             else

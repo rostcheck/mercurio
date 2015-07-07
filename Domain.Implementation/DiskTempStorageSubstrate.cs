@@ -56,5 +56,10 @@ namespace Mercurio.Domain.Implementation
             }
             File.Delete(fileName);
         }
+
+        public string GetPath(string fileName)
+        {
+            return Path.Combine(_storagePath, fileName);
+        }
     }
 }
