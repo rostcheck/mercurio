@@ -79,7 +79,13 @@ namespace MercurioShell
 
         public virtual string RewriteBeforeParsing(string commandString)
         {
-            return commandString;
+            // If only one argument is required, rewrite to implicitly put the argument name in so typing it isn't required
+            var parts = commandString.Split();
+            var requiredArgs = _arguments.Where(s => s.Required == true).ToList();
+            if (parts.Length == 2 && requiredArgs.Count == 1)
+                return string.Format("{0} -{1} {2}", parts[0], requiredArgs[0].Name, parts[1]);
+            else
+                return commandString;
         }
 
         public virtual bool RecognizeCommand(string commandName)
