@@ -23,8 +23,8 @@ namespace Mercurio.Domain
         void ChangeRevisionRetentionPolicy(RevisionRetentionPolicyType revisionRetentionPolicyType);
         ICollection<string> Documents { get; }
         ICollection<DocumentVersionMetadata> ListAvailableVersions(string documentName);
-        DocumentVersion GetDocumentVersion(DocumentVersionMetadata versionMetadata);
-        DocumentVersion GetLatestDocumentVersion(string documentName);
+        DocumentVersion GetDocumentVersion(DocumentVersionMetadata versionMetadata, bool metadataOnly = false);
+        DocumentVersion GetLatestDocumentVersion(string documentName, bool metadataOnly = false);
 
         DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData);
         DocumentVersion ModifyTextDocument(string documentName, Identity modifierIdentity, string modifiedData);

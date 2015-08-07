@@ -36,6 +36,7 @@ namespace MercurioShell
 
         public ICollection<string> ExecuteCommand(string commandString)
         {
+            commandString = commandString.Trim();
             if (string.IsNullOrEmpty(commandString))
                 return null;
 

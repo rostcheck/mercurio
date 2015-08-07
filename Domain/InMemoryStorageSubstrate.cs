@@ -82,9 +82,9 @@ namespace Mercurio.Domain
             }
         }
 
-        public void DeleteDocumentVersion(Guid containerId, DocumentVersion documentVersion)
+        public void DeleteDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata)
         {
-            _documentVersions.Remove(documentVersion.Metadata.Id);
+            _documentVersions.Remove(documentVersionMetadata.Id);
         }
     }
 }

@@ -1,0 +1,3 @@
+- Need a rename-document command
+- Need a show-versions command
+- Test help for delete-document re. hard argument

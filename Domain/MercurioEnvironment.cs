@@ -266,7 +266,11 @@ namespace Mercurio.Domain
         public string EditDocument(string fileName, string clearTextContent)
         {           
             _tempStorageSubstrate.StoreData(fileName, clearTextContent);
-            Process.Start(_tempStorageSubstrate.GetPath(fileName));
+            var process = new Process();
+            process.StartInfo.Arguments = _tempStorageSubstrate.GetPath(fileName);
+            process.StartInfo.FileName = "notepad.exe";
+            process.Start();
+            process.WaitForExit();
             var result = _tempStorageSubstrate.RetrieveData(fileName);
             _tempStorageSubstrate.EraseData(fileName);
             return result;
