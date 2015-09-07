@@ -25,6 +25,8 @@ namespace MercurioShell
 
             var documentName = arguments["document-name"];
             var documentVersion = context.OpenContainer.GetLatestDocumentVersion(documentName);
+            if (documentVersion == null)
+                return new List<string>() { "Document " + documentName + " not found in container " + context.OpenContainer.Name };
             var linesToShow = documentVersion.DocumentContent.Split(new string[] { System.Environment.NewLine }, numberOfLinesToShow + 1, StringSplitOptions.None).Take(numberOfLinesToShow).ToList();
             if (linesToShow.Count == numberOfLinesToShow)
                 linesToShow.Add("...");

@@ -21,13 +21,13 @@ namespace MercurioShell
         {
             ValidateContext(context);
 
-            var container = context.Environment.CreateContainer(arguments["container-name"], arguments["substrate-name"], GetRetentionPolicy(arguments["revision-retention"]));
+            var container = context.Environment.CreateContainer(arguments["container-name"], arguments["substrate-name"], GetRetentionPolicy(arguments["revision-retention-policy"]));
             return new List<string> { string.Format("Created container {0}", container.Name) };
         }
 
         private RevisionRetentionPolicyType GetRetentionPolicy(string policyName)
         {
-            switch (policyName)
+            switch (policyName.ToLower())
             {
                 case "keepall":
                     return RevisionRetentionPolicyType.KeepAll;

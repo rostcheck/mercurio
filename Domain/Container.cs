@@ -200,6 +200,8 @@ namespace Mercurio.Domain
                 return null;
             var documentVersionMetadata = availableVersions.OrderByDescending(s => s.CreatedDateTime).First();
             var documentVersion = _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
+            if (documentVersionMetadata.IsDeleted)
+                metadataOnly = true;
             var unencryptedDocumentContent = (metadataOnly == true) ? null : _cryptoManager.Decrypt(documentVersion.DocumentContent);
             return DocumentVersion.CreateWithUnencryptedContent(documentVersion, unencryptedDocumentContent);
         }

@@ -64,5 +64,10 @@ namespace Mercurio.Domain
             info.AddValue(CreatorIdSerializationName, this.CreatorId);
             info.AddValue(IsDeletedSerializationName, this.IsDeleted);
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1} {2}", CreatedDateTime.ToLocalTime(), CreatorId, IsDeleted ? "(deleted)" : "");
+        }
     }
 }
