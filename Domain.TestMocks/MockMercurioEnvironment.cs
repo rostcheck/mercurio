@@ -96,5 +96,11 @@ namespace Mercurio.Domain.TestMocks
         {
             return clearTextContent;
         }
+
+
+        public UserIdentity GetUserIdentity(string identifier)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

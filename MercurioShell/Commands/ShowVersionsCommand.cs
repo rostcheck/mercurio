@@ -1,4 +1,5 @@
 ﻿using CommandLine.Utility;
+using Mercurio.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +26,16 @@ namespace MercurioShell.Commands
             else
             {
                 returnList = new List<string>() { string.Format("Available versions for document {0} are:", arguments["document-name"]) };
-                returnList.AddRange(versions.Select(s => s.ToString()));
+                returnList.AddRange(versions.Select(s => VersionAsString(s, context)));
             }
             return returnList;
+        }
+
+        private string VersionAsString(DocumentVersionMetadata metadata, MercurioShellContext context)
+        {
+            var creator = context.Environment.GetUserIdentity(metadata.CreatorId);
+            var creatorName = (creator == null) ? "" : creator.Name;
+            return string.Format("{0} {1} {2} {3}", metadata.CreatedDateTime.ToLocalTime(), creatorName, metadata.Id, metadata.IsDeleted ? "(deleted)" : "");
         }
     }
 }

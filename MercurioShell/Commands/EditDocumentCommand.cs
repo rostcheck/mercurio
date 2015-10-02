@@ -24,7 +24,7 @@ namespace MercurioShell.Commands
 
             bool editing = context.OpenContainer.ContainsDocument(documentName);
             var existingDocumentVersion =  (editing == true) ? context.OpenContainer.GetLatestDocumentVersion(documentName) : null;
-            if (existingDocumentVersion.IsDeleted)
+            if (existingDocumentVersion != null && existingDocumentVersion.IsDeleted)
                 return new List<string>() { "Document " + documentName + " is deleted." };
             Guid documentId = (existingDocumentVersion != null) ? existingDocumentVersion.DocumentId : Guid.NewGuid();
             string existingDocumentContent = (editing == true) ? existingDocumentVersion.DocumentContent : string.Empty;

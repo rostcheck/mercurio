@@ -184,6 +184,17 @@ namespace Mercurio.Domain
             return identities;
         }
 
+        public UserIdentity GetUserIdentity(string identifier)
+        {
+            var identities = new List<UserIdentity>();
+            foreach (var cryptographicStorageProvider in _cryptographicServiceProviders)
+            {
+                var manager = cryptographicStorageProvider.CreateManager(GetCryptoManagerConfiguration(cryptographicStorageProvider));
+                identities.AddRange(manager.GetAvailableIdentities());
+            }
+            return identities.Where(s => s.UniqueIdentifier == identifier).FirstOrDefault();
+        }
+
         private CryptoManagerConfiguration GetCryptoManagerConfiguration(ICryptographicServiceProvider provider)
         {
             var configuration = provider.GetConfiguration();
