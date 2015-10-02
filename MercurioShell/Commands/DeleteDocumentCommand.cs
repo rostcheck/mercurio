@@ -17,6 +17,8 @@ namespace MercurioShell
 
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)
         {
+            VerifyContainerIsOpen(context);
+
             if (context.ConfirmAction("WARNING: Deleting a document will delete all its contents forever. Are you sure you want to do this?", context.Environment))
             {
                 if (arguments.Contains("hard-delete"))

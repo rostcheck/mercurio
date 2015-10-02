@@ -17,10 +17,7 @@ namespace MercurioShell
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
-            ValidateContext(context);
-
-            if (context.OpenContainer == null)
-                return new List<string>() { string.Format("No container is unlocked") };
+            VerifyContainerIsOpen(context);
 
             var documentPath = arguments["document-path"];
             var documentName = Path.GetFileName(documentPath);

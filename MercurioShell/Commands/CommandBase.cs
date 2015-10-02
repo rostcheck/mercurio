@@ -171,5 +171,11 @@ namespace MercurioShell
             ValidateSyntax(commandName, arguments);
             return Execute(commandName, arguments, context);
         }
+
+        protected void VerifyContainerIsOpen(MercurioShellContext context)
+        {
+            if (context == null || context.OpenContainer == null)
+                throw new Exception("No container is unlocked.");
+        }
     }
 }

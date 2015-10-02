@@ -18,8 +18,6 @@ namespace MercurioShell
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
-            ValidateContext(context);
-
             var container = context.Environment.GetContainer(arguments["container-name"]);
             if (container == null)
                 return new List<string>() { string.Format("Container named {0} was not found", arguments["container-name"]) };

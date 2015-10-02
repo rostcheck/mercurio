@@ -216,7 +216,7 @@ namespace Mercurio.Domain
 
             var documentMetadata = DocumentMetadata.Create(documentName);
             var encryptedInitialData = _cryptoManager.Encrypt(initialData, creatorIdentity.UniqueIdentifier);
-            var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, 0, creatorIdentity.UniqueIdentifier, encryptedInitialData);
+            var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, 0, creatorIdentity.UniqueIdentifier, encryptedInitialData, false);
 
             _substrate.StoreDocumentVersion(this.Id, documentVersion);
             _privateMetadata.AddDocumentVersion(documentName, documentVersion.Metadata);
@@ -243,7 +243,7 @@ namespace Mercurio.Domain
                 throw new MercurioException(string.Format("Document {0} does not have any versions in this container", documentName)); // internal inconsistency
 
             var encryptedData = _cryptoManager.Encrypt(modifiedData, modifierIdentity.UniqueIdentifier);
-            var newVersion = DocumentVersion.Create(documentId, latestVersion.Id, latestVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier, encryptedData);
+            var newVersion = DocumentVersion.Create(documentId, latestVersion.Id, latestVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier, encryptedData, false);
 
             _substrate.StoreDocumentVersion(this.Id, newVersion);
             _privateMetadata.AddDocumentVersion(documentName, newVersion.Metadata);

@@ -18,7 +18,6 @@ namespace MercurioShell
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
-            ValidateContext(context);
             var returnStrings = new List<string>();
 
             if (context.OpenContainer != null) {

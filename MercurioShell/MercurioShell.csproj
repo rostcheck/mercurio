@@ -55,6 +55,7 @@
     <Compile Include="Commands\LockContainerCommand.cs" />
     <Compile Include="Commands\ShowContainersCommand.cs" />
     <Compile Include="Commands\InspectDocumentCommand.cs" />
+    <Compile Include="Commands\UndeleteDocumentCommand.cs" />
     <Compile Include="IExecutableMercurioCommand.cs" />
     <Compile Include="MercurioCommandShell.cs" />
     <Compile Include="MercurioShellContext.cs" />

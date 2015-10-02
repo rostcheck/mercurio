@@ -19,8 +19,6 @@ namespace MercurioShell
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
-            ValidateContext(context);
-
             var container = context.Environment.CreateContainer(arguments["container-name"], arguments["substrate-name"], GetRetentionPolicy(arguments["revision-retention-policy"]));
             return new List<string> { string.Format("Created container {0}", container.Name) };
         }

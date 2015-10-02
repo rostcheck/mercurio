@@ -16,12 +16,16 @@ namespace MercurioShell.Commands
 
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)
         {
+            VerifyContainerIsOpen(context);
+
             string documentName = arguments["document-name"];
             //if (!documentName.ToLower().Contains(".txt"))
             //    documentName = string.Format("{0}.txt", documentName);
 
             bool editing = context.OpenContainer.ContainsDocument(documentName);
             var existingDocumentVersion =  (editing == true) ? context.OpenContainer.GetLatestDocumentVersion(documentName) : null;
+            if (existingDocumentVersion.IsDeleted)
+                return new List<string>() { "Document " + documentName + " is deleted." };
             Guid documentId = (existingDocumentVersion != null) ? existingDocumentVersion.DocumentId : Guid.NewGuid();
             string existingDocumentContent = (editing == true) ? existingDocumentVersion.DocumentContent : string.Empty;
             var editedContent = context.Environment.EditDocument(documentId.ToString(), existingDocumentContent);

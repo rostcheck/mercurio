@@ -59,7 +59,7 @@ namespace Mercurio.Domain.Implementation
         public DocumentVersion RetrieveDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata)
         {
             var fileContent = File.ReadAllText(GetDocumentVersionPath(containerId, documentVersionMetadata.DocumentId, documentVersionMetadata.Id));
-            return DocumentVersion.Create(documentVersionMetadata.DocumentId, documentVersionMetadata.PriorVersionId, documentVersionMetadata.CreatedDateTime.UtcTicks, documentVersionMetadata.CreatorId, fileContent);
+            return DocumentVersion.Create(documentVersionMetadata.DocumentId, documentVersionMetadata.PriorVersionId, documentVersionMetadata.CreatedDateTime.UtcTicks, documentVersionMetadata.CreatorId, fileContent, documentVersionMetadata.IsDeleted);
         }
 
         public void StoreDocumentVersion(Guid containerId, DocumentVersion documentVersion)
