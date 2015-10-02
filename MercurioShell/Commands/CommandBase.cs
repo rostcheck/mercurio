@@ -53,7 +53,7 @@ namespace MercurioShell
                 sb.Append(string.Format("-{0} {1} ", argument.Name, FormatArgumentHelp(argument)));
 
             foreach (var argument in _arguments.Where(s => s.Required == false))
-                sb.Append(string.Format("[-{0} {1}] ", argument.Name, FormatArgumentHelp(argument)));
+                sb.Append(FormatNameAndHelp(argument));
 
             if (_aliases != null)
             {
@@ -69,12 +69,20 @@ namespace MercurioShell
             return sb.ToString();
         }
 
+        private string FormatNameAndHelp(CommandArgument argument)
+        {
+            if (argument.AllowedValues == null)
+                return string.Format("[-{0}] ", argument.Name);
+            else
+                return string.Format("[-{0} {1}] ", argument.Name, FormatArgumentHelp(argument));
+        }
+
         private string FormatArgumentHelp(CommandArgument argument)
         {
-            if (argument.AllowedValues != null)
-                return string.Format("<{0}>", string.Join(" | ", argument.AllowedValues));
-            else
+            if (argument.AllowedValues == null)
                 return string.Format("<{0}>", argument.ArgumentNameForHelp);
+            else
+                return string.Format("<{0}>", string.Join(" | ", argument.AllowedValues));
         }
 
         public virtual string RewriteBeforeParsing(string commandString)

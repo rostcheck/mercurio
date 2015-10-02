@@ -1,3 +1,1 @@
 - Need a rename-document command
-- Fix handling of deleted versions (for edit-document)
-- Test help for delete-document re. hard argument
