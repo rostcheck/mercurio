@@ -11,7 +11,7 @@ namespace MercurioShell
     {
         public LockContainerCommand()
         {
-            AddRequiredParameter("container-name", "name");
+            AddOptionalParameter("container-name", "name");
             AddAlias("Close-Container");
             AddAlias("Close");
             AddAlias("Lock");
@@ -19,7 +19,8 @@ namespace MercurioShell
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
-            var container = context.Environment.GetContainer(arguments["container-name"]);
+            var containerName = arguments["container-name"];
+            var container = (containerName == null) ? context.OpenContainer : context.Environment.GetContainer(containerName);
             if (container == null)
                 return new List<string>() { string.Format("Container named {0} was not found", arguments["container-name"]) };
 
