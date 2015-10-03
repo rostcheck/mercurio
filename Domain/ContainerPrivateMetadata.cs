@@ -132,5 +132,15 @@ namespace Mercurio.Domain
             _documentVersionDirectory.Remove(documentMetadata.Id);
             _documentDirectory.Remove(documentName);
         }
+
+        public void RenameDocument(string oldDocumentName, string newDocumentName)
+        {
+            if (!_documentDirectory.ContainsKey(oldDocumentName))
+                throw new MercurioException("No such file exists");
+
+            var documentMetadata = GetDocumentMetadata(oldDocumentName);
+            _documentDirectory.Remove(oldDocumentName);
+            _documentDirectory.Add(newDocumentName, documentMetadata);
+        }
     }
 }

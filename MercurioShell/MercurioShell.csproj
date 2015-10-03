@@ -50,6 +50,7 @@
     <Compile Include="Commands\HelpCommand.cs" />
     <Compile Include="Commands\CreateContainerCommand.cs" />
     <Compile Include="Commands\ImportDocumentCommand.cs" />
+    <Compile Include="Commands\RenameDocumentComand.cs" />
     <Compile Include="Commands\ShowVersionsCommand.cs" />
     <Compile Include="Commands\ShowDocumentsCommand.cs" />
     <Compile Include="Commands\LockContainerCommand.cs" />

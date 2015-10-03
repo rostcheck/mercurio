@@ -279,6 +279,18 @@ namespace Mercurio.Domain
             return newVersion;
         }
 
+        public virtual void RenameDocument(string oldDocumentName, string newDocumentName)
+        {
+            VerifyIsUnlocked();
+
+            var documentId = GetDocumentId(oldDocumentName);
+            if (documentId == null)
+                throw new MercurioException(string.Format("Document {0} does not exist in this container", oldDocumentName));
+
+            _privateMetadata.RenameDocument(oldDocumentName, newDocumentName);
+            StorePrivateMetadata();
+        }
+
         public virtual DocumentVersion UnDeleteDocument(string documentName, Identity modifierIdentity)
         {
             VerifyIsUnlocked();

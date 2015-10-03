@@ -35,5 +35,6 @@ namespace Mercurio.Domain
         DocumentVersion DeleteDocumentSoft(string documentName, Identity modifierIdentity);
         void DeleteDocumentHard(string documentName, Identity modifierIdentity);
         DocumentVersion UnDeleteDocument(string documentName, Identity modifierIdentity); // Can only undelete soft-deleted documents
+        void RenameDocument(string oldDocumentName, string newDocumentName);
     }
 }
