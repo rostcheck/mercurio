@@ -14,6 +14,7 @@ namespace MercurioShell
         public InspectDocumentCommand()
         {
             AddRequiredParameter("document-name", "name");
+            AddAlias("inspect");
         }
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)

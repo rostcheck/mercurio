@@ -13,6 +13,9 @@ namespace MercurioShell
         {
             AddRequiredParameter("old-document-name", "name");
             AddRequiredParameter("new-document-name", "name");
+            AddAlias("Rename");
+            AddAlias("Ren");
+            AddAlias("mv");
         }
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)

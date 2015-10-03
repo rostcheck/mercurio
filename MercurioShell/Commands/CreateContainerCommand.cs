@@ -15,6 +15,7 @@ namespace MercurioShell
             AddRequiredParameter("container-name", "name");
             AddRequiredParameter("substrate-name", "name");
             AddOptionalParameter("revision-retention-policy", new string[] { "KeepOne", "KeepAll" });
+            AddAlias("mkdir");
         }
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)

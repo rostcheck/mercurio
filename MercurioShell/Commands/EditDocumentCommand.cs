@@ -12,6 +12,7 @@ namespace MercurioShell.Commands
         public EditDocumentCommand()
         {
             AddRequiredParameter("document-name", "name");
+            AddAlias("edit");
         }
 
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)

@@ -13,6 +13,8 @@ namespace MercurioShell
         {
             AddRequiredParameter("document-name", "name");
             AddOptionalParameter("hard-delete", "hard-delete");
+            AddAlias("Del");
+            AddAlias("rm");
         }
 
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)

@@ -9,6 +9,12 @@ namespace MercurioShell
 {
     public class ShowDocumentsCommand : CommandBase, IExecutableMercurioCommand
     {
+        public ShowDocumentsCommand()
+        {
+            AddAlias("Dir");
+            AddAlias("ls");
+        }
+
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
         {
             VerifyContainerIsOpen(context);

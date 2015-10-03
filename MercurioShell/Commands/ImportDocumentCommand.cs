@@ -13,6 +13,7 @@ namespace MercurioShell
         public ImportDocumentCommand()
         {
             AddRequiredParameter("document-path", "path");
+            AddAlias("import");
         }
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)

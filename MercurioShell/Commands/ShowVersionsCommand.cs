@@ -13,6 +13,7 @@ namespace MercurioShell.Commands
         public ShowVersionsCommand()
         {
             AddRequiredParameter("document-name", "name");
+            AddAlias("Versions");
         }
 
         protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)

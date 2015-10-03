@@ -12,6 +12,7 @@ namespace MercurioShell.Commands
         public UndeleteDocumentCommand()
         {
             AddRequiredParameter("document-name", "name");
+            AddAlias("Undel");
         }
 
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)

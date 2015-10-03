@@ -12,6 +12,7 @@ namespace MercurioShell
         public DeleteContainerCommand()
         {
             AddRequiredParameter("container-name", "name");
+            AddAlias("rmdir");
         }
 
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)
