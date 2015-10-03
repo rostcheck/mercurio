@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace Mercurio.Domain.Implementation
         private static string ReplaceConfigurationStrings(string inputString)
         {
             if (inputString.Contains("{DocumentDirectory}"))
-                return inputString.Replace("{DocumentDirectory}", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+                return inputString.Replace("{DocumentDirectory}", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + Path.DirectorySeparatorChar);
             return inputString;
         }
     }

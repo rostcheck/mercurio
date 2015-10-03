@@ -25,7 +25,7 @@ namespace Mercurio.Domain.Implementation
                 throw new ArgumentNullException("Path cannot be null");
 
             if (!Directory.Exists(diskPath))
-                throw new DirectoryNotFoundException();
+                throw new DirectoryNotFoundException("Directory " + diskPath + " was not found");
 
             return new DiskStorageSubstrate(diskPath, serializerType);
         }

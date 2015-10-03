@@ -57,6 +57,8 @@ namespace Mercurio.Domain.Implementation
             var storageSubstratePath = ConfigurationManager.GetConfigurationValue("StorageSubstrate");
             if (storageSubstratePath != null)
             {
+                if (!Directory.Exists(storageSubstratePath))
+                    Directory.CreateDirectory(storageSubstratePath);
                 returnList.Add(DiskStorageSubstrate.Create(storageSubstratePath, SerializerType.BinarySerializer));
             }
             return returnList;

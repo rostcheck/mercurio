@@ -1,2 +1,3 @@
 - Create identity when none are available
+- Port to Mac/mono : in CryptographicServiceProviderGPG fix IsInstalled() to search path flexibly
 - [Major] implement a replicating substrate
