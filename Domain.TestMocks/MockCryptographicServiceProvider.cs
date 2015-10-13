@@ -15,7 +15,7 @@ namespace Mercurio.Domain.TestMocks
             return "MockCrypto";
         }
 
-        public bool IsInstalled()
+        public bool IsInstalled(IOSAbstractor abstractor)
         {
             return true;
         }

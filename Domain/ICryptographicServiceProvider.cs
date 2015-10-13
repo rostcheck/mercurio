@@ -12,7 +12,7 @@ namespace Mercurio.Domain
     public interface ICryptographicServiceProvider
     {
         string GetProviderType();
-        bool IsInstalled();
+        bool IsInstalled(IOSAbstractor osAbstractor);
         CryptoManagerConfiguration GetConfiguration();
         ICryptoManager CreateManager(CryptoManagerConfiguration configuration);
     }

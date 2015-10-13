@@ -74,11 +74,13 @@
     <Compile Include="IEnvironmentScanner.cs" />
     <Compile Include="IMercurioEnvironment.cs" />
     <Compile Include="InMemoryStorageSubstrate.cs" />
+    <Compile Include="IOSAbstractor.cs" />
     <Compile Include="ISerializerCore.cs" />
     <Compile Include="ITempStorageSubstrate.cs" />
     <Compile Include="MercurioExceptionIdentityNotSet.cs" />
     <Compile Include="MercurioExceptionNoIdentitiesAvailable.cs" />
     <Compile Include="MercurioExceptionRequiredCryptoProviderNotAvailable.cs" />
+    <Compile Include="OSType.cs" />
     <Compile Include="RevisionListExtensions.cs" />
     <Compile Include="DocumentVersionMetadata.cs" />
     <Compile Include="SerializerFactory.cs" />

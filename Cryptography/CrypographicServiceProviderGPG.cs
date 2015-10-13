@@ -16,10 +16,16 @@ namespace Cryptography.GPG
             return CryptoType.GPG.ToString();
         }
 
-        public bool IsInstalled()
+        public bool IsInstalled(IOSAbstractor osAbstractor)
         {
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GNU", "GnuPG", "gpg2.exe");
-            return File.Exists(path);
+            var paths = Environment.ExpandEnvironmentVariables(Environment.GetEnvironmentVariable("PATH")).Split(osAbstractor.GetPathSeparatorChar());
+            foreach (var path in paths)
+            {
+                var thisPath = Path.Combine(path, osAbstractor.GetExecutableName("gpg2"));
+                if (File.Exists(thisPath))
+                    return true;
+            }
+            return false;
         }
 
         public CryptoManagerConfiguration GetConfiguration()

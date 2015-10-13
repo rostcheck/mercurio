@@ -15,5 +15,6 @@ namespace Mercurio.Domain
          List<IStorageSubstrate> GetStorageSubstrates();
          ITempStorageSubstrate GetTemporaryStorageSubstrate();
          string GetEditor();
+         OSType GetOsType();
     }
 }

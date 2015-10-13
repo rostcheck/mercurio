@@ -39,5 +39,10 @@ namespace Mercurio.Domain.TestMocks
         {
             return "notepad.exe";
         }
+
+        public OSType GetOsType()
+        {
+            return OSType.Unknown;
+        }
     }
 }
