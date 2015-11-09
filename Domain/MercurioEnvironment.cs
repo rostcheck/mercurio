@@ -23,8 +23,9 @@ namespace Mercurio.Domain
         private Serializer _serializer;
         private ITempStorageSubstrate _tempStorageSubstrate;
         private string _editor;
+        private IOSAbstractor _osAbstractor;
 
-        public static MercurioEnvironment Create(IEnvironmentScanner scanner, Serializer serializer, Func<string, NetworkCredential> passphraseFunction)
+        public static MercurioEnvironment Create(IEnvironmentScanner scanner, IOSAbstractor osAbstractor, Serializer serializer, Func<string, NetworkCredential> passphraseFunction)
         {
             var cryptographicServiceProviders = scanner.GetCryptographicProviders();
             var storageSubstrates = scanner.GetStorageSubstrates();
@@ -50,10 +51,11 @@ namespace Mercurio.Domain
             {
                 throw new ArgumentNullException("Must provide a valid passphrase function");
             }
-            return new MercurioEnvironment(cryptographicServiceProviders, serializer, storageSubstrates, tempStorageSubstrate, editor, passphraseFunction);
+            return new MercurioEnvironment(cryptographicServiceProviders, osAbstractor, serializer, storageSubstrates, tempStorageSubstrate, editor, passphraseFunction);
         }
 
         private MercurioEnvironment(IEnumerable<ICryptographicServiceProvider> cryptographicServiceProviders, 
+            IOSAbstractor osAbstractor,
             Serializer serializer,
             IEnumerable<IStorageSubstrate> storageSubstrates, 
             ITempStorageSubstrate tempStorageSubstrate, 
@@ -66,6 +68,7 @@ namespace Mercurio.Domain
             this._serializer = serializer;
             this._tempStorageSubstrate = tempStorageSubstrate;
             this._editor = editor;
+            this._osAbstractor = osAbstractor;
         }
 
         // Generally only needed for testing
@@ -178,7 +181,7 @@ namespace Mercurio.Domain
             var identities = new List<UserIdentity>();
             foreach (var cryptographicStorageProvider in _cryptographicServiceProviders)
             {
-                var manager = cryptographicStorageProvider.CreateManager(GetCryptoManagerConfiguration(cryptographicStorageProvider));
+                var manager = cryptographicStorageProvider.CreateManager(GetCryptoManagerConfiguration(cryptographicStorageProvider, _osAbstractor));
                 identities.AddRange(manager.GetAvailableIdentities());
             }
             return identities;
@@ -189,15 +192,15 @@ namespace Mercurio.Domain
             var identities = new List<UserIdentity>();
             foreach (var cryptographicStorageProvider in _cryptographicServiceProviders)
             {
-                var manager = cryptographicStorageProvider.CreateManager(GetCryptoManagerConfiguration(cryptographicStorageProvider));
+                var manager = cryptographicStorageProvider.CreateManager(GetCryptoManagerConfiguration(cryptographicStorageProvider, _osAbstractor));
                 identities.AddRange(manager.GetAvailableIdentities());
             }
             return identities.Where(s => s.UniqueIdentifier == identifier).FirstOrDefault();
         }
 
-        private CryptoManagerConfiguration GetCryptoManagerConfiguration(ICryptographicServiceProvider provider)
+        private CryptoManagerConfiguration GetCryptoManagerConfiguration(ICryptographicServiceProvider provider, IOSAbstractor osAbstractor)
         {
-            var configuration = provider.GetConfiguration();
+            var configuration = provider.GetConfiguration(osAbstractor);
             if (_userHomeDirectory != null && _userHomeDirectory != "")
             {
                 var userEnvironmentConfiguration = new CryptoManagerConfiguration();
@@ -227,7 +230,7 @@ namespace Mercurio.Domain
                 throw new MercurioExceptionRequiredCryptoProviderNotAvailable(string.Format("Cannot find cryptographic provider for {0} in the current environment", _activeIdentity.CryptoManagerType));
             }
 
-            var cryptoManager = cryptoProvider.CreateManager(GetCryptoManagerConfiguration(cryptoProvider));
+            var cryptoManager = cryptoProvider.CreateManager(GetCryptoManagerConfiguration(cryptoProvider, _osAbstractor));
             if (cryptoManager.GetFingerprint(_activeIdentity.UniqueIdentifier) == null)
             {
                 throw new MercurioExceptionNoIdentitiesAvailable(string.Format("Specified identity {0} is not available", _activeIdentity.Name));
@@ -257,7 +260,7 @@ namespace Mercurio.Domain
                 throw new MercurioExceptionIdentityNotSet(string.Format("Cannot change to requested identity {0} - bad login", identity.Name));
             }
 
-            var cryptoManager = cryptoProvider.CreateManager(GetCryptoManagerConfiguration(cryptoProvider));
+            var cryptoManager = cryptoProvider.CreateManager(GetCryptoManagerConfiguration(cryptoProvider, _osAbstractor));
             if (cryptoManager.GetFingerprint(identity.UniqueIdentifier) == null)
             {
                 throw new MercurioExceptionNoIdentitiesAvailable(string.Format("Specified identity {0} is not available", identity.Name));

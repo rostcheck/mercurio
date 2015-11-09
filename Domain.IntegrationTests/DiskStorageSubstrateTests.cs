@@ -34,9 +34,10 @@ namespace Domain.IntegrationTests
             string testContainerName = "testContainer";
             var configuration = TestUtilities.TestConfig.Create("Bob");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
 
             var storageSubstrate = DiskStorageSubstrate.Create(".", SerializerType.BinarySerializer);
-            var cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            var cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), osAbstractor, configuration);
             var credential = new NetworkCredential(CryptoTestConstants.HermesPublicKeyID, CryptoTestConstants.HermesPassphrase);
             cryptoManager.SetCredential(credential);
             var container = storageSubstrate.CreateContainer(testContainerName, cryptoManager);
@@ -53,7 +54,8 @@ namespace Domain.IntegrationTests
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
 
             var storageSubstrate = DiskStorageSubstrate.Create(".", SerializerType.BinarySerializer);
-            var cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            var cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), osAbstractor, configuration);
             var container = storageSubstrate.CreateContainer(testContainerName, cryptoManager);
             var containers = new List<IContainer>(storageSubstrate.GetAllContainers());
             Assert.IsTrue(containers.Count == 1);
@@ -70,7 +72,8 @@ namespace Domain.IntegrationTests
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
 
             var storageSubstrate = DiskStorageSubstrate.Create(".", SerializerType.BinarySerializer);
-            var cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            var cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), osAbstractor, configuration);
             var container = storageSubstrate.CreateContainer(testContainerName, cryptoManager);
             var bytes = storageSubstrate.RetrievePrivateMetadataBytes(container.Id);
             Assert.IsNotNull(bytes);

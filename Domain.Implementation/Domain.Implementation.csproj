@@ -48,6 +48,7 @@
     <Compile Include="EnvironmentScanner.cs" />
     <Compile Include="LinuxOsAbstractor.cs" />
     <Compile Include="MacOsAbstractor.cs" />
+    <Compile Include="OSAbstractorFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageSubstrateBase.cs" />
     <Compile Include="WindowsOsAbstractor.cs" />

@@ -86,7 +86,8 @@ namespace MercurioAppServiceLayer
             {
                 throw new Exception(errorList.ToString());
             }
-            this.cryptoManager = CryptoManagerFactory.Create(GetCryptoManagerType(cryptoManagerType).ToString(), configuration);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            this.cryptoManager = CryptoManagerFactory.Create(GetCryptoManagerType(cryptoManagerType).ToString(), osAbstractor, configuration);
             this.logger = new FileLogger("mercurio_log.txt");
             
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration(ConfigurationManager.GetConfigurationValue("StorageConnectionString"));

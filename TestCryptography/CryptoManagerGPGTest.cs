@@ -7,6 +7,7 @@ using System.Net;
 using Cryptography.GPG;
 using Mercurio.Domain;
 using Starksoft.Cryptography.OpenPGP;
+using Mercurio.Domain.Implementation;
 
 namespace TestCryptography
 {
@@ -18,7 +19,8 @@ namespace TestCryptography
         {
             CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), osAbstractor, configuration);
             string publicKey = cryptoManager.GetPublicKey(string.Empty);
             Assert.IsTrue(publicKey.Length != 0);
 
@@ -35,7 +37,8 @@ namespace TestCryptography
         {
             CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), osAbstractor, configuration);
             string publicKey = cryptoManager.GetPublicKey("bad-key-id");
         }
 
@@ -44,7 +47,8 @@ namespace TestCryptography
         {
             CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), osAbstractor, configuration);
 
             NetworkCredential goodCredential = new NetworkCredential(CryptoTestConstants.HermesPublicKeyID, CryptoTestConstants.HermesPassphrase);
             NetworkCredential badCredential = new NetworkCredential(CryptoTestConstants.HermesPublicKeyID, "Not the correct passphrase");
@@ -57,7 +61,8 @@ namespace TestCryptography
         {
             CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), osAbstractor, configuration);
 
             cryptoManager.SetCredential(null);
         }
@@ -68,7 +73,8 @@ namespace TestCryptography
         {
             CryptoManagerConfiguration configuration = PrepareTest("mercurio");
             CryptoManagerFactory.Register(CryptoType.GPG.ToString(), typeof(CrypographicServiceProviderGPG));
-            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), configuration);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            ICryptoManager cryptoManager = CryptoManagerFactory.Create(CryptoType.GPG.ToString(), osAbstractor, configuration);
 
             NetworkCredential badCredential = new NetworkCredential("invalid-identity", "Not the correct passphrase");
             cryptoManager.SetCredential(badCredential);

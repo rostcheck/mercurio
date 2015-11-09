@@ -13,7 +13,7 @@ namespace Mercurio.Domain
     {
         string GetProviderType();
         bool IsInstalled(IOSAbstractor osAbstractor);
-        CryptoManagerConfiguration GetConfiguration();
+        CryptoManagerConfiguration GetConfiguration(IOSAbstractor osAbstractor);
         ICryptoManager CreateManager(CryptoManagerConfiguration configuration);
     }
 }

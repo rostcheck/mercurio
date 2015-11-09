@@ -21,7 +21,7 @@ namespace Mercurio.Domain.TestMocks
         }
 
 
-        public CryptoManagerConfiguration GetConfiguration()
+        public CryptoManagerConfiguration GetConfiguration(IOSAbstractor osAbstractor)
         {
             return _cryptoManagerConfiguration;
         }

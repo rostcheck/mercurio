@@ -28,7 +28,8 @@ namespace MercurioShell.IntegrationTests
             var environmentScanner = new EnvironmentScanner(TestUtils.GetUserWorkingDir(TestUserName));
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            _environment = MercurioEnvironment.Create(environmentScanner, serializer, TestUtils.PassphraseFunction);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            _environment = MercurioEnvironment.Create(environmentScanner, osAbstractor, serializer, TestUtils.PassphraseFunction);
             _environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
             var identity = _environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
             _environment.SetActiveIdentity(identity);

@@ -14,7 +14,7 @@ namespace Mercurio.Domain
         private static Dictionary<string, Type> registry;
         private static Dictionary<string, CryptoManagerConfiguration> configurationRegistry;
 
-        public static ICryptoManager Create(string cryptoManagerType, CryptoManagerConfiguration userConfiguration = null)
+        public static ICryptoManager Create(string cryptoManagerType, IOSAbstractor osAbstractor, CryptoManagerConfiguration userConfiguration = null)
         {
             if (registry == null)
             {
@@ -37,7 +37,7 @@ namespace Mercurio.Domain
                 }
                 else
                 {
-                    providerConfiguration = cryptoServiceProvider.GetConfiguration();
+                    providerConfiguration = cryptoServiceProvider.GetConfiguration(osAbstractor);
                 }
 
                 providerConfiguration.Merge(userConfiguration);

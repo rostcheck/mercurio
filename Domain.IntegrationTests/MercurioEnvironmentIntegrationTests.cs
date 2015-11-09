@@ -30,7 +30,8 @@ namespace Domain.IntegrationTests
             var environmentScanner = new EnvironmentScanner(TestUtils.GetUserWorkingDir(TestUserName));
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            var environment = MercurioEnvironment.Create(environmentScanner, serializer, TestUtils.PassphraseFunction);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            var environment = MercurioEnvironment.Create(environmentScanner, osAbstractor, serializer, TestUtils.PassphraseFunction);
             environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
             var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();
             environment.SetActiveIdentity(identity);
@@ -50,7 +51,8 @@ namespace Domain.IntegrationTests
             var environmentScanner = new EnvironmentScanner();
             var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
-            var environment = MercurioEnvironment.Create(environmentScanner, serializer, TestUtils.PassphraseFunction);
+            var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+            var environment = MercurioEnvironment.Create(environmentScanner, osAbstractor, serializer, TestUtils.PassphraseFunction);
             environment.SetUserHomeDirectory(TestUtils.GetUserWorkingDir(TestUserName));
 
             var identity = environment.GetAvailableIdentities().Where(s => s.UniqueIdentifier == CryptoTestConstants.HermesPublicKeyID).FirstOrDefault();

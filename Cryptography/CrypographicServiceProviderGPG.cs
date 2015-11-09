@@ -18,22 +18,35 @@ namespace Cryptography.GPG
 
         public bool IsInstalled(IOSAbstractor osAbstractor)
         {
+            return !string.IsNullOrEmpty(GetInstalledGPGPath(osAbstractor));
+        }
+
+        private string GetInstalledGPGPath(IOSAbstractor osAbstractor)
+        {
             var paths = Environment.ExpandEnvironmentVariables(Environment.GetEnvironmentVariable("PATH")).Split(osAbstractor.GetPathSeparatorChar());
             foreach (var path in paths)
             {
                 var thisPath = Path.Combine(path, osAbstractor.GetExecutableName("gpg2"));
                 if (File.Exists(thisPath))
-                    return true;
+                    return thisPath;
             }
-            return false;
+            return null;
         }
 
-        public CryptoManagerConfiguration GetConfiguration()
+        public CryptoManagerConfiguration GetConfiguration(IOSAbstractor osAbstractor)
         {
             var configuration = new CryptoManagerConfiguration();
-            configuration.Add(CryptoConfigurationKeyEnum.CryptoExeBinaryPath.ToString(), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "GNU", "GnuPG", "gpg2.exe").ToString());
-            configuration.Add(CryptoConfigurationKeyEnum.KeyringPath.ToString(), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GnuPG").ToString());
+            configuration.Add(CryptoConfigurationKeyEnum.CryptoExeBinaryPath.ToString(), GetInstalledGPGPath(osAbstractor));
+            configuration.Add(CryptoConfigurationKeyEnum.KeyringPath.ToString(), GetKeyringPath(osAbstractor));
             return configuration;
+        }
+
+        private string GetKeyringPath(IOSAbstractor osAbstractor)
+        {
+            if (osAbstractor.GetOsType() == OSType.Windows)
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GnuPG").ToString();
+            else
+                return Path.Combine(Environment.GetEnvironmentVariable("HOME"), ".gnupg");
         }
 
         public ICryptoManager CreateManager(CryptoManagerConfiguration configuration)
