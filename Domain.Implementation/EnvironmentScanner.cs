@@ -85,11 +85,16 @@ namespace Mercurio.Domain.Implementation
                 case OSType.Windows:
                     // hard-coded to Notepad for now
                     return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows).ToString(), "Notepad.exe").ToString();  
-                case OSType.Mac:
-                case OSType.Linux:
-                    var editor = Environment.GetEnvironmentVariable("EDITOR");
-                    if (string.IsNullOrEmpty(editor))
-                        throw new MercurioException("EDITOR environment variable must be set");
+				case OSType.Mac:
+				case OSType.Linux:
+					var editor = Environment.GetEnvironmentVariable("EDITOR");
+					if (string.IsNullOrEmpty(editor))
+					{
+						editor = CheckAvailableEditors(new string[] {"joe", "vi", "emacs"});
+						if (string.IsNullOrEmpty(editor))
+							throw new MercurioException("EDITOR environment variable must be set");
+
+					}
                     return editor;
                 default:
                     throw new MercurioException("OS Type not set when getting editor");
@@ -100,5 +105,17 @@ namespace Mercurio.Domain.Implementation
         {
             return OSAbstractorFactory.GetOsType();
         }
+
+		private string CheckAvailableEditors(string[] editors)
+		{
+			var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
+			foreach (var editor in editors)
+			{
+				var exeName = osAbstractor.GetExecutableName(editor);
+				if (!string.IsNullOrEmpty(exeName))
+					return exeName;
+			}
+			return null;
+		}
     }
 }
