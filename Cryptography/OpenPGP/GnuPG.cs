@@ -35,6 +35,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace Starksoft.Cryptography.OpenPGP
 {
@@ -635,7 +636,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 if (needsPassword)
                 {
                     //  push passphrase onto stdin with a CRLF
-                    _proc.StandardInput.WriteLine(_credential.Password);
+					_proc.StandardInput.WriteLine(GetPassword(_credential));
                     _proc.StandardInput.Flush();
                 }
                 
@@ -706,6 +707,21 @@ namespace Starksoft.Cryptography.OpenPGP
             if (gpgErrorText.Length > 0)
                 throw new GnuPGException(gpgErrorText);
         }
+
+		private string GetPassword(NetworkCredential credential)
+		{
+			if (!string.IsNullOrEmpty(credential.Password))
+				return credential.Password;
+			else
+			{
+				// Decrypt the password and return it as a managed string. This is a security problem, but
+				// eventually we need the password and need to read it somewhere when passing out to GPG
+				var bstrPtr = Marshal.SecureStringToBSTR(credential.SecurePassword);
+				var insecurePassword = Marshal.PtrToStringBSTR(bstrPtr);	
+				Marshal.ZeroFreeBSTR(bstrPtr);
+				return insecurePassword;
+			}
+		}
 
         private string GetGnuPGPath()
         {

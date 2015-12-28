@@ -188,7 +188,7 @@ namespace Cryptography.GPG
             foreach (GnuPGKey secretKey in secretKeys)
             {
                 var keyInfo = GetKeyInfo(secretKey);
-                userIdentityList.Add(UserIdentity.Create(secretKey.KeyID, keyInfo.Name, secretKey.UserId, keyInfo.Description, this.ManagerType));
+				userIdentityList.Add(UserIdentity.Create(secretKey.KeyID, keyInfo.Name, secretKey.UserId, keyInfo.Description, this.ManagerType, secretKey.KeyExpiration));
             }
             return userIdentityList;
         }

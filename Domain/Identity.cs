@@ -16,14 +16,16 @@ namespace Mercurio.Domain
         public string Address { get; private set; } // address for message delivery (ex. person@mercurio.org)
         public string Name { get; private set; } // readable name (ex. "John Smith")
         public string CryptoManagerType { get; private set; } // Identity must be established by an ICryptoManager
+		public DateTime? ExpirationDate { get; private set; } // Ex: 2014-08-12
 
-        protected Identity(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
+        protected Identity(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType, DateTime? expirationDate = null)
         {
             this.UniqueIdentifier = uniqueIdentifier;
             this.Name = name;
             this.Address = address;
             this.Description = description;
             this.CryptoManagerType = cryptoManagerType;
+			this.ExpirationDate = expirationDate;
         }
 
         protected Identity(Identity otherIdentity)
@@ -35,7 +37,7 @@ namespace Mercurio.Domain
             this.CryptoManagerType = otherIdentity.CryptoManagerType;
         }
 
-        public static Identity Create(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
+        public static Identity Create(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType, DateTime? expirationDate = null)
         {
             ValidateRequiredString(uniqueIdentifier, "Unique identifier");
             //ValidateRequiredString(publicKey, "Public key");
@@ -44,7 +46,7 @@ namespace Mercurio.Domain
             {
                 address = string.Format("{0}@local", uniqueIdentifier);
             }
-            return new Identity(uniqueIdentifier, name, address, description, cryptoManagerType);
+            return new Identity(uniqueIdentifier, name, address, description, cryptoManagerType, expirationDate);
         }
 
         protected static void ValidateRequiredString(string requiredString, string name)
@@ -66,7 +68,7 @@ namespace Mercurio.Domain
         public override bool Equals(object obj)
         {
             var otherIdentity = obj as Identity;
-            return (otherIdentity == null) ? false : (this.UniqueIdentifier == otherIdentity.UniqueIdentifier);
+			return (otherIdentity == null) ? false : (this.UniqueIdentifier == otherIdentity.UniqueIdentifier && this.ExpirationDate == otherIdentity.ExpirationDate);
         }
 
         public override int GetHashCode()

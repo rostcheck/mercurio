@@ -23,7 +23,7 @@ namespace Cryptography.GPG
 
         private string GetInstalledGPGPath(IOSAbstractor osAbstractor)
         {
-            var paths = Environment.ExpandEnvironmentVariables(Environment.GetEnvironmentVariable("PATH")).Split(osAbstractor.GetPathSeparatorChar());
+			var paths = osAbstractor.GetPaths();
             foreach (var path in paths)
             {
                 var thisPath = Path.Combine(path, osAbstractor.GetExecutableName("gpg2"));

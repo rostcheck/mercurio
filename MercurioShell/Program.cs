@@ -70,9 +70,13 @@ namespace MercurioShell
             // environment.SetUserHomeDirectory(userHome);
             var identities = environment.GetAvailableIdentities();
             Console.WriteLine("Available identities are:");
-            foreach(var identity in identities)
+			for (int identityCounter = 0; identityCounter < identities.Count; identityCounter++)
             {
-                Console.WriteLine(identity.Name);
+				var identity = identities[identityCounter];
+				string expirationDate = identity.ExpirationDate.HasValue ?  string.Format(" (expires {0})", identity.ExpirationDate.Value.ToShortDateString())									
+					: "";
+				Console.WriteLine(string.Format("{0}] {1} ({2}): {3} {4}", identityCounter, identity.Name, identity.Address, identity.Description, 
+					expirationDate));
             }
             bool done = false;
             bool success = false;
@@ -80,23 +84,25 @@ namespace MercurioShell
             {
                 Console.WriteLine("Enter desired identity or 'quit' to exit: ");
                 Console.Write("> ");
-                var identityName = Console.ReadLine().Trim();
-                var identityNameLowercase = identityName.ToLower();
-                if (identityNameLowercase == "quit")
+                var identityNumberText = Console.ReadLine().Trim();
+				var identityNumberLowercase = identityNumberText.ToLower();
+                if (identityNumberLowercase == "quit")
                 {
                     done = true;
                 }
                 else
                 {
-                    var selectedIdentity = identities.Where(s => s.Name.Trim().ToLower() == identityNameLowercase).FirstOrDefault();
-                    if (selectedIdentity == null)
-                    {
-                        Console.WriteLine(string.Format("Identity {0} does not exist. Please choose from the list above.", identityName));
-                        Console.Write("> ");
-                        continue;
-                    }
+					var identityNumber = Convert.ToInt32(identityNumberText);
+					if (identityNumber < 0 || identityNumber >= identities.Count)
+					{
+						Console.WriteLine(string.Format("'{0}' is not a valid choice. Please choose from the list above.", identityNumber));
+						Console.Write("> ");
+						continue;						
+					}
+					var selectedIdentity = identities[identityNumber];
                     try
                     {
+						Console.WriteLine("Trying to set active environment to " + selectedIdentity.UniqueIdentifier + " " + selectedIdentity.Name + " " + selectedIdentity.Description + " " + selectedIdentity.Address);
                         environment.SetActiveIdentity(selectedIdentity);
                         success = true;
                         done = true;

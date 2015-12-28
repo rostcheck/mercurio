@@ -21,4 +21,11 @@ public class MacOsAbstractor : IOSAbstractor
     {
         return bareName;
     }
+
+	public string[] GetPaths()
+	{
+		var paths = new List<string>(Environment.ExpandEnvironmentVariables(Environment.GetEnvironmentVariable("PATH")).Split(GetPathSeparatorChar()));
+		paths.Add("/opt/local/bin"); // Needed for debugging, Xamarin on Mac clears env vars
+		return paths.ToArray();
+	}
 }

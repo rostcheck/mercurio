@@ -11,8 +11,8 @@ namespace Mercurio.Domain
     /// </summary>
     public class UserIdentity : Identity
     {
-        protected UserIdentity(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
-            : base(uniqueIdentifier, name, address, description, cryptoManagerType)
+        protected UserIdentity(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType, DateTime? expirationDate)
+            : base(uniqueIdentifier, name, address, description, cryptoManagerType, expirationDate)
         {
         }
 
@@ -20,12 +20,12 @@ namespace Mercurio.Domain
         {
         }
 
-        public new static UserIdentity Create(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
+        public new static UserIdentity Create(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType, DateTime? expirationDate)
         {
             ValidateRequiredString(uniqueIdentifier, "Unique identifier");
             //ValidateRequiredString(publicKey, "Public key");
             ValidateRequiredString(name, "Name");
-            return new UserIdentity(uniqueIdentifier, name, address, description, cryptoManagerType);
+            return new UserIdentity(uniqueIdentifier, name, address, description, cryptoManagerType, expirationDate);
         }
     }
 }

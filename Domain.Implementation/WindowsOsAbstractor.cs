@@ -22,5 +22,10 @@ namespace Mercurio.Domain.Implementation
         {
             return bareName + ".exe";
         }
+
+		public string[] GetPaths()
+		{
+			return Environment.ExpandEnvironmentVariables(Environment.GetEnvironmentVariable("PATH")).Split(GetPathSeparatorChar());
+		}
     }
 }

@@ -190,7 +190,7 @@ namespace Starksoft.Cryptography.OpenPGP
             _algorithm = ParseAlgorithm(keyFields[0].Substring(keyFields[0].Length - 1));
             _keyId = keyFields[1];
             _creationDate = DateTime.Parse(fields[2]);
-            if (fields.Length > 4 && fields[3] == "[expires")
+			if (fields.Length > 4 && fields[3].Contains("[expires"))
             {
                 _keyExpiration = DateTime.Parse(fields[4].Substring(0, fields[4].Length - 1));
             }

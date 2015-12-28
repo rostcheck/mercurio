@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -72,11 +73,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain.Implementation\Domain.Implementation.csproj">
-      <Project>{2825b70c-e747-4066-b327-23229c1ac60d}</Project>
+      <Project>{2825B70C-E747-4066-B327-23229C1AC60D}</Project>
       <Name>Domain.Implementation</Name>
     </ProjectReference>
     <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
+      <Project>{783F530F-80D8-4664-AEB5-4C15B877BAEB}</Project>
       <Name>Domain</Name>
     </ProjectReference>
   </ItemGroup>

@@ -11,5 +11,6 @@ namespace Mercurio.Domain
         OSType GetOsType();
         char GetPathSeparatorChar();
         string GetExecutableName(string bareName);
+		string[] GetPaths();
     }
 }
