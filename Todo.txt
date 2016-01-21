@@ -1,3 +1,5 @@
 - Create identity when none are available
-- Port to Mac/mono : in CryptographicServiceProviderGPG fix IsInstalled() to search path flexibly
+- If required arguments are not supplied, ask for them
+- Optional arguments need to set a default (ex. CreateContainer: revision retention policy)
 - [Major] implement a replicating substrate
+- Interactive tutorial that works through requisites
