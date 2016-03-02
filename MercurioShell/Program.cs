@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace MercurioShell
 {
     /// <summary>
-    /// MercurioShell allows the user to manipulate a Mercurio environment from the command line 
+    /// MercurioShell allows the user to interactively manipulate a Mercurio environment from the command line 
     /// </summary>
     public class Program
     {
@@ -24,38 +24,82 @@ namespace MercurioShell
                 return;
             }
             var shell = MercurioCommandShell.Create(environment, ConfirmAction);
-            bool exit = false;
+			var console = new MercurioConsole();
+            bool exit = false;		
+			bool newLine = false;
+			var keys = new List<ConsoleKeyInfo>();
+
+			Console.BackgroundColor = ConsoleColor.Black;
+			console.WriteToConsole("");
+			console.ResetCommandLine();
             Console.WriteLine("Welcome to Project Mercurio. Type 'help' for help or 'quit' to exit.");
-            do
-            {
-                Console.Write("> ");
-                var line = Console.ReadLine();
+
+			do
+			{	// Process until exit
+				do
+				{	// Get a line
+					var consoleKeyInfo = Console.ReadKey();
+					switch(consoleKeyInfo.Key)
+					{
+						case ConsoleKey.Enter:
+							newLine = true;
+							break;
+						case ConsoleKey.Backspace:
+						case ConsoleKey.Delete:
+							keys.RemoveAt(keys.Count - 1);
+							break;
+						case ConsoleKey.UpArrow:
+							keys.Clear();
+							keys.AddRange(console.BackHistory());
+							break;
+						case ConsoleKey.DownArrow:
+							keys.Clear();
+							keys.AddRange(console.ForwardHistory());
+							break;
+						default:
+							keys.Add(consoleKeyInfo);
+							break;
+					}							
+//					var left = Console.CursorLeft;
+//					Console.SetCursorPosition(left, WriterRow);
+				}  while (newLine == false);
+				var line = string.Join("", keys.Select(s => s.KeyChar).ToList());
+//				var lineLower = line.ToLower();
+//				if (lineLower == "exit" || lineLower == "quit")
+//					exit = true;
+				
+//                Console.Write("> ");
+//                var line = Console.ReadLine();
                 switch (line.ToLower().Trim())
                 {
                     case "quit":
                     case "exit":
-                        Console.WriteLine("Goodbye");
+                        console.WriteToConsole("Goodbye");
                         exit = true;
                         break;
                     default:
                         try
                         {
+							console.WriteToConsole(line);
+							console.PushCommandLine(keys);
+
                             var results = shell.ExecuteCommand(line);
                             if (results != null)
                             {
-                                foreach (var result in results)
-                                {
-                                    Console.WriteLine(result);
-                                }
+								console.WriteToConsole(results);
                             }
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex.Message);
+							console.WriteToConsole(ex.Message);
                         }
                         break;
-
                 }
+				// Write to console
+				//console.WriteToConsole(line);
+				newLine = false; 
+				keys.Clear(); // Clear buffers
+				console.ResetCommandLine();
             } while (!exit);
         }
 
@@ -142,6 +186,7 @@ namespace MercurioShell
             }
             Console.WriteLine();
             return new NetworkCredential(userName, passPhrase);
-        }
+        }			
+
     }
 }
