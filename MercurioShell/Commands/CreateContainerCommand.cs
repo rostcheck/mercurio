@@ -26,6 +26,9 @@ namespace MercurioShell
 
         private RevisionRetentionPolicyType GetRetentionPolicy(string policyName)
         {
+			if (policyName == null)
+				return RevisionRetentionPolicyType.KeepOne;
+			
             switch (policyName.ToLower())
             {
                 case "keepall":
