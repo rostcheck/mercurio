@@ -44,19 +44,21 @@ namespace MercurioShell
 		{
 			foreach (var line in lines)
 				AddToBuffers(line);
+			AddToBuffers(_blankLine);			
 			WriteMonitor(ScreenBuffer);
 		}
 
 		public void WriteToConsole(string line)
 		{
 			AddToBuffers(line);
+			//AddToBuffers(System.Environment.NewLine);
 			WriteMonitor(ScreenBuffer);
 		}
 
 		public void ResetCommandLine(string line = null)
 		{
 			ClearRow(_writerRow, line);
-			Console.SetCursorPosition(line != null ? line.Count() : 0, _writerRow);
+			Console.SetCursorPosition(line != null ? line.Count() % _blankLine.Length : 0, _writerRow);
 		}
 
 		public void ResetHistory()
@@ -91,7 +93,7 @@ namespace MercurioShell
 			var keySequence = CommandBuffer[CommandBuffer.Count - _currentCommandOffset];
 			string command = string.Join("", keySequence.Select(s => s.KeyChar).ToList());
 			ClearRow(_writerRow, command);
-			Console.SetCursorPosition(command.Length, _writerRow);
+			Console.SetCursorPosition(command.Length % _blankLine.Length, _writerRow);
 			return keySequence;			
 		}
 
@@ -122,7 +124,10 @@ namespace MercurioShell
 			if (line == null)
 				Console.Write(_blankLine);
 			else
-				Console.Write(line + _blankLine.Substring(0, _blankLine.Length - line.Length));
+			{
+				int remainingChars = (line.Length >= _blankLine.Length) ? 0 : _blankLine.Length - line.Length;
+				Console.Write(line + _blankLine.Substring(0, remainingChars));
+			}
 		}
 
 		private void AddToBuffers(string line)
