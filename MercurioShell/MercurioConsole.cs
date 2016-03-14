@@ -13,7 +13,7 @@ namespace MercurioShell
 		const int BufferSize = 100;
 		private int _writerRow;
 		private int _consoleWidth;
-		private int _currentCommandOffset = 0;
+		private int _currentCommandOffset = 1;
 		private string _blankLine;
 		private List<string> ScreenBuffer { get; set; } // Has line breaks to fit screen dimensions for fast output
 		private List<string> ContentBuffer { get; set; } // Allows infinite line length
@@ -53,11 +53,15 @@ namespace MercurioShell
 			WriteMonitor(ScreenBuffer);
 		}
 
-		public void ResetCommandLine()
+		public void ResetCommandLine(string line = null)
 		{
-			ClearRow(_writerRow, null);
-			Console.SetCursorPosition(0, _writerRow);
-			_currentCommandOffset = 0;
+			ClearRow(_writerRow, line);
+			Console.SetCursorPosition(line != null ? line.Count() : 0, _writerRow);
+		}
+
+		public void ResetHistory()
+		{
+			_currentCommandOffset = 0;			
 		}
 
 		public void PushCommandLine(List<ConsoleKeyInfo> keySequence)
@@ -81,6 +85,9 @@ namespace MercurioShell
 
 		private List<ConsoleKeyInfo> HistoryToCommandRow()
 		{
+			if (CommandBuffer.Count == 0 || _currentCommandOffset == 0)
+				return null;
+			
 			var keySequence = CommandBuffer[CommandBuffer.Count - _currentCommandOffset];
 			string command = string.Join("", keySequence.Select(s => s.KeyChar).ToList());
 			ClearRow(_writerRow, command);

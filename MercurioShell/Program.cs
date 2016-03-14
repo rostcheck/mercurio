@@ -50,11 +50,13 @@ namespace MercurioShell
 							break;
 						case ConsoleKey.UpArrow:
 							keys.Clear();
-							keys.AddRange(console.BackHistory());
+							AddToKeysRange(keys, console.BackHistory());
+							console.ResetCommandLine(string.Join("", keys.Select(s => s.KeyChar).ToList()));
 							break;
 						case ConsoleKey.DownArrow:
 							keys.Clear();
-							keys.AddRange(console.ForwardHistory());
+							AddToKeysRange(keys, console.ForwardHistory());
+							console.ResetCommandLine(string.Join("", keys.Select(s => s.KeyChar).ToList()));
 							break;
 						default:
 							keys.Add(consoleKeyInfo);
@@ -100,8 +102,15 @@ namespace MercurioShell
 				newLine = false; 
 				keys.Clear(); // Clear buffers
 				console.ResetCommandLine();
+				console.ResetHistory();
             } while (!exit);
         }
+
+		private static void AddToKeysRange(List<ConsoleKeyInfo> keys, List<ConsoleKeyInfo> newKeys)
+		{
+			if (keys != null && newKeys != null)
+				keys.AddRange(newKeys);
+		}
 
         private static IMercurioEnvironment Setup()
         {
