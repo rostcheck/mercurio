@@ -36,42 +36,38 @@ namespace MercurioShell
 
 			do
 			{	// Process until exit
-				do
-				{	// Get a line
+				string line = "";
+				do					
+				{	// Get a line						
 					var consoleKeyInfo = Console.ReadKey();
 					switch(consoleKeyInfo.Key)
 					{
 						case ConsoleKey.Enter:
-							newLine = true;
+							line = console.PushCommandLine();
 							break;
 						case ConsoleKey.Backspace:
 						case ConsoleKey.Delete:
-							keys.RemoveAt(keys.Count - 1);
+							console.DeleteKey();
 							break;
 						case ConsoleKey.UpArrow:
-							keys.Clear();
-							AddToKeysRange(keys, console.BackHistory());
-							console.ResetCommandLine(string.Join("", keys.Select(s => s.KeyChar).ToList()));
+							console.BackHistory();
 							break;
 						case ConsoleKey.DownArrow:
-							keys.Clear();
-							AddToKeysRange(keys, console.ForwardHistory());
-							console.ResetCommandLine(string.Join("", keys.Select(s => s.KeyChar).ToList()));
+							console.ForwardHistory();
 							break;
+						case ConsoleKey.RightArrow:
+							console.CursorRight();
+							break;
+						case ConsoleKey.LeftArrow:
+							console.CursorLeft();
+							break;						
 						default:
-							keys.Add(consoleKeyInfo);
+							var HasAltOrControl = consoleKeyInfo.Modifiers & (ConsoleModifiers.Alt | ConsoleModifiers.Control);
+							if (HasAltOrControl == 0)
+								console.AddKey(consoleKeyInfo.KeyChar.ToString());
 							break;
 					}							
-//					var left = Console.CursorLeft;
-//					Console.SetCursorPosition(left, WriterRow);
-				}  while (newLine == false);
-				var line = string.Join("", keys.Select(s => s.KeyChar).ToList());
-//				var lineLower = line.ToLower();
-//				if (lineLower == "exit" || lineLower == "quit")
-//					exit = true;
-				
-//                Console.Write("> ");
-//                var line = Console.ReadLine();
+				}  while (line == "");
                 switch (line.ToLower().Trim())
                 {
                     case "quit":
@@ -83,7 +79,6 @@ namespace MercurioShell
                         try
                         {
 							console.WriteToConsole(line);
-							console.PushCommandLine(keys);
 
                             var results = shell.ExecuteCommand(line);
                             if (results != null)
@@ -98,7 +93,6 @@ namespace MercurioShell
                         break;
                 }
 				// Write to console
-				//console.WriteToConsole(line);
 				newLine = false; 
 				keys.Clear(); // Clear buffers
 				console.ResetCommandLine();
