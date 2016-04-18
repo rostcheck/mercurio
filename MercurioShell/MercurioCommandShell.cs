@@ -86,5 +86,60 @@ namespace MercurioShell
             }
             return null;
         }
+
+		public string ResolveCommand(string commandString)
+		{
+			commandString = commandString.Trim();
+			if (string.IsNullOrEmpty(commandString))
+				return commandString;
+
+			var args = commandString.Split();
+			var commandName = args[0];
+			var completions = new List<string>();
+
+			if (args.Length == 1)
+			{
+				foreach (var command in _commands)
+				{
+					string recognizedCommand = command.RecognizePartialCommand(commandName);
+					if (recognizedCommand != null)
+						completions.Add(recognizedCommand);
+				}
+				if (completions.Count == 0)
+					return commandString;
+				else if (completions.Count == 1)
+					return completions[0];
+				else
+					return CommonPrefixOf(completions);									
+			}
+			else
+				return commandString; // Could add argument tab completion here
+		}
+
+		public static string CommonPrefixOf(IEnumerable<string> strings)
+		{
+			var commonPrefix = strings.FirstOrDefault() ?? "";
+			var commonPrefixLower = commonPrefix.ToLower();
+
+			foreach(var testString in strings)
+			{
+				var s = testString.ToLower();
+				var potentialMatchLength = Math.Min(s.Length, commonPrefix.Length);
+
+				if (potentialMatchLength < commonPrefix.Length)
+					commonPrefix = commonPrefix.Substring(0, potentialMatchLength);
+
+				for(var i = 0; i < potentialMatchLength; i++)
+				{
+					if (s[i] != commonPrefixLower[i])
+					{
+						commonPrefix = commonPrefix.Substring(0, i);
+						break;
+					}
+				}
+			}
+
+			return commonPrefix;
+		}
     }
 }

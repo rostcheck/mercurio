@@ -116,6 +116,28 @@ namespace MercurioShell
             }
         }
 
+		// Return the command (or alias) name if the partialCommandName could be part of this command
+		public virtual string RecognizePartialCommand(string partialCommand)
+		{
+			string partialCommandName = partialCommand.Trim().ToLower();
+			if (Name.ToLower().StartsWith(partialCommandName))
+				return Name;
+			else
+			{
+				if (_aliases == null)
+					return null;
+				else
+				{
+					foreach (var alias in _aliases)
+					{
+						if (alias.ToLower().StartsWith(partialCommandName))
+							return alias;
+					}
+					return null;
+				}
+			}
+		}
+
         public virtual void ValidateSyntax(string commandName, Arguments args)
         {
             if (!RecognizeCommand(commandName))

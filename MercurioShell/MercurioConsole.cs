@@ -140,7 +140,7 @@ namespace MercurioShell
 		{
 			CommandBuffer.Add(_currentCommandLine);
 			return _currentCommandLine;
-			_currentCommandLine = "";
+			//_currentCommandLine = "";
 		}
 
 		public void BackHistory()
@@ -163,6 +163,17 @@ namespace MercurioShell
 				return;
 			
 			ResetCommandLine(CommandBuffer[CommandBuffer.Count - _currentCommandOffset]);
+		}
+
+		public void TabComplete(MercurioCommandShell shell)
+		{
+			var newCommandLine = shell.ResolveCommand(_currentCommandLine);
+			if (newCommandLine != _currentCommandLine)
+				Console.Beep();
+			_currentCommandLine = newCommandLine;
+			_cursorPosition = _currentCommandLine.Length;
+			RedrawRow(_writerRow, _currentCommandLine, _cursorPosition);
+
 		}
 
 		private void WriteMonitor(List<string> buffer)

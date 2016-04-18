@@ -12,6 +12,7 @@ namespace MercurioShell
         string Name { get; }
         string RewriteBeforeParsing(string commandString);
         bool RecognizeCommand(string commandName);
+		string RecognizePartialCommand(string commandName);
         void ValidateSyntax(string commandName, Arguments args); // Can throw MercurioShellSyntaxException
         string ShowHelp();
         ICollection<string> ExecuteCommand(string command, Arguments args, MercurioShellContext context);

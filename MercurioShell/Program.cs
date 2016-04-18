@@ -26,7 +26,6 @@ namespace MercurioShell
             var shell = MercurioCommandShell.Create(environment, ConfirmAction);
 			var console = new MercurioConsole();
             bool exit = false;		
-			bool newLine = false;
 			var keys = new List<ConsoleKeyInfo>();
 
 			Console.BackgroundColor = ConsoleColor.Black;
@@ -60,7 +59,10 @@ namespace MercurioShell
 							break;
 						case ConsoleKey.LeftArrow:
 							console.CursorLeft();
-							break;						
+							break;
+						case ConsoleKey.Tab:
+							console.TabComplete(shell);
+							break;
 						default:
 							var HasAltOrControl = consoleKeyInfo.Modifiers & (ConsoleModifiers.Alt | ConsoleModifiers.Control);
 							if (HasAltOrControl == 0)
@@ -93,7 +95,7 @@ namespace MercurioShell
                         break;
                 }
 				// Write to console
-				newLine = false; 
+				//newLine = false; 
 				keys.Clear(); // Clear buffers
 				console.ResetCommandLine();
 				console.ResetHistory();
@@ -110,7 +112,7 @@ namespace MercurioShell
         {
             var userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             var environmentScanner = new EnvironmentScanner(userHome);
-            var storageSubstrates = environmentScanner.GetStorageSubstrates();
+            //var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
             var environment = MercurioEnvironment.Create(environmentScanner, osAbstractor, serializer, GetLoginInfo);
