@@ -90,8 +90,8 @@ namespace MercurioShell
 		{
 			string newCommandLine;
 			int splicePos = _cursorPosition - 1;
-			if (splicePos < 0) 
-				splicePos = 0;
+			if (splicePos < 0)
+				return; //splicePos = 0;
 			newCommandLine = _currentCommandLine.Substring(0, splicePos);
 			splicePos += 1;
 			newCommandLine += _currentCommandLine.Substring(splicePos, _currentCommandLine.Length - splicePos);
