@@ -87,9 +87,9 @@ namespace MercurioShell
             return null;
         }
 
-		public string ResolveCommand(string commandString)
+		public string ResolveCommand(string originalCommandString)
 		{
-			commandString = commandString.Trim();
+			var commandString = originalCommandString.Trim();
 			if (string.IsNullOrEmpty(commandString))
 				return commandString;
 
@@ -99,25 +99,44 @@ namespace MercurioShell
 
 			if (args.Length == 1)
 			{
+				// Command tab completion
 				foreach (var command in _commands)
 				{
 					string recognizedCommand = command.RecognizePartialCommand(commandName);
 					if (recognizedCommand != null)
 						completions.Add(recognizedCommand);
-				}
-				if (completions.Count == 0)
-					return commandString;
-				else if (completions.Count == 1)
-					return completions[0];
-				else
-					return CommonPrefixOf(completions);									
+				}								
 			}
 			else
-				return commandString; // Could add argument tab completion here
+			{
+				// Handle argument tab completion
+				var command = RecognizeCommand(commandName);
+				if (command != null)
+					completions = new List<string>(command.RecognizePartialArgument(args[args.Count() - 1]));				
+			}
+			if (completions.Count == 0)
+				return originalCommandString;
+			else
+				return CompleteCommand(commandString, CommonPrefixOf(completions));
+		}
+			
+		private static string CompleteCommand(string commandString, string completedArgument)
+		{
+			var args = commandString.Split();
+			if (args.Count() == 0) 
+				return "";
+			else
+			{
+				var lastArgument = args[args.Count() - 1];
+				return commandString.Substring(0, commandString.Length - lastArgument.Length) + completedArgument;
+			}
 		}
 
-		public static string CommonPrefixOf(IEnumerable<string> strings)
+		private static string CommonPrefixOf(IEnumerable<string> strings)
 		{
+			if (strings.Count() == 1)
+				return strings.First();
+			
 			var commonPrefix = strings.FirstOrDefault() ?? "";
 			var commonPrefixLower = commonPrefix.ToLower();
 

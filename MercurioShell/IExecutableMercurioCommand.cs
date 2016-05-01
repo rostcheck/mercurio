@@ -15,6 +15,7 @@ namespace MercurioShell
 		string RecognizePartialCommand(string commandName);
         void ValidateSyntax(string commandName, Arguments args); // Can throw MercurioShellSyntaxException
         string ShowHelp();
+		ICollection<string> RecognizePartialArgument(string argumentName);
         ICollection<string> ExecuteCommand(string command, Arguments args, MercurioShellContext context);
     }
 }

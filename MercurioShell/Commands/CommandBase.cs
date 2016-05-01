@@ -138,6 +138,38 @@ namespace MercurioShell
 			}
 		}
 
+		// Return a list of argument names that could complete the partialArgument supplied
+		public virtual ICollection<string> RecognizePartialArgument(string partialArgument)
+		{
+			var possibleArguments = new List<string>();
+			string partialArgumentName = partialArgument.Trim().ToLower();
+			if (partialArgumentName.StartsWith("-"))
+				partialArgumentName = partialArgumentName.Substring(1);
+
+
+			foreach (var argumentName in _arguments.Select(s => s.Name))
+			{
+				if (argumentName.ToLower().StartsWith(partialArgumentName))
+					possibleArguments.Add("-" + argumentName);
+			}
+			return possibleArguments;
+		}
+
+		// Return a list of arguments that the user has not already filled out on the command line
+//		public virtual ICollection<CommandArgument> AvailableArguments(string commandString)
+//		{
+//			
+//			var availableArguments = new List<string>();
+//			commandString = commandString.Trim().ToLower();
+//
+//			foreach (var argumentName in _arguments.Select(s => s.Name))
+//			{
+//				if (argumentName.ToLower().StartsWith(partialArgumentName))
+//					availableArguments.Add(argumentName);
+//			}
+//			return (availableArguments.Count == 0) ? null : availableArguments;
+//		}
+
         public virtual void ValidateSyntax(string commandName, Arguments args)
         {
             if (!RecognizeCommand(commandName))
