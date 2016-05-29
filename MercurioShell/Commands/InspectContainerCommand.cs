@@ -17,7 +17,11 @@ namespace MercurioShell
 
 		protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
 		{
-			var container = context.Environment.GetContainer(arguments["container-name"]);
+			IContainer container = null;
+			if (context.OpenContainer != null && context.OpenContainer.Name == arguments["container-name"])
+				container = context.OpenContainer;
+			else
+				container = context.Environment.GetContainer(arguments["container-name"]);
 			var containerInfo = new List<string>();
 			containerInfo.Add(string.Format("Container name: {0}", container.Name));
 			containerInfo.Add(string.Format("Locked: {0}", container.IsLocked ? "yes" : "no"));
