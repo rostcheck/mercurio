@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 
@@ -137,5 +138,14 @@ namespace CommandLine.Utility
         {
             return Parameters.Contains(keyName);
         }
+
+		public void SetOptionalArguments(Dictionary<string, string> defaultValues)
+		{
+			foreach (var defaultValueKey in defaultValues.Keys)
+			{
+				if (!Parameters.Contains(defaultValueKey))
+					Parameters.Add(defaultValueKey, defaultValues[defaultValueKey]);
+			}
+		}
     }
 }

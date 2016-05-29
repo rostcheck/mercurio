@@ -1,6 +1,7 @@
 ﻿using CommandLine.Utility;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -231,6 +232,9 @@ namespace MercurioShell
         {
             ValidateContext(context);
             ValidateSyntax(commandName, arguments);
+			var commandsWithDefaultArguments = _arguments.Where(s => s.Required == false && s.AllowedValues != null && s.AllowedValues.Count() > 0);
+			// First allowed value is the default for optional arguments
+			arguments.SetOptionalArguments(commandsWithDefaultArguments.ToDictionary(s => s.Name, e => e.AllowedValues[0]));
             return Execute(commandName, arguments, context);
         }
 
@@ -238,6 +242,6 @@ namespace MercurioShell
         {
             if (context == null || context.OpenContainer == null)
                 throw new Exception("No container is unlocked.");
-        }
+        }			 
     }
 }

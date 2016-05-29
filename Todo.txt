@@ -1,6 +1,5 @@
 - Create identity when none are available
 - If required arguments are not supplied, ask for them
-- Optional arguments need to set a default (ex. CreateContainer: revision retention policy)
 - [Major] implement a replicating substrate
 - Interactive tutorial that works through requisites
 - When completing arguments, see if command can help (ex. paths, container-names, etc)

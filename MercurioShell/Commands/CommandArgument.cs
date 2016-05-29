@@ -11,7 +11,7 @@ namespace MercurioShell
         public bool Required { get; private set; }
         public string Name { get; private set; }
         public string ArgumentNameForHelp { get; private set; }
-        public string[] AllowedValues { get; private set; }
+        public string[] AllowedValues { get; private set; } // For optional arguments, first allowed value is default
 
         public CommandArgument(string name, bool required, string argumentNameForHelp, string[] allowedValues = null)
         {
