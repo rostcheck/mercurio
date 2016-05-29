@@ -10,12 +10,12 @@ namespace Entities
 {
     public class DelayedMessage : MercurioMessageBase, IMercurioMessage
     {
-        private int delayInMS;
+		public int DelayInMS { get; private set; }
         private IMercurioMessage message;
 
         public DelayedMessage(int delayInMS, IMercurioMessage message)
         {
-            this.delayInMS = delayInMS;
+            this.DelayInMS = delayInMS;
             this.message = message;
         }
 

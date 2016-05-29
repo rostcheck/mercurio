@@ -16,7 +16,7 @@ namespace Mercurio.Domain
         {
         }
 
-        public static new ContactIdentity Create(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
+        public static ContactIdentity Create(string uniqueIdentifier, string name, string address, string description, string cryptoManagerType)
         {
             ValidateRequiredString(uniqueIdentifier, "Unique identifier");
             //ValidateRequiredString(publicKey, "Public key");

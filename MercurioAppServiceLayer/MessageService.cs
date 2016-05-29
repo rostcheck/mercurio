@@ -82,7 +82,7 @@ namespace MercurioAppServiceLayer
                 throw new ArgumentException("Null invitation passed to AcceptInvitation");
 
             cryptoManager.SignKey(invitation.KeyID);
-            string signedKey = cryptoManager.GetPublicKey(invitation.KeyID);
+            //string signedKey = cryptoManager.GetPublicKey(invitation.KeyID);
             // Reverse the sender and recipient, send an invitation accepted message back
             string senderAddress = invitation.RecipientAddress;
             string recipientAddress = invitation.SenderAddress;

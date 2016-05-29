@@ -124,7 +124,7 @@ namespace MercurioAppServiceLayer
             const int delay = 500;
             listening = true;
             cryptoManager.SetCredential(credential);
-            Task injectorTask = Task.Factory.StartNew(() => InjectTestMessages());
+            Task.Factory.StartNew(() => InjectTestMessages());
             IMercurioMessage nextMessage = null;
             while (listening)
             {

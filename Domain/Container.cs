@@ -252,7 +252,7 @@ namespace Mercurio.Domain
             VerifyIsUnlocked();
 
             var documentId = GetDocumentId(documentName);
-            if (documentId == null)
+			if (documentId == Guid.Empty)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
             var latestVersion = GetLatestDocumentVersion(documentName);
@@ -273,7 +273,7 @@ namespace Mercurio.Domain
             VerifyIsUnlocked();
 
             var documentId = GetDocumentId(documentName);
-            if (documentId == null)
+            if (documentId == Guid.Empty)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
             var latestVersion = GetLatestDocumentVersion(documentName, true);
@@ -293,7 +293,7 @@ namespace Mercurio.Domain
             VerifyIsUnlocked();
 
             var documentId = GetDocumentId(oldDocumentName);
-            if (documentId == null)
+            if (documentId == Guid.Empty)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", oldDocumentName));
 
             _privateMetadata.RenameDocument(oldDocumentName, newDocumentName);
@@ -305,7 +305,7 @@ namespace Mercurio.Domain
             VerifyIsUnlocked();
 
             var documentId = GetDocumentId(documentName);
-            if (documentId == null)
+            if (documentId == Guid.Empty)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
             var latestVersionMetadata = GetLatestDocumentVersionMetadata(documentName);
@@ -327,7 +327,7 @@ namespace Mercurio.Domain
             VerifyIsUnlocked();
 
             var documentId = GetDocumentId(documentName);
-            if (documentId == null)
+            if (documentId == Guid.Empty)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
             var versions = ListAvailableVersions(documentName);

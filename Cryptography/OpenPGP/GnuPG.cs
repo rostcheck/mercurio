@@ -424,7 +424,7 @@ namespace Starksoft.Cryptography.OpenPGP
                 throw new ArgumentException("Argument keyID can not be null or empty");
 
             StreamReader sr = GetCommand(string.Format("--batch --yes --delete-key {0}", keyID));
-            string output = sr.ReadToEnd();
+            sr.ReadToEnd();
         }
 
         /// <summary>
@@ -449,7 +449,7 @@ namespace Starksoft.Cryptography.OpenPGP
             VerifyCredentialIsSet();
 
             StreamReader sr = GetCommand(string.Format("--yes --sign-key {0}", keyID), true);
-            string output = sr.ReadToEnd();
+            sr.ReadToEnd();
         }
 
         /// <summary>

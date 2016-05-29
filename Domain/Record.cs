@@ -56,8 +56,8 @@ namespace Mercurio.Domain
 
         public void CommitChanges(string revisorIdentityUniqueId)
         {
-            var priorRevision =  _revisions.Last();
-            var priorRevisionId = (priorRevision == null) ? Guid.Empty : priorRevision.Id;
+            //var priorRevision =  _revisions.Last();
+            //var priorRevisionId = (priorRevision == null) ? Guid.Empty : priorRevision.Id;
 
             //_revisions.Add(DocumentVersion.Create(priorRevisionId, revisorIdentityUniqueId, _uncommittedRevisions));
             _uncommittedRevisions = new List<AtomicDataElementChange>();

@@ -20,9 +20,7 @@ namespace Mercurio.Domain
         private Func<string, NetworkCredential> _passphraseFunction;
         private NetworkCredential _activeCredential;
         private string _userHomeDirectory = null;
-        private Serializer _serializer;
         private ITempStorageSubstrate _tempStorageSubstrate;
-        private string _editor;
         private IOSAbstractor _osAbstractor;
 
         public static MercurioEnvironment Create(IEnvironmentScanner scanner, IOSAbstractor osAbstractor, Serializer serializer, Func<string, NetworkCredential> passphraseFunction)
@@ -65,9 +63,9 @@ namespace Mercurio.Domain
             this._cryptographicServiceProviders = new List<ICryptographicServiceProvider>(cryptographicServiceProviders);
             this._storageSubstrates = storageSubstrates.ToList();
             this._passphraseFunction = passphraseFunction;
-            this._serializer = serializer;
+            //this._serializer = serializer;
             this._tempStorageSubstrate = tempStorageSubstrate;
-            this._editor = editor;
+            //this._editor = editor;
             this._osAbstractor = osAbstractor;
         }
 
@@ -93,7 +91,6 @@ namespace Mercurio.Domain
         {
             VerifyActiveIdentity();
 
-            var returnList = new List<IContainer>();
             foreach (var substrate in this._storageSubstrates)
             {
                 var container = substrate.GetAllContainers().FirstOrDefault(s => s.Name.ToLower() == containerName.ToLower());

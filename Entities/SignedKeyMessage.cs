@@ -107,7 +107,7 @@ namespace Entities
 
         public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
         {
-            string keyID = cryptoManager.ImportKey(SignedPublicKey);
+            //string keyID = cryptoManager.ImportKey(SignedPublicKey);
             //string fingerprint = cryptoManager.GetFingerprint(keyID);
 
             //TODO: further secure this protocol; insure message is expected

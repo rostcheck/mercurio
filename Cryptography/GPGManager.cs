@@ -20,7 +20,7 @@ namespace Cryptography.GPG
             public string Description { get; set; }
         }
 
-        private CryptoManagerConfiguration configuration;
+        //private CryptoManagerConfiguration configuration;
         private GnuPG gpg;
         private delegate void GpgOperation(Stream inputStream, Stream outputStream, Stream metadataStream);
 
@@ -34,14 +34,14 @@ namespace Cryptography.GPG
 
         public GPGManager(CryptoManagerConfiguration configuration)
         {
-            this.configuration = configuration;
+            //this.configuration = configuration;
              gpg = new GnuPG(configuration[CryptoConfigurationKeyEnum.KeyringPath.ToString()],
                 configuration[CryptoConfigurationKeyEnum.CryptoExeBinaryPath.ToString()]);
         }
 
         public void SetConfiguration(CryptoManagerConfiguration configuration)
         {
-            this.configuration = configuration;
+            //this.configuration = configuration;
             gpg = new GnuPG(configuration[CryptoConfigurationKeyEnum.KeyringPath.ToString()],
                configuration[CryptoConfigurationKeyEnum.CryptoExeBinaryPath.ToString()]);
         }

@@ -23,7 +23,7 @@ namespace MercurioShell
             var documentPath = arguments["document-path"];
             var documentName = Path.GetFileName(documentPath);
             var documentData = File.ReadAllText(documentPath);
-            var documentVersion = context.OpenContainer.CreateTextDocument(documentName, context.Environment.GetActiveIdentity(), documentData);
+            context.OpenContainer.CreateTextDocument(documentName, context.Environment.GetActiveIdentity(), documentData);
             var returnList = new List<string>() { string.Format("Imported document {0} into container {1}", documentName, context.OpenContainer.Name) };
             returnList.AddRange(context.OpenContainer.Documents);
             return returnList;

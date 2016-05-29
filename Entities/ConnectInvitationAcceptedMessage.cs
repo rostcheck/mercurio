@@ -123,11 +123,11 @@ namespace Entities
             // TODO: Is this message expected? Secure protocol more
 
             string keyID = cryptoManager.ImportKey(SignedPublicKey);
-            string fingerprint = cryptoManager.GetFingerprint(keyID);
+            //string fingerprint = cryptoManager.GetFingerprint(keyID);
 
             // Countersign the key and send it back
             cryptoManager.SignKey(keyID);
-            string signedKey = cryptoManager.GetPublicKey(keyID);
+            //string signedKey = cryptoManager.GetPublicKey(keyID);
             // Reverse sender and recipient
             string sender = RecipientAddress;
             string recipient = SenderAddress;
