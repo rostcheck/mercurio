@@ -72,6 +72,16 @@ namespace MercurioShell
 				Console.CursorSize = _originalCursorSize;
 		}
 
+		public void GoToLineStart()
+		{
+			SetCursorPosition(0);
+		}
+
+		public void GoToLineEnd()
+		{
+			ResetCommandLine(_currentCommandLine);
+		}
+
 		public void AddKey(string key)
 		{
 			string newCommandLine;

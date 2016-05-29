@@ -39,6 +39,7 @@ namespace MercurioShell
 				do					
 				{	// Get a line						
 					var consoleKeyInfo = Console.ReadKey();
+					bool controlPressed = (consoleKeyInfo.Modifiers & ConsoleModifiers.Control) == ConsoleModifiers.Control;
 					switch(consoleKeyInfo.Key)
 					{
 						case ConsoleKey.Enter:
@@ -67,6 +68,18 @@ namespace MercurioShell
 							var HasAltOrControl = consoleKeyInfo.Modifiers & (ConsoleModifiers.Alt | ConsoleModifiers.Control);
 							if (HasAltOrControl == 0)
 								console.AddKey(consoleKeyInfo.KeyChar.ToString());
+							else if (controlPressed)
+							{
+								switch(consoleKeyInfo.Key)
+								{
+									case ConsoleKey.A:
+										console.GoToLineStart();
+										break;
+									case ConsoleKey.E:
+										console.GoToLineEnd();
+										break;									
+								}
+							}
 							break;
 					}							
 				}  while (line == "");
