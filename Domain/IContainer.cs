@@ -14,6 +14,7 @@ namespace Mercurio.Domain
         Guid Id { get; }
         string Name { get; }
         string CryptoManagerType { get; }
+		string RevisionRetentionPolicyType { get; } // must be unlocked to get
         bool IsLocked { get; }
         void Lock(ICryptoManager cryptoManager);
         void Unlock(byte[] privateMetadataBytes, ICryptoManager cryptoManager);

@@ -17,7 +17,7 @@ namespace Mercurio.Domain
         private const string ContainerDescriptionSerializationName = "ContainerDescription";
         private const string DocumentDirectorySerializationName = "DocumentDirectory";
         private const string VersionDirectorySerializationName = "DocumentVersionDirectory";
-        private const string RevisionRetentionPolicyTypeSerializationName = "RevisionRetentionPolicyType"; //TODO: move to private metadata
+        private const string RevisionRetentionPolicyTypeSerializationName = "RevisionRetentionPolicyType";
 
         public string ContainerName { get; private set; }
         public string ContainerDescription { get; private set; }

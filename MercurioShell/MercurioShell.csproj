@@ -68,6 +68,7 @@
     <Compile Include="Commands\ShowSubstratesCommand.cs" />
     <Compile Include="Commands\UnlockContainerCommand.cs" />
     <Compile Include="MercurioConsole.cs" />
+    <Compile Include="Commands\InspectContainerCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

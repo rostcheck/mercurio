@@ -18,7 +18,7 @@ namespace Mercurio.Domain
         protected ContainerMetadata _metadata;
         protected ContainerPrivateMetadata _privateMetadata;
 
-        protected Container(string containerName, IStorageSubstrate substrate, Serializer serializer, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
+		protected Container(string containerName, IStorageSubstrate substrate, Serializer serializer, ICryptoManager cryptoManager = null, RevisionRetentionPolicyType retentionPolicyType = Mercurio.Domain.RevisionRetentionPolicyType.KeepOne)
         {
             Id = Guid.NewGuid();
             _substrate = substrate;
@@ -39,7 +39,7 @@ namespace Mercurio.Domain
         }
 
         // Container is created unlocked
-        public static IContainer Create(string name, ICryptoManager cryptoManager, IStorageSubstrate substrate, Serializer serializer, RevisionRetentionPolicyType retentionPolicyType = RevisionRetentionPolicyType.KeepOne)
+		public static IContainer Create(string name, ICryptoManager cryptoManager, IStorageSubstrate substrate, Serializer serializer, RevisionRetentionPolicyType retentionPolicyType = Mercurio.Domain.RevisionRetentionPolicyType.KeepOne)
         {
             if (cryptoManager.GetActiveIdentity() == string.Empty)
                 throw new MercurioExceptionIdentityNotSet("Identity not set on cryptoManager");
@@ -141,6 +141,15 @@ namespace Mercurio.Domain
         {
             throw new NotImplementedException();
         }
+
+		public virtual string RevisionRetentionPolicyType
+		{
+			get
+			{
+				VerifyIsUnlocked();
+				return ((RevisionRetentionPolicyType) _privateMetadata.RevisionRetentionPolicyType).ToString();
+			}
+		}
 
         public virtual IRevisionRetentionPolicy RevisionRetentionPolicy
         {
