@@ -22,6 +22,7 @@ namespace Mercurio.Domain
         private string _userHomeDirectory = null;
         private ITempStorageSubstrate _tempStorageSubstrate;
         private IOSAbstractor _osAbstractor;
+		private string _editor;
 
         public static MercurioEnvironment Create(IEnvironmentScanner scanner, IOSAbstractor osAbstractor, Serializer serializer, Func<string, NetworkCredential> passphraseFunction)
         {
@@ -65,7 +66,7 @@ namespace Mercurio.Domain
             this._passphraseFunction = passphraseFunction;
             //this._serializer = serializer;
             this._tempStorageSubstrate = tempStorageSubstrate;
-            //this._editor = editor;
+            this._editor = editor;
             this._osAbstractor = osAbstractor;
         }
 
@@ -279,7 +280,7 @@ namespace Mercurio.Domain
             _tempStorageSubstrate.StoreData(fileName, clearTextContent);
             var process = new Process();
             process.StartInfo.Arguments = _tempStorageSubstrate.GetPath(fileName);
-            process.StartInfo.FileName = "notepad.exe";
+			process.StartInfo.FileName = _editor;
             process.Start();
             process.WaitForExit();
             var result = _tempStorageSubstrate.RetrieveData(fileName);

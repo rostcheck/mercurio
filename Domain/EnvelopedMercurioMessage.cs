@@ -1,5 +1,5 @@
 ﻿using Mercurio.Domain;
-using ProtoBuf;
+//using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities
+namespace Mercurio.Domain
 {
     /// <summary>
     /// Very basic class containing addresses, payload, and type. Recipient must decide if
@@ -17,7 +17,7 @@ namespace Entities
     /// EnvelopedMercurioMessage (so envelopes containing unrecognized messages can be 
     /// deserialized and discarded)
     /// </summary>
-    [ProtoContract]
+//    [ProtoContract]
     [Serializable]
     public class EnvelopedMercurioMessage
     {

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -49,11 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{783f530f-80d8-4664-aeb5-4c15b877baeb}</Project>
+      <Project>{783F530F-80D8-4664-AEB5-4C15B877BAEB}</Project>
       <Name>Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestUtils\TestUtilities.csproj">
-      <Project>{8e90eeaa-8440-456f-b682-ae0e35c8095d}</Project>
+      <Project>{8E90EEAA-8440-456F-B682-AE0E35C8095D}</Project>
       <Name>TestUtilities</Name>
     </ProjectReference>
   </ItemGroup>
