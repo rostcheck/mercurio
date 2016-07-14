@@ -15,48 +15,29 @@ namespace Entities
     [Serializable]
     public class ConnectInvitationAcceptedMessage : MercurioMessageBase, IMercurioMessage
     {
-        private const string SenderAddressName = "sender_address";
-        private const string RecipientAddressName = "recipient_address";
-        private const string SignedPublicKeyName = "signed_public_key";
-        private const string SenderKeyIDName = "sender_key_id";
-        private const string ContentIDName = "content_id";
-        private string signedPublicKey;
-        private string senderKeyID;
-        private string senderAddress;
-        private string recipientAddress;
-        private Guid contentID;
-
-        public Guid ContentID
-        {
-            get
-            {
-                return contentID;
-            }
-        }
+        private string _signedPublicKey;
+        private string _senderKeyID;
 
         public ConnectInvitationAcceptedMessage(string senderAddress, string recipientAddress, string senderKeyID, string signedPublicKey)
         {
-            if (senderAddress == null || senderAddress == string.Empty)
-                throw new ArgumentException("Cannot initialize ConnectInvitationAcceptedMessage without senderAddress");
-            if (recipientAddress == null || recipientAddress == string.Empty)
-                throw new ArgumentException("Cannot initialize ConnectInvitationAcceptedMessage without recipientAddress");
-            if (senderKeyID == null || senderKeyID == string.Empty)
-                throw new ArgumentException("Cannot initialize ConnectInvitationAcceptedMessage without senderKeyID");
-            if (signedPublicKey == null || signedPublicKey == string.Empty)
-                throw new ArgumentException("Cannot initialize ConnectInvitationAcceptedMessage without signedPublicKey");
+			ValidateParameter("SenderKeyId", senderKeyID);
+			ValidateParameter("SignedPublicKey", signedPublicKey);		
+			base.Initialize(senderAddress, recipientAddress, GetContent(senderKeyID, signedPublicKey));
 
-            this.senderAddress = senderAddress;
-            this.recipientAddress = recipientAddress;
-            this.senderKeyID = senderKeyID;
-            this.signedPublicKey = signedPublicKey;
-            this.contentID = Guid.NewGuid();
+            this._senderKeyID = senderKeyID;
+            this._signedPublicKey = signedPublicKey;
         }
+
+		private string GetContent(string senderKeyId, string signedPublicKey)
+		{
+			return senderKeyId + ContentSeparator + signedPublicKey;
+		}
 
         public string SenderKeyID
         {
             get
             {
-                return senderKeyID;
+                return _senderKeyID;
             }
         }
 
@@ -64,61 +45,30 @@ namespace Entities
         {
             get
             {
-                return signedPublicKey;
+                return _signedPublicKey;
             }
-        }
+        }			
 
-        public string Content
+        public override bool Encryptable
         {
             get
             {
-                return signedPublicKey;
+                return false; // Ye can't encrypt the ConnectInvitationMessage, laddie, or your new potential connection can't read it
             }
-        }
-
-        public bool Encryptable
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public string SenderAddress
-        {
-            get
-            {
-                return senderAddress;
-            }
-        }
-
-        public string RecipientAddress
-        {
-            get
-            {
-                return recipientAddress;
-            }
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(RecipientAddressName, recipientAddress);
-            info.AddValue(SenderAddressName, senderAddress);
-            info.AddValue(SenderKeyIDName, senderKeyID);
-            info.AddValue(SignedPublicKeyName, signedPublicKey);
-            info.AddValue(ContentIDName, contentID);
         }
 
         public ConnectInvitationAcceptedMessage(SerializationInfo info, StreamingContext context)
         {
-            this.recipientAddress = info.GetString(RecipientAddressName);
-            this.senderAddress = info.GetString(SenderAddressName);
-            this.senderKeyID = info.GetString(SenderKeyIDName);
-            this.signedPublicKey = info.GetString(SignedPublicKeyName);
-            this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
+			Deserialize(info, context);
+			var fields = this.Content.Split(ContentSeparator.ToCharArray()[0]);
+			if (fields.Length != 2)
+				throw new MercurioException("ConnectInvitationMessage does not contain correct content");
+			this._senderKeyID = fields[0];
+			this._signedPublicKey = fields[1];
+
         }
 
-        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        public override IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
         {
             // TODO: Is this message expected? Secure protocol more
 
@@ -133,6 +83,7 @@ namespace Entities
             string recipient = SenderAddress;
             var signedKeyMessage = new SignedKeyMessage(recipient, sender, 
                 cryptoManager.GetPublicKey(userIdentity), string.Empty);
+			base.Process(cryptoManager, serializer, userIdentity);
             return signedKeyMessage;
         }
     }

@@ -11,50 +11,51 @@ namespace Entities
     public class DelayedMessage : MercurioMessageBase, IMercurioMessage
     {
 		public int DelayInMS { get; private set; }
-        private IMercurioMessage message;
+        private IMercurioMessage _message;
 
         public DelayedMessage(int delayInMS, IMercurioMessage message)
         {
             this.DelayInMS = delayInMS;
-            this.message = message;
+            this._message = message;
         }
 
-        public Guid ContentID
+        public override Guid ContentID
         {
             get
             {
-                return message.ContentID;
-            }
-        }
-        public string SenderAddress
-        {
-            get
-            {
-                return message.SenderAddress;
+                return _message.ContentID;
             }
         }
 
-        public string RecipientAddress
+        public override string SenderAddress
         {
             get
             {
-                return message.RecipientAddress;
+                return _message.SenderAddress;
             }
         }
 
-        public bool Encryptable
+        public override string RecipientAddress
         {
             get
             {
-                return message.Encryptable;
+                return _message.RecipientAddress;
             }
         }
 
-        public string Content
+        public override bool Encryptable
         {
             get
             {
-                return message.Content;
+                return _message.Encryptable;
+            }
+        }
+
+        public override string Content
+        {
+            get
+            {
+                return _message.Content;
             }
         }
 
@@ -62,17 +63,18 @@ namespace Entities
         {
             get
             {
-                return message;
+                return _message;
             }
         }
 
-        public void GetObjectData(SerializationInfo info,StreamingContext context)
+        public override void GetObjectData(SerializationInfo info,StreamingContext context)
         {
-            message.GetObjectData(info, context);
+            _message.GetObjectData(info, context);
         }
 
-        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        public override IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
         {
+			base.Process(cryptoManager, serializer, userIdentity);
             return Message;
         }
     }

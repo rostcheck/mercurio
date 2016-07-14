@@ -75,7 +75,6 @@
     <Compile Include="InvalidQueueNameException.cs" />
     <Compile Include="IMercurioUserAgent.cs" />
     <Compile Include="LogMessageLevelEnum.cs" />
-    <Compile Include="MercurioMessageBase.cs" />
     <Compile Include="PersistentQueueConfiguration.cs" />
     <Compile Include="PersistentQueueType.cs" />
     <Compile Include="ConnectInvitationMessage.cs" />

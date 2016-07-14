@@ -4,52 +4,28 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using ProtoBuf;
+//using ProtoBuf;
 using Mercurio.Domain;
 
 namespace Entities
 {
-    [ProtoContract]
+    //[ProtoContract]
     [Serializable]
     public class ConnectInvitationMessage : MercurioMessageBase, IMercurioMessage
     {
-        private const string SenderAddressName = "sender_address";
-        private const string RecipientAddressName = "recipient_address";
-        private const string PublicKeyName = "public_key";
-        private const string SignaturesName = "signatures";
-        private const string EvidenceURLName = "evidence_url";
-        private const string ContentIDName = "content_id";
-        private Guid contentID;
-
-        public Guid ContentID
-        {
-            get
-            {
-                return contentID;
-            }
-        }
-
         public string PublicKey
         {
             get
             {
-                return publicKey;
+                return _publicKey;
             }
 
-            set
-            {
-                publicKey = value;
-            }
+//            set
+//            {
+//                _publicKey = value;
+//            }
         }
-
-        public string Content
-        {
-            get
-            {
-                return publicKey;
-            }
-        }
-
+			
         //public string[] Signatures
         //{
         //    get
@@ -62,105 +38,54 @@ namespace Entities
         {
             get
             {
-                return evidence;
+                return _evidence;
             }
 
-            set
-            {
-                evidence = value;
-            }
-        }
+//            set
+//            {
+//                _evidence = value;
+//            }
+        }						
 
-        public string RecipientAddress
-        {
-            get
-            {
-                return recipientAddress;
-            }
+        public string KeyID { get; set; } // Transient data
 
-            set
-            {
-                recipientAddress = value;
-            }
-        }
-
-        public string SenderAddress
-        {
-            get
-            {
-                return senderAddress;
-            }
-
-            set
-            {
-                senderAddress = value;
-            }
-        }
-
-        public bool Encryptable
-        {
-            get
-            {
-                return false;
-            }
-
-            set
-            {
-            }
-        }
-
-        public string KeyID { get; set; }
-
-        private string publicKey;
-        private string[] signatures;
-        private string evidence;
-        private string recipientAddress;
-        private string senderAddress;
+        private string _publicKey;
+        private string[] _signatures;
+        private string _evidence;
 
         public ConnectInvitationMessage(string senderAddress, string recipientAddress, string publicKey, string[] signatures, string evidence)
         {
-            if (senderAddress == null || senderAddress == string.Empty)
-                throw new ArgumentException("Cannot initialize ConnectInvitationMessage without senderAddress");
-            if (recipientAddress == null || recipientAddress == string.Empty)
-                throw new ArgumentException("Cannot initialize ConnectInvitationMessage without recipientAddress");
-            if (publicKey == null || publicKey == string.Empty)
-                throw new ArgumentException("Cannot initialize ConnectInvitationMessage without publicKey");
-            if (evidence == null || evidence == string.Empty)
-                throw new ArgumentException("Cannot initialize ConnectInvitationMessage without evidence");
+			ValidateParameter("PublicKey", publicKey);
+			ValidateParameter("Evidence", evidence);
+			base.Initialize(senderAddress, recipientAddress, GetContent(publicKey, signatures, evidence));
 
-            this.senderAddress = senderAddress;
-            this.recipientAddress = recipientAddress;
-            this.publicKey = publicKey;
-            this.signatures = signatures;
-            this.evidence = evidence;
-            this.contentID = Guid.NewGuid();
+            this._publicKey = publicKey;
+            this._signatures = signatures;
+            this._evidence = evidence;
         }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
+		private string GetContent(string publicKey, string[] signatures, string evidence)
+		{
+			var signaturesAsString = string.Join(ContentSubSeparator, signatures);
+			return publicKey + ContentSeparator + signaturesAsString + ContentSeparator + evidence;
+		}			
+
+        public ConnectInvitationMessage(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(RecipientAddressName, recipientAddress);
-            info.AddValue(SenderAddressName, senderAddress);
-            info.AddValue(PublicKeyName, publicKey);
-            info.AddValue(SignaturesName, signatures);
-            info.AddValue(EvidenceURLName, evidence);
-            info.AddValue(ContentIDName, contentID);
+			base.Deserialize(info, context);
+			var fields = this.Content.Split(ContentSeparator.ToCharArray()[0]);
+			if (fields.Length != 3)
+				throw new MercurioException("ConnectInvitationMessage does not contain the correct content");
+			
+			this._publicKey = fields[0];
+			this._signatures = fields[1].Split(ContentSubSeparator.ToCharArray()[0]);
+			this._evidence = fields[2];
         }
 
-        public ConnectInvitationMessage(SerializationInfo info, StreamingContext ctxt)
+        public override IMercurioMessage Process(ICryptoManager cryptoManager, Mercurio.Domain.Serializer serializer, string userIdentity)
         {
-            this.recipientAddress = info.GetString(RecipientAddressName);
-            this.senderAddress = info.GetString(SenderAddressName);
-            this.publicKey = info.GetString(PublicKeyName);
-            this.signatures = (string[]) info.GetValue(SignaturesName, typeof(string[]));
-            this.evidence = info.GetString(EvidenceURLName);
-            this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
-        }
-
-        public IMercurioMessage Process(ICryptoManager cryptoManager, Mercurio.Domain.Serializer serializer, string userIdentity)
-        {
-            KeyID = cryptoManager.ImportKey(PublicKey);
-            RaiseMessageIsDisplayable(this);
-            return null;
+            KeyID = cryptoManager.ImportKey(_publicKey);
+			return base.Process(cryptoManager, serializer, userIdentity);
         }
     }
 }

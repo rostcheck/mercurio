@@ -53,6 +53,7 @@
     <Compile Include="StorageSubstrateBase.cs" />
     <Compile Include="WindowsOsAbstractor.cs" />
     <Compile Include="ReplicatedStorageSubstrate.cs" />
+    <Compile Include="Messages\CreateContainerMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReadMe.txt" />
@@ -75,4 +76,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Messages\" />
+  </ItemGroup>
 </Project>

@@ -19,34 +19,17 @@ namespace Mercurio.Domain
     /// </summary>
 //    [ProtoContract]
     [Serializable]
-    public class EnvelopedMercurioMessage
+    public class EnvelopedMercurioMessage : MercurioMessageBase
     {
-        private const string SenderAddressName = "sender_address";
-        private const string RecipientAddressName = "recipient_address";
-        private const string MessageTypeName = "message_type";
-        private const string PayloadName = "payload";
+		private string _messageType;
+		private byte[] _payload;
 
-        public string SenderAddress 
-        {
-            get
-            {
-                return senderAddress;
-            }
-        }
-
-        public string RecipientAddress
-        {
-            get
-            {
-                return recipientAddress;
-            }
-        }
 
         public string MessageType
         {
             get
             {
-                return messageType;
+                return _messageType;
             }
         }
 
@@ -67,7 +50,7 @@ namespace Mercurio.Domain
                 //    IMercurioMessage message = ProtoBuf.Serializer.Deserialize<IMercurioMessage>(stream);
                 //    return message;
                 //}
-                return payload;
+                return _payload;
             }
 
             //set
@@ -78,23 +61,18 @@ namespace Mercurio.Domain
 
         public IMercurioMessage PayloadAsMessage(Mercurio.Domain.Serializer serializer)
         {
-            if (payload == null)
+            if (_payload == null)
             {
                 return null;
             }
             else
             {
                 //MemoryStream stream = new MemoryStream(Encoding.Unicode.GetBytes(payload));
-                MemoryStream stream = new MemoryStream(payload);
+                MemoryStream stream = new MemoryStream(_payload);
                 return serializer.Deserialize<IMercurioMessage>(stream);
             }
            
         }
-
-        private string senderAddress;
-        private string recipientAddress;
-        private string messageType;
-        private byte[] payload;
 
         private void SetPayload(IMercurioMessage message, Mercurio.Domain.Serializer serializer)
         {
@@ -108,40 +86,35 @@ namespace Mercurio.Domain
 
             //StreamReader reader = new StreamReader(stream);
             //payload = reader.ReadToEnd();
-            payload = stream.ToArray();
+            _payload = stream.ToArray();
         }
 
-        public EnvelopedMercurioMessage(string senderAddress, string recipientAddress, IMercurioMessage payload, Mercurio.Domain.Serializer serializer)
+        public EnvelopedMercurioMessage(string senderAddress, string recipientAddress, IMercurioMessage payloadMessage, Mercurio.Domain.Serializer serializer)
         {
-            if (senderAddress == null || senderAddress == string.Empty)
-                throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without senderAddress");
-            if (recipientAddress == null || recipientAddress == string.Empty)
-                throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without recipientAddress");
-            if (payload == null)
-                throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without payload");
+			ValidateParameter("SenderAddress", senderAddress);
+			ValidateParameter("RecipientAddress", recipientAddress);
+            if (payloadMessage == null)
+                throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without payloadMessage");
             if (serializer == null)
                 throw new ArgumentException("Cannot initialize EnvelopedMercurioMessage without serializer");
-
-            this.senderAddress = senderAddress;
-            this.recipientAddress = recipientAddress;
-            this.messageType = payload.GetType().ToString();
-            SetPayload(payload, serializer);
+			this._messageType = payloadMessage.GetType().ToString();
+			SetPayload(payloadMessage, serializer);			
+			Initialize(senderAddress, recipientAddress, GetContent(this._messageType, this._payload));
         }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(SenderAddressName, senderAddress);
-            info.AddValue(RecipientAddressName, recipientAddress);
-            info.AddValue(MessageTypeName, messageType);
-            info.AddValue(PayloadName, payload);
-        }
+		private string GetContent(string messageType, byte[] payload)
+		{
+			return messageType + ContentSeparator + payload.ToString();
+		}
 
-        public EnvelopedMercurioMessage(SerializationInfo info, StreamingContext ctxt)
+        public EnvelopedMercurioMessage(SerializationInfo info, StreamingContext context)
         {
-            this.senderAddress = info.GetString(SenderAddressName);
-            this.recipientAddress = info.GetString(RecipientAddressName);
-            this.messageType = info.GetString(MessageTypeName);
-            this.payload = Encoding.Unicode.GetBytes(info.GetString(PayloadName));
+			base.Deserialize(info, context);
+			var fields = this.Content.Split(ContentSeparator.ToCharArray()[0]);
+			if (fields.Length != 2)
+				throw new MercurioException("EnvelopedMercurioMessage does not contain correct content");
+			this._messageType = fields[0];
+			this._payload = Encoding.Unicode.GetBytes(fields[1]);
         }
     }
 }

@@ -12,100 +12,64 @@ namespace Entities
     [Serializable]
     public class SignedKeyMessage : MercurioMessageBase, IMercurioMessage
     {
-        private Guid contentID;
-        private const string SenderAddressName = "sender_address";
-        private const string RecipientAddressName = "recipient_address";
-        private const string SignedPublicKeyName = "signed_public_key";
-        private const string EvidenceURLName = "evidence_url";
-        private const string ContentIDName = "content_id";
-        private string senderAddress;
-        private string recipientAddress;
-        private string signedPublicKey;
-        private string evidence;
-
-        public Guid ContentID
-        {
-            get
-            {
-                return contentID;
-            }
-        }
-
-        public string SenderAddress
-        {
-            get
-            {
-                return senderAddress;
-            }
-        }
-
-        public string RecipientAddress
-        {
-            get
-            {
-                return recipientAddress;
-            }
-        }
+        private string _signedPublicKey;
+        private string _evidence;
 
         public string SignedPublicKey
         {
             get
             {
-                return signedPublicKey;
+                return _signedPublicKey;
             }
         }
 
-        public string Content
-        {
-            get
-            {
-                return signedPublicKey;
-            }
+		public string Evidence
+		{
+			get
+			{
+				return _evidence;
+			}
+		}
+
+       	public override string ToString()
+		{
+            return _signedPublicKey;            
         }
 
-        public bool Encryptable
+        public override bool Encryptable
         {
             get
             {
-                return false;
+                return false; // Can't encryot the connection conversation
             }
         }
 
         public SignedKeyMessage(string recipientAddress, string senderAddress, string signedPublicKey, string evidence)
         {
-            if (senderAddress == null || senderAddress == string.Empty)
-                throw new ArgumentException("Cannot initialize SignedKeyMessage without senderAddress");
-            if (recipientAddress == null || recipientAddress == string.Empty)
-                throw new ArgumentException("Cannot initialize SignedKeyMessage without recipientAddress");
-            if (signedPublicKey == null || signedPublicKey == string.Empty)
-                throw new ArgumentException("Cannot initialize SignedKeyMessage without signedPublicKey");
+			ValidateParameter("SignedPublicKey", signedPublicKey);
+			base.Initialize(recipientAddress, senderAddress, GetContent(signedPublicKey, evidence));
 
-            this.senderAddress = senderAddress;
-            this.recipientAddress = recipientAddress;
-            this.signedPublicKey = signedPublicKey;
-            this.evidence = evidence;
-            this.contentID = Guid.NewGuid();
+            this._signedPublicKey = signedPublicKey;
+            this._evidence = evidence;
         }
+			
+		private string GetContent(string signedPublicKey, string evidence)
+		{
+			return signedPublicKey + ContentSeparator + evidence;
+		}
 
-        public SignedKeyMessage(SerializationInfo info, StreamingContext ctxt)
+        public SignedKeyMessage(SerializationInfo info, StreamingContext context)
         {
-            this.senderAddress = info.GetString(SenderAddressName);
-            this.recipientAddress = info.GetString(RecipientAddressName);
-            this.signedPublicKey = info.GetString(SignedPublicKeyName);
-            this.evidence = info.GetString(EvidenceURLName);
-            this.contentID = (Guid)info.GetValue(ContentIDName, typeof(Guid));
+			base.Deserialize(info, context);
+			var fields = this.Content.Split(ContentSeparator.ToCharArray()[0]);
+			if (fields.Length < 1)
+				throw new MercurioException("SignedKeyMessage does not contain correct content");
+			this._signedPublicKey = fields[0];
+			if (fields.Length > 1)
+				this._evidence = fields[1];
         }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(RecipientAddressName, recipientAddress);
-            info.AddValue(SenderAddressName, senderAddress);
-            info.AddValue(SignedPublicKeyName, SignedPublicKey);
-            info.AddValue(EvidenceURLName, evidence);
-            info.AddValue(ContentIDName, contentID);
-        }
-
-        public IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
+        public override IMercurioMessage Process(ICryptoManager cryptoManager, Serializer serializer, string userIdentity)
         {
             //string keyID = cryptoManager.ImportKey(SignedPublicKey);
             //string fingerprint = cryptoManager.GetFingerprint(keyID);

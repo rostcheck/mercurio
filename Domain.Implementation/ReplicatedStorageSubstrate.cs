@@ -23,59 +23,66 @@ namespace Mercurio.Domain.Implementation
 
 		public List<IContainer> GetAllContainers()
 		{
-			throw new NotImplementedException();
+			return _baseSubstrate.GetAllContainers();
 		}
 
 		public IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne)
 		{
-			throw new NotImplementedException();
+			var container = _baseSubstrate.CreateContainer(containerName, cryptoManager, retentionPolicy);
+			//_messageQueue.Add(new CreateContainerMessage(containerName)); // implement
+			return container;
 		}
 
 		public bool HostsContainer(Guid containerId)
 		{
-			throw new NotImplementedException();
+			return _baseSubstrate.HostsContainer(containerId);
 		}
 
 		public byte[] RetrievePrivateMetadataBytes(Guid containerId)
 		{
-			throw new NotImplementedException();
+			return _baseSubstrate.RetrievePrivateMetadataBytes(containerId);
 		}
 
 		public void StoreDocumentVersion(Guid containerId, DocumentVersion documentVersion)
 		{
-			throw new NotImplementedException();
+			_baseSubstrate.StoreDocumentVersion(containerId, documentVersion);
+			//_messageQueue.Add(new StoreDocumentVersionMessage(containerId, documentVersion)); // Implement
 		}
 
 		public DocumentVersion RetrieveDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata)
 		{
-			throw new NotImplementedException();
+			return _baseSubstrate.RetrieveDocumentVersion(containerId, documentVersionMetadata);
 		}
 
 		public void DeleteDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersion)
 		{
-			throw new NotImplementedException();
+			_baseSubstrate.DeleteDocumentVersion(containerId, documentVersion);
+			//_messageQueue.Add(new DeleteDocumentMessage(containerId, documentVersion)); // Implement
 		}
 
 		public void StoreMetadata(Guid containerId, ContainerMetadata metadata)
 		{
-			throw new NotImplementedException();
+			_baseSubstrate.StoreMetadata(containerId, metadata);
+			//_messageQueue.Add(new StoreMetadataMessage(containerId, metadata)); // Implement
 		}
 
 		public void StorePrivateMetadata(Guid containerId, Stream encryptedPrivateMetadata)
 		{
-			throw new NotImplementedException();
+			_baseSubstrate.StorePrivateMetadata(containerId, encryptedPrivateMetadata);
+			//_messageQueue.Add(new StorePrivateMetadataMessage(containerId, encryptedPrivateMetadata)); // Implement			
 		}
 
 		public void DeleteContainer(Guid containerId)
 		{
-			throw new NotImplementedException();
+			_baseSubstrate.DeleteContainer(containerId);
+			//_messageQueue.Add(new DeleteContainerMessage(containerId));
 		}
 
 		public string Name
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return _baseSubstrate.Name + "-replicated";
 			}
 		}
 
