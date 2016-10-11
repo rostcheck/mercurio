@@ -100,7 +100,7 @@ namespace MercurioAppServiceLayer
         {
             const string testMessageQueue = "messages_for_alice@maker.net";
             string testMessageQueuePath = Path.Combine(@"..", @"..", @"..", "TestKeyRings", testMessageQueue);
-            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration();
+            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration("messages", "local");
             IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
             if (File.Exists(testMessageQueue))
                 File.Delete(testMessageQueue);

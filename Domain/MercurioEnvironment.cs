@@ -287,5 +287,10 @@ namespace Mercurio.Domain
             _tempStorageSubstrate.EraseData(fileName);
             return result;
         }
+
+		public IPersistentQueue CreateQueue(string name, string serviceType)
+		{
+			throw new NotImplementedException();
+		}
     }
 }

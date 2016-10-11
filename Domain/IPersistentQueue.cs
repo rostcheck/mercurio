@@ -8,6 +8,7 @@ namespace Mercurio.Domain
 {
     public interface IPersistentQueue
     {
+		string Name { get; }
         void Add(EnvelopedMercurioMessage message);
         EnvelopedMercurioMessage GetNext(string address);
         int Length(string address);

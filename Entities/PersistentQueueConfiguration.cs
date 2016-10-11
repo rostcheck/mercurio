@@ -10,13 +10,15 @@ namespace Entities
     public class PersistentQueueConfiguration : IPersistentQueueConfiguration
     {
         private string configurationString;
+		private string name;
 
-        public PersistentQueueConfiguration(string configurationString = "")
+        public PersistentQueueConfiguration(string name, string configurationString = "")
         {
             this.configurationString = configurationString;
+			this.name = name;
         }
 
-        public string ConfigurationString 
+		public string ConfigurationString
         { 
             get
             {
@@ -27,5 +29,18 @@ namespace Entities
                 this.configurationString = value;
             }
         }
+
+		public string Name
+		{ 
+			get
+			{
+				return name;
+			} 
+
+			set
+			{
+				name = value;
+			}
+		}
     }
 }

@@ -8,6 +8,7 @@ namespace Mercurio.Domain
 {
     public interface IPersistentQueueConfiguration
     {
+		string Name { get; set; }
         string ConfigurationString { get; set; }
     }
 }

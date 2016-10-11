@@ -11,12 +11,24 @@ namespace Entities
     class PersistentQueueWithLocalFileStorage : IPersistentQueue
     {
         private Serializer serializer;
+		private string name;
 
         public PersistentQueueWithLocalFileStorage(IPersistentQueueConfiguration configuration, Serializer serializer)
         {
-            // Configuration isn't used for anything in this class
+			if (configuration == null)
+				throw new ArgumentException("Must supply configuration to PersistetnQueueWithLocalFileStorage");
+			
             this.serializer = serializer;
+			this.name = configuration.Name;
         }
+
+		public string Name
+		{
+			get
+			{
+				return name;
+			}
+		}
 
         public void Add(EnvelopedMercurioMessage message)
         {

@@ -13,16 +13,27 @@ namespace Entities
 {
     public class PersistentQueueWithCloudStorage : IPersistentQueue
     {
+		private string name;
         private CloudStorageAccount storageAccount;
         private CloudQueueClient queueClient;
         private Serializer serializer;
 
         public PersistentQueueWithCloudStorage(IPersistentQueueConfiguration configuration, Serializer serializer)
         {
+			if (configuration == null)
+				throw new ArgumentException("Must supply configuration to PersistentQueueWithCloudStorage");
+			if (configuration.ConfigurationString == null || configuration.ConfigurationString == "")
+				throw new ArgumentNullException("Must supply configurationString to PeristentQueueWithCloudStorage");
+			if (configuration.Name == null || configuration.Name == "")
+				throw new AggregateException("Must supply name to PersistentQueueWithCloudStorage");
+			
+			name = configuration.Name;
             storageAccount = CloudStorageAccount.Parse(configuration.ConfigurationString);
             queueClient = storageAccount.CreateCloudQueueClient();
             this.serializer = serializer;
         }
+
+		public string Name { get { return this.name; } }
 
         public void Add(EnvelopedMercurioMessage message)
         {

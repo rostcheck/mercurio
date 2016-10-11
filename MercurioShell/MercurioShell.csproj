@@ -69,6 +69,7 @@
     <Compile Include="Commands\UnlockContainerCommand.cs" />
     <Compile Include="MercurioConsole.cs" />
     <Compile Include="Commands\InspectContainerCommand.cs" />
+    <Compile Include="Commands\CreateQueueCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
