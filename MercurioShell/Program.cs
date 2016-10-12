@@ -164,7 +164,7 @@ namespace MercurioShell
 					var selectedIdentity = identities[identityNumber];
                     try
                     {
-						Console.WriteLine("Trying to set active environment to " + selectedIdentity.UniqueIdentifier + " " + selectedIdentity.Name + " " + selectedIdentity.Description + " " + selectedIdentity.Address);
+						Console.WriteLine("Trying to set active identity to " + selectedIdentity.UniqueIdentifier + " " + selectedIdentity.Name + " " + selectedIdentity.Description + " " + selectedIdentity.Address);
                         environment.SetActiveIdentity(selectedIdentity);
                         success = true;
                         done = true;
