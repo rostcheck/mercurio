@@ -1,0 +1,7 @@
+A replicating substrate is a substrate that is connencted to an external
+channel. When changes are made to the substrate, it will post messages to
+the channel. When messages are received from the channel, it will make
+changes to the local version of the substrate.
+
+Configuring a replicating substrate requires giving it enough configuration
+information to allow it to communicate with the channel.

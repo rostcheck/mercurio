@@ -1,0 +1,121 @@
+﻿This document describes the Mercurio, a secure computing environment.
+
+Motivation:
+
+The Mercurio project began in 2014, a period in which the Internet had become widely established
+globally but recent revelations of pervasive nation-state surveillance (the "Snowden Revelations") 
+raised serious privacy concerns. The growing role of mobile computing devices, cloud-connected 
+operating systems, and the Internet of Things (connected devices) combined to suggest a future in 
+which an individual's ability to keep personal thoughts and records private seemed destined to
+extiction. Similarly, social networking promoted a future of centralized computing services, at
+odds with the internet's distributed design, where administrators (or the nation-states with power
+over them) could easily access an individual's records and interactions.
+
+Many these problems are rooted in the fundamental lack of security as an priviledged goal of the
+early Internet architecture. The broader Internet ecosystem provides applications that allow 
+high-grade decentralized security (ex. GPG), but these applications are not integrated with the 
+ecology in a way that facilitates ease of use.
+
+Mercurio is an effort to create a secure decentralized computing environment in which an individual 
+can create, store, and transmit records with less risk of unwanted access. Central goals of the
+project include:
+
+- Ubiquitous integrated cryptography: Mercurio stores all data-at-rest in encrypted form and 
+requires a cryptographic key associated with the user be available for operations to be performed. 
+Encryption is thus inherent in the fabric of the Mercurio environment.
+
+- Resistance to surveillance: Current Internet applications and protocols provide little defense
+against monitoring. Their direct point-to-point client-server connections allow an observer to 
+easily collect metadata, revealing extensive personal information even if message contents 
+themselves cannot be read. Mercurio may resist surveillance by deliberately arranging its 
+communications so as to obscure who is communicating with whom.
+
+- Defined identity: Mercurio documents are inherently bound to a user's key. Although the identity 
+might be pseudonymous, the requirement of uniquely defined identity allows a user to securely 
+share a document with a specific other user.
+
+- Distributed architecture: Mercurio is designed to operate without centralized authority, in line
+with the original design of the Internet and as opposed to the current large centralized social 
+network sites.
+
+- Support for heterogenous participants: Mercurio provides an application protocol allows 
+participants to interact in the same distributed computing environment, although they may be 
+on different hardware and operating systems.
+
+- Independence of transmission medium: Mercurio is designed to operate across a diverse set of
+communications media, including: current cloud computing networks, direct host-to-host 
+transmission, and other transmission media yet to be invented.
+
+- Portability: Mercurio is designed to be portable, not so much across current devices as across 
+more secure computing devices expected to emerge in the future. Such devices may have more limited
+resources as compared to common computing platforms.
+
+To prioritize these goals, Mercurio deliberately de-emphasizes others:
+
+- Real-time delivery: Mercurio is built to use a store-and-forward model, where streams are not a
+central concept. Messages may be delayed, intermixed, sent out of order, or transmitted 
+multiple times through parallel channels, as needed to protect privacy.
+
+- Ease of compliance with administrative orders: Decisions in Mercurio's design favor protection
+of user privacy. This necessarily limits the ability of administrators to comply with legal or
+extra-legal demands for user information, even when they are willing to do so, as compared to a 
+social media provider that has a "gods-eye view" of its users and their interactions.
+
+
+Note on usability: Mercurio is designed to be easily usable, but not necessarily familiar. Meeting
+some of the above privileged goals has led to differnet decisions than might have been taken if 
+growth, familiar patterns of user-interface interaction, and dead-simple lowest-common-denominator
+usage had been privileged. Such goals might, for example, have led to shipping the initial 
+reference implementation of Mercurio on the most common commercial GUI platform, built with 
+native tools. Conversely, Mercurio privileges ease of use with respect to encryption - encryption
+and identity are built fundamentally into the Mercurio platform and operations automatically
+and invisibly make use of them.
+
+If Mercurio succeeds in its goals, we believe that it will be adopted even if it follows some less
+familiar user interaction patterns, as long as it is easy to use within its own paradigm of 
+operation.
+
+Architecture:
+
+Central concepts of the Mercurio secure computing system include: the environment, documents, 
+document versions, containers, substrates, and computing systems.
+
+Environment: The Mercurio environment provides the framework with which the user interacts to use
+Mercurio services. The initial reference implementation of Mercurio interacts with the environment
+through a command-line shell.
+
+Documents: A Mercurio document is simply data, whether in human or application-readable form. 
+Mercurio documents are inherently encrypted.
+
+Document version: Documents in Mercurio are versioned; editing a document creates a new 
+document version. Substrates may or may not support keeping old versions of the document.
+
+Container: A container is simply a collection of documents. In the Mercurio environment, a 
+container must be opened before use. When a container is open, all its documents are accessible;
+when it is closed, none of them are. The abstraction of containers allows the environment to 
+minimalize attack window by securing data when it is not in use, and allows the user to partition
+data to align with the user's social landscape (for example, work and personal documents can be
+kept distinct through the use of separate containers). Containers physically reside on, and may be
+moved between, substrates.
+
+Substrate: A substrate ("storage substrate") represents a data store that can host containers. 
+Substrates may be simple, as in the example of a disk substate that simply stores containers on
+disk, or more complex, as in the case of a distributed replicated substrate that distrubutes its
+containers across a set of computing systems (and may require access to several of those to open
+a container).
+
+Computing system: A computing system is a resource to which the environment has (some limited)
+access and that can perform storage and compute operations. An example computing resource might 
+be a cloud computing account, which the Mercurio environment might use to communicate with other
+users' Mercurio environments through a queue.
+
+Queue: a message storage queue represented by either a local or remote computing system. Queues 
+can be persistent or transient. In persistent queues, messages are stored, so will be delivered 
+if the computing system has a failure. In transient queues, messages are volatile and will be 
+lost if the computing system has a failure. Queues are the primary mechanism through which 
+Mercurio communicates between environments, and are used to distribute messages between 
+substrates in a replicated storage substrate.
+
+Message: internally Mercurio communicates between environments (or between storage substrates 
+in a replicated substrate) using messages. Messages are automatically encrypted with encryption 
+tied to the user identity.
