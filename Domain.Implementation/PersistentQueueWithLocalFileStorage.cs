@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Mercurio.Domain;
 
-namespace Entities
+namespace Mercurio.Domain.Implementation
 {
     class PersistentQueueWithLocalFileStorage : IPersistentQueue
     {

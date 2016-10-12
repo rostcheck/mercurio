@@ -9,7 +9,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Mercurio.Domain;
 
-namespace Entities
+namespace Mercurio.Domain.Implementation
 {
     public class PersistentQueueWithCloudStorage : IPersistentQueue
     {

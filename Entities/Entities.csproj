@@ -53,12 +53,6 @@
     <Reference Include="Microsoft.Data.Services.Client, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.0\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage">
-      <HintPath>..\packages\WindowsAzure.Storage.3.2.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
-    </Reference>
     <Reference Include="System.Spatial, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <HintPath>..\packages\System.Spatial.5.6.0\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
@@ -72,15 +66,9 @@
     <Compile Include="EncryptedMercurioMessage.cs" />
     <Compile Include="FileLogger.cs" />
     <Compile Include="IMercurioLogger.cs" />
-    <Compile Include="InvalidQueueNameException.cs" />
     <Compile Include="IMercurioUserAgent.cs" />
     <Compile Include="LogMessageLevelEnum.cs" />
-    <Compile Include="PersistentQueueConfiguration.cs" />
-    <Compile Include="PersistentQueueType.cs" />
     <Compile Include="ConnectInvitationMessage.cs" />
-    <Compile Include="PersistentQueueFactory.cs" />
-    <Compile Include="PersistentQueueWithCloudStorage.cs" />
-    <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
     <Compile Include="SignedKeyMessage.cs" />
     <Compile Include="SimpleTextMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

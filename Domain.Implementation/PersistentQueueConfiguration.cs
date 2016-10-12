@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Mercurio.Domain;
 
-namespace Entities
+namespace Mercurio.Domain.Implementation
 {
     public class PersistentQueueConfiguration : IPersistentQueueConfiguration
     {
