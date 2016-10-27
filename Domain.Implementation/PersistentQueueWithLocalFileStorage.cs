@@ -13,7 +13,7 @@ namespace Mercurio.Domain.Implementation
         private Serializer serializer;
 		private string name;
 
-        public PersistentQueueWithLocalFileStorage(IPersistentQueueConfiguration configuration, Serializer serializer)
+        public PersistentQueueWithLocalFileStorage(PersistentQueueConfiguration configuration, Serializer serializer)
         {
 			if (configuration == null)
 				throw new ArgumentException("Must supply configuration to PersistetnQueueWithLocalFileStorage");

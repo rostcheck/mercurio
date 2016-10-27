@@ -61,13 +61,13 @@
       <Project>{2825B70C-E747-4066-B327-23229C1AC60D}</Project>
       <Name>Domain.Implementation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{783F530F-80D8-4664-AEB5-4C15B877BAEB}</Project>
-      <Name>Domain</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{CE737374-D61E-4D4C-8796-580EC758A00C}</Project>
       <Name>Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{783F530F-80D8-4664-AEB5-4C15B877BAEB}</Project>
+      <Name>Domain</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

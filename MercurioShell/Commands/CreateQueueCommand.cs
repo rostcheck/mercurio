@@ -14,15 +14,15 @@ namespace MercurioShell
 		{
 			//TODO: finish implementation
 			AddRequiredParameter("queue-name", "name");
-			AddRequiredParameter("queue-type", new string[] { "Local", "Remote" });
-			//AddOptionalParameter("revision-retention-policy", new string[] { "KeepOne", "KeepAll" });
+			AddRequiredParameter("queue-type", new string[] { "LocalDisk", "RemoteAzure", "RemoteAWS" });
+			AddRequiredParameter("queue-info",	"info");
 			AddAlias("mkq");			
 		}
 
 
 		protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
 		{
-			var queue = context.Environment.CreateQueue(arguments["queue-name"], arguments["queue-type"]);
+			var queue = context.Environment.CreateQueue(arguments["queue-name"], arguments["queue-type"], arguments["queue-info"]);
 			return new List<string> { string.Format("Created queue {0}", queue.Name) };
 		}
 	}

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Mercurio.Domain.Implementation
 {
-    public enum PeristentQueueType
+    public static class PeristentQueueType
     {
-        LocalFileStorage,
-        CloudQueueStorage
+		public const string LocalFileStorage = "LocalDisk";
+		public const string CloudQueueStorage = "Azure";
     }
 }

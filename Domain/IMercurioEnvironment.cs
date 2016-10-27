@@ -24,6 +24,6 @@ namespace Mercurio.Domain
         bool ConfirmActiveIdentity();
         UserIdentity GetUserIdentity(string identifier);
         string EditDocument(string documentId, string clearTextContent); // Shell out to system editor to edit a document
-		IPersistentQueue CreateQueue(string name, string serviceType);
+		IPersistentQueue CreateQueue(string name, string serviceType, string queueInfo, Serializer serializer);
     }
 }

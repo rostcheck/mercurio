@@ -23,11 +23,14 @@ namespace Mercurio.Domain
         private ITempStorageSubstrate _tempStorageSubstrate;
         private IOSAbstractor _osAbstractor;
 		private string _editor;
+		private IPersistentQueueFactory _queueFactory;
 
 		public const string KeychainTypeId = "5C60F693-BEF5-E011-A485-80EE7300C695";
 		public static Guid KeychainGuid { get { return new Guid(KeychainTypeId); } }
 
-        public static MercurioEnvironment Create(IEnvironmentScanner scanner, IOSAbstractor osAbstractor, Serializer serializer, Func<string, NetworkCredential> passphraseFunction)
+        public static MercurioEnvironment Create(IEnvironmentScanner scanner, IOSAbstractor osAbstractor, Serializer serializer, 
+			IPersistentQueueFactory queueFactory,
+			Func<string, NetworkCredential> passphraseFunction)
         {
             var cryptographicServiceProviders = scanner.GetCryptographicProviders();
             var storageSubstrates = scanner.GetStorageSubstrates();
@@ -49,11 +52,14 @@ namespace Mercurio.Domain
             if (editor == null)
                 throw new ArgumentException("Cannot locate an editor");
 
+			if (queueFactory == null)
+				throw new ArgumentException("Must supply a queue factory");
+
             if (passphraseFunction == null)
             {
                 throw new ArgumentNullException("Must provide a valid passphrase function");
             }
-            return new MercurioEnvironment(cryptographicServiceProviders, osAbstractor, serializer, storageSubstrates, tempStorageSubstrate, editor, passphraseFunction);
+            return new MercurioEnvironment(cryptographicServiceProviders, osAbstractor, serializer, storageSubstrates, tempStorageSubstrate, editor, queueFactory, passphraseFunction);
         }
 
         private MercurioEnvironment(IEnumerable<ICryptographicServiceProvider> cryptographicServiceProviders, 
@@ -62,6 +68,7 @@ namespace Mercurio.Domain
             IEnumerable<IStorageSubstrate> storageSubstrates, 
             ITempStorageSubstrate tempStorageSubstrate, 
             string editor,
+			IPersistentQueueFactory queueFactory,
             Func<string, NetworkCredential> passphraseFunction)
         {
             this._cryptographicServiceProviders = new List<ICryptographicServiceProvider>(cryptographicServiceProviders);
@@ -71,6 +78,7 @@ namespace Mercurio.Domain
             this._tempStorageSubstrate = tempStorageSubstrate;
             this._editor = editor;
             this._osAbstractor = osAbstractor;
+			this._queueFactory = queueFactory;
         }
 
         // Generally only needed for testing
@@ -305,9 +313,10 @@ namespace Mercurio.Domain
             return result;
         }
 
-		public IPersistentQueue CreateQueue(string name, string serviceType)
+		public IPersistentQueue CreateQueue(string name, string serviceType, string queueInfo, Serializer serializer)
 		{
-			throw new NotImplementedException();
+			var configuration = new PersistentQueueConfiguration(name, serviceType, queueInfo);
+			return _queueFactory.Create(configuration, serializer);
 		}
     }
 }

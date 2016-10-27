@@ -78,13 +78,12 @@
     <Compile Include="WindowsOsAbstractor.cs" />
     <Compile Include="ReplicatedStorageSubstrate.cs" />
     <Compile Include="Messages\CreateContainerMessage.cs" />
-    <Compile Include="PersistentQueueConfiguration.cs" />
     <Compile Include="PersistentQueueFactory.cs" />
-    <Compile Include="PersistentQueueType.cs" />
     <Compile Include="PersistentQueueWithCloudStorage.cs" />
     <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
     <Compile Include="InvalidQueueNameException.cs" />
     <Compile Include="InMemoryStorageSubstrate.cs" />
+    <Compile Include="PersistentQueueType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReadMe.txt" />

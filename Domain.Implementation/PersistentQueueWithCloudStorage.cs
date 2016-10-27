@@ -18,7 +18,7 @@ namespace Mercurio.Domain.Implementation
         private CloudQueueClient queueClient;
         private Serializer serializer;
 
-        public PersistentQueueWithCloudStorage(IPersistentQueueConfiguration configuration, Serializer serializer)
+        public PersistentQueueWithCloudStorage(PersistentQueueConfiguration configuration, Serializer serializer)
         {
 			if (configuration == null)
 				throw new ArgumentException("Must supply configuration to PersistentQueueWithCloudStorage");

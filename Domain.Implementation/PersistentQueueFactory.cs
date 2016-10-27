@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Mercurio.Domain.Implementation
 {
-    public static class PersistentQueueFactory
+	public class PersistentQueueFactory : IPersistentQueueFactory
     {
-        public static IPersistentQueue Create(PeristentQueueType queueType, IPersistentQueueConfiguration configuration, Serializer serializer)
+        public IPersistentQueue Create(PersistentQueueConfiguration configuration, Serializer serializer)
         {
-            switch (queueType)
+			switch (configuration.ServiceType)
             {
                 case PeristentQueueType.LocalFileStorage:
                     return new PersistentQueueWithLocalFileStorage(configuration, serializer);

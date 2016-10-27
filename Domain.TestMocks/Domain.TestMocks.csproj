@@ -48,13 +48,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{783F530F-80D8-4664-AEB5-4C15B877BAEB}</Project>
-      <Name>Domain</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TestUtils\TestUtilities.csproj">
       <Project>{8E90EEAA-8440-456F-B682-AE0E35C8095D}</Project>
       <Name>TestUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{783F530F-80D8-4664-AEB5-4C15B877BAEB}</Project>
+      <Name>Domain</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -76,12 +76,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{783F530F-80D8-4664-AEB5-4C15B877BAEB}</Project>
-      <Name>Domain</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -90,4 +84,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{783F530F-80D8-4664-AEB5-4C15B877BAEB}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
