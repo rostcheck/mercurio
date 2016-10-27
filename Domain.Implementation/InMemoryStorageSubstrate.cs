@@ -4,16 +4,18 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mercurio.Domain;
 
-namespace Mercurio.Domain
+namespace Mercurio.Domain.Implementation
 {
-    public class InMemoryStorageSubstrate : IStorageSubstrate
+	public class InMemoryStorageSubstrate : StorageSubstrateBase, IStorageSubstrate
     {
         private Dictionary<Guid, DocumentVersion> _documentVersions;
         private Dictionary<Guid, ContainerMetadata> _metadata;
         private Dictionary<Guid, byte[]> _privateMetadata;
 
         public InMemoryStorageSubstrate()
+			: base(false) // InMemory substrate is not a valid default substrate; can't persist
         {
             _documentVersions = new Dictionary<Guid, DocumentVersion>();
             _metadata = new Dictionary<Guid, ContainerMetadata>();

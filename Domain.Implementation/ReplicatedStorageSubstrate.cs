@@ -13,7 +13,8 @@ namespace Mercurio.Domain.Implementation
 		private IStorageSubstrate _baseSubstrate;
 		private IPersistentQueue _messageQueue;
 
-		public ReplicatedStorageSubstrate(IStorageSubstrate baseSubstrate, IPersistentQueue messageQueue)
+		public ReplicatedStorageSubstrate(IStorageSubstrate baseSubstrate, IPersistentQueue messageQueue, bool isDefault)
+			: base(isDefault)
 		{
 			this._baseSubstrate = baseSubstrate;
 			this._messageQueue = messageQueue;

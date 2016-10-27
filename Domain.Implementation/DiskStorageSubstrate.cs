@@ -13,13 +13,14 @@ namespace Mercurio.Domain.Implementation
         private string _path;
         private SerializerType _serializerType;
 
-        private DiskStorageSubstrate(string diskPath, SerializerType serializerType)
+		private DiskStorageSubstrate(string diskPath, SerializerType serializerType, bool isDefault) :
+			base(isDefault)
         {
             _path = diskPath;
             _serializerType = serializerType;
         }
 
-        public static DiskStorageSubstrate Create(string diskPath, SerializerType serializerType)
+		public static DiskStorageSubstrate Create(string diskPath, SerializerType serializerType, bool isDefault = false)
         {
             if (diskPath == null || diskPath == "")
                 throw new ArgumentNullException("Path cannot be null");
@@ -27,7 +28,7 @@ namespace Mercurio.Domain.Implementation
             if (!Directory.Exists(diskPath))
                 throw new DirectoryNotFoundException("Directory " + diskPath + " was not found");
 
-            return new DiskStorageSubstrate(diskPath, serializerType);
+            return new DiskStorageSubstrate(diskPath, serializerType, isDefault);
         }
 
         // Create a new independent substrate accessor from this one
@@ -35,6 +36,7 @@ namespace Mercurio.Domain.Implementation
         {
             return DiskStorageSubstrate.Create(substrate._path, substrate._serializerType);
         }
+
         public string Name
         {
             get { return Path.GetFileName(_path); }

@@ -54,13 +54,14 @@ namespace Mercurio.Domain.Implementation
 
         public List<IStorageSubstrate> GetStorageSubstrates()
         {
+			//TODO: we only support one substrate for now - generalize to more
             var returnList = new List<IStorageSubstrate>();
             var storageSubstratePath = ConfigurationManager.GetConfigurationValue("StorageSubstrate");
             if (storageSubstratePath != null)
             {
                 if (!Directory.Exists(storageSubstratePath))
                     Directory.CreateDirectory(storageSubstratePath);
-                returnList.Add(DiskStorageSubstrate.Create(storageSubstratePath, SerializerType.BinarySerializer));
+                returnList.Add(DiskStorageSubstrate.Create(storageSubstratePath, SerializerType.BinarySerializer, true));
             }
             return returnList;
         }

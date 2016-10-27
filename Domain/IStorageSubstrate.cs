@@ -13,6 +13,7 @@ namespace Mercurio.Domain
     public interface IStorageSubstrate
     {
         string Name { get; }
+		bool IsDefaultStorageSubstrate { get; } // Environment has one default substrate, where the keychain is store
 
         List<IContainer> GetAllContainers();
         IContainer CreateContainer(string containerName, ICryptoManager cryptoManager, RevisionRetentionPolicyType retentionPolicy = RevisionRetentionPolicyType.KeepOne);

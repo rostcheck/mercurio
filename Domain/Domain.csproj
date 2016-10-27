@@ -73,7 +73,6 @@
     <Compile Include="Identity.cs" />
     <Compile Include="IEnvironmentScanner.cs" />
     <Compile Include="IMercurioEnvironment.cs" />
-    <Compile Include="InMemoryStorageSubstrate.cs" />
     <Compile Include="IOSAbstractor.cs" />
     <Compile Include="ISerializerCore.cs" />
     <Compile Include="ITempStorageSubstrate.cs" />

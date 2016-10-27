@@ -1,7 +1,7 @@
-- Create identity when none are available
-- If required arguments are not supplied, ask for them
 - [Major] implement a replicating substrate
   - Implement keychain for storing secure configuration/credentials
   - Add commands to create channels
+- Create identity when none are available
+- If required arguments are not supplied, ask for them
 - Interactive tutorial that works through requisites
 - When completing arguments, see if command can help (ex. paths, container-names, etc)

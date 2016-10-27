@@ -17,7 +17,7 @@ namespace Mercurio.Domain.TestMocks
         public MockMercurioEnvironment()
         {
             _containers = new List<IContainer>();
-            _storageSubstrates = new List<IStorageSubstrate>() { new InMemoryStorageSubstrate() };
+			_storageSubstrates = new List<IStorageSubstrate>() { new MockTempStorageSubstrate() };
             _cryptoManager = new MockCryptoManager();
         }
 

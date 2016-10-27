@@ -84,6 +84,7 @@
     <Compile Include="PersistentQueueWithCloudStorage.cs" />
     <Compile Include="PersistentQueueWithLocalFileStorage.cs" />
     <Compile Include="InvalidQueueNameException.cs" />
+    <Compile Include="InMemoryStorageSubstrate.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReadMe.txt" />

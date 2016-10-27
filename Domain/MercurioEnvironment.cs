@@ -105,7 +105,12 @@ namespace Mercurio.Domain
         {
             return new List<string>(_storageSubstrates.Select(s => s.Name));
         }
-       
+      
+		public IStorageSubstrate GetDefaultLocalSubstrate()
+		{
+			return _storageSubstrates.Where(s => s.IsDefaultStorageSubstrate == true).FirstOrDefault();
+		}
+
         public IContainer CreateContainer(string containerName, string storageSubstrateName,
             RevisionRetentionPolicyType revisionRetentionPolicyType = RevisionRetentionPolicyType.KeepOne)
         {
