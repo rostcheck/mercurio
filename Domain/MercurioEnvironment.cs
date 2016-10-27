@@ -24,6 +24,9 @@ namespace Mercurio.Domain
         private IOSAbstractor _osAbstractor;
 		private string _editor;
 
+		public const string KeychainTypeId = "5C60F693-BEF5-E011-A485-80EE7300C695";
+		public static Guid KeychainGuid { get { return new Guid(KeychainTypeId); } }
+
         public static MercurioEnvironment Create(IEnvironmentScanner scanner, IOSAbstractor osAbstractor, Serializer serializer, Func<string, NetworkCredential> passphraseFunction)
         {
             var cryptographicServiceProviders = scanner.GetCryptographicProviders();
@@ -108,7 +111,16 @@ namespace Mercurio.Domain
       
 		public IStorageSubstrate GetDefaultLocalSubstrate()
 		{
-			return _storageSubstrates.Where(s => s.IsDefaultStorageSubstrate == true).FirstOrDefault();
+			IStorageSubstrate substrate = _storageSubstrates.Where(s => s.IsDefaultStorageSubstrate == true).FirstOrDefault();
+			if (substrate != null)
+			{
+				// Implicitly verify it contains a keychain container. If not, create an empty one
+				if (!substrate.HostsContainer(KeychainGuid))
+				{
+					substrate.CreateContainer("keychain", _activeCryptoManager, RevisionRetentionPolicyType.KeepOne);
+				}
+			}
+			return substrate;
 		}
 
         public IContainer CreateContainer(string containerName, string storageSubstrateName,
