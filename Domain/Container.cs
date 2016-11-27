@@ -231,12 +231,12 @@ namespace Mercurio.Domain
 
             VerifyIsUnlocked();
 
-            var documentMetadata = DocumentMetadata.Create(documentName);
+            var documentMetadata = DocumentMetadata.Create(documentName, DocumentType.TextDocument.ToString());
             var encryptedInitialData = _cryptoManager.Encrypt(initialData, creatorIdentity.UniqueIdentifier);
             var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, 0, creatorIdentity.UniqueIdentifier, encryptedInitialData, false);
 
             _substrate.StoreDocumentVersion(this.Id, documentVersion);
-            _privateMetadata.AddDocumentVersion(documentName, documentVersion.Metadata);
+            _privateMetadata.AddDocumentVersion(documentMetadata, documentVersion.Metadata);
             StorePrivateMetadata();            
             return DocumentVersion.CreateWithUnencryptedContent(documentVersion, initialData);
         }
@@ -247,12 +247,18 @@ namespace Mercurio.Domain
             return _privateMetadata.GetDocumentId(documentName);
         }
 
+        private DocumentMetadata GetDocumentMetadata(string documentName)
+        {
+            VerifyIsUnlocked();
+            return _privateMetadata.GetDocumentMetadata(documentName);
+        }
+
         public virtual DocumentVersion ModifyTextDocument(string documentName, Identity modifierIdentity, string modifiedData)
         {
             VerifyIsUnlocked();
 
-            var documentId = GetDocumentId(documentName);
-			if (documentId == Guid.Empty)
+            var documentMetadata = GetDocumentMetadata(documentName);
+			if (documentMetadata == null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
             var latestVersion = GetLatestDocumentVersion(documentName);
@@ -260,10 +266,10 @@ namespace Mercurio.Domain
                 throw new MercurioException(string.Format("Document {0} does not have any versions in this container", documentName)); // internal inconsistency
 
             var encryptedData = _cryptoManager.Encrypt(modifiedData, modifierIdentity.UniqueIdentifier);
-            var newVersion = DocumentVersion.Create(documentId, latestVersion.Id, latestVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier, encryptedData, false);
+            var newVersion = DocumentVersion.Create(documentMetadata.Id, latestVersion.Id, latestVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier, encryptedData, false);
 
             _substrate.StoreDocumentVersion(this.Id, newVersion);
-            _privateMetadata.AddDocumentVersion(documentName, newVersion.Metadata);
+            _privateMetadata.AddDocumentVersion(documentMetadata, newVersion.Metadata);
             StorePrivateMetadata();
             return newVersion;
         }
@@ -272,18 +278,18 @@ namespace Mercurio.Domain
         {
             VerifyIsUnlocked();
 
-            var documentId = GetDocumentId(documentName);
-            if (documentId == Guid.Empty)
+            var documentMetadata = GetDocumentMetadata(documentName);
+            if (documentMetadata == null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
             var latestVersion = GetLatestDocumentVersion(documentName, true);
             if (latestVersion == null)
                 throw new MercurioException(string.Format("Document {0} does not have any versions in this container", documentName)); // internal inconsistency
 
-            var newVersion = DocumentVersion.CreateDeleted(documentId, latestVersion.Id, latestVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier);
+            var newVersion = DocumentVersion.CreateDeleted(documentMetadata.Id, latestVersion.Id, latestVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier);
 
             _substrate.StoreDocumentVersion(this.Id, newVersion);
-            _privateMetadata.AddDocumentVersion(documentName, newVersion.Metadata);
+            _privateMetadata.AddDocumentVersion(documentMetadata, newVersion.Metadata);
             StorePrivateMetadata();
             return newVersion;
         }

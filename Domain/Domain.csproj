@@ -42,7 +42,6 @@
     <Compile Include="AccessPermissionType.cs" />
     <Compile Include="AtomicDataElement.cs" />
     <Compile Include="AtomicDataElementChange.cs" />
-    <Compile Include="BinaryDocument.cs" />
     <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="ChangePolicy\ChangePolicyAllowAll.cs" />
     <Compile Include="ChangePolicy\ChangePolicyAllowSpecificIdentities.cs" />
@@ -57,7 +56,6 @@
     <Compile Include="CryptoManagerExtensions.cs" />
     <Compile Include="CryptoManagerConfiguration.cs" />
     <Compile Include="CryptoManagerFactory.cs" />
-    <Compile Include="Database.cs" />
     <Compile Include="DataElementType.cs" />
     <Compile Include="DeletePolicy\DeletePolicyAllowAll.cs" />
     <Compile Include="DeletePolicy\DeletePolicyAllowNone.cs" />

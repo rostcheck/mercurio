@@ -63,7 +63,7 @@ namespace Mercurio.Domain
             return _documentDirectory.Keys.ToList();
         }
 
-        private DocumentMetadata GetDocumentMetadata(string documentName)
+        public DocumentMetadata GetDocumentMetadata(string documentName)
         {
             return _documentDirectory.ContainsKey(documentName) ? _documentDirectory[documentName] : null;
         }
@@ -93,15 +93,12 @@ namespace Mercurio.Domain
             return _documentVersionDirectory[documentId].Where(s => s.Id == documentVersionId).FirstOrDefault();
         }
 
-        public void AddDocumentVersion(string documentName, DocumentVersionMetadata documentVersionMetadata)
+        public void AddDocumentVersion(DocumentMetadata documentMetadata, DocumentVersionMetadata documentVersionMetadata)
         {
-            var documentMetadata = _documentDirectory.ContainsKey(documentName) ? GetDocumentMetadata(documentName) : null;
-
             // Create directory entry if it doesn't exist
             if (documentMetadata == null)
             {
-                documentMetadata = DocumentMetadata.Create(documentName);
-                _documentDirectory.Add(documentName, documentMetadata);
+                _documentDirectory.Add(documentMetadata.Name, documentMetadata);
                 _documentVersionDirectory.Add(documentMetadata.Id, new List<DocumentVersionMetadata>());
             }
 
