@@ -96,7 +96,7 @@ namespace Mercurio.Domain
         public void AddDocumentVersion(DocumentMetadata documentMetadata, DocumentVersionMetadata documentVersionMetadata)
         {
             // Create directory entry if it doesn't exist
-            if (documentMetadata == null)
+            if (!_documentDirectory.ContainsKey(documentMetadata.Name))
             {
                 _documentDirectory.Add(documentMetadata.Name, documentMetadata);
                 _documentVersionDirectory.Add(documentMetadata.Id, new List<DocumentVersionMetadata>());
