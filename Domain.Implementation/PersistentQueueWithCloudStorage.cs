@@ -26,6 +26,9 @@ namespace Mercurio.Domain.Implementation
 				throw new ArgumentNullException("Must supply configurationString to PeristentQueueWithCloudStorage");
 			if (configuration.Name == null || configuration.Name == "")
 				throw new AggregateException("Must supply name to PersistentQueueWithCloudStorage");
+			if (string.IsNullOrWhiteSpace(configuration.ConfigurationString))
+				throw new ArgumentException("Must supply queue configuration to PersistentQueueWithCloudStorage");
+
 			
 			name = configuration.Name;
             storageAccount = CloudStorageAccount.Parse(configuration.ConfigurationString);

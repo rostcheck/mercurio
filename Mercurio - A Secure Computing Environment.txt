@@ -100,9 +100,10 @@ moved between, substrates.
 
 Substrate: A substrate ("storage substrate") represents a data store that can host containers. 
 Substrates may be simple, as in the example of a disk substate that simply stores containers on
-disk, or more complex, as in the case of a distributed replicated substrate that distrubutes its
+disk, or more complex, as in the case of a distributed replicated substrate that distributes its
 containers across a set of computing systems (and may require access to several of those to open
-a container).
+a container). The substrate itself is not expected to be encrypted (it is just storage), but all the
+containers in it (and the documents in them) are, except for publicly readable container metadata.
 
 Computing system: A computing system is a resource to which the environment has (some limited)
 access and that can perform storage and compute operations. An example computing resource might 
@@ -118,4 +119,12 @@ substrates in a replicated storage substrate.
 
 Message: internally Mercurio communicates between environments (or between storage substrates 
 in a replicated substrate) using messages. Messages are automatically encrypted with encryption 
-tied to the user identity.
+tied to the user Identity.
+
+User: a human who uses the system. A user may have more than one cryptographic identity.
+
+Identity: Ultimately, a unique cryptographic private key (and its associated public key). 
+Technically this may include a set of keys (expired ones, revocation certificates) so the identity
+is actually the conceptual entity owning a cryptographic key. A user (real person) may have 
+multiple identities.
+

@@ -20,9 +20,10 @@ namespace MercurioShell
 		}
 
 
-		protected override ICollection<string> Execute(string command, Arguments arguments, MercurioShellContext context)
+		protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)
 		{
-			var queue = context.Environment.CreateQueue(arguments["queue-name"], arguments["queue-type"], arguments["queue-info"]);
+            var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
+			var queue = context.Environment.CreateQueue(arguments["queue-name"], arguments["queue-type"], arguments["queue-info"], serializer);
 			return new List<string> { string.Format("Created queue {0}", queue.Name) };
 		}
 	}

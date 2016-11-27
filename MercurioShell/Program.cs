@@ -128,7 +128,8 @@ namespace MercurioShell
             //var storageSubstrates = environmentScanner.GetStorageSubstrates();
             var serializer = SerializerFactory.Create(SerializerType.BinarySerializer);
             var osAbstractor = OSAbstractorFactory.GetOsAbstractor();
-            var environment = MercurioEnvironment.Create(environmentScanner, osAbstractor, serializer, GetLoginInfo);
+            var queueFactory = new PersistentQueueFactory();
+            var environment = MercurioEnvironment.Create(environmentScanner, osAbstractor, serializer, queueFactory, GetLoginInfo);
             // environment.SetUserHomeDirectory(userHome);
             var identities = environment.GetAvailableIdentities();
             Console.WriteLine("Available identities are:");

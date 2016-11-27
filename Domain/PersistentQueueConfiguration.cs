@@ -12,6 +12,9 @@ namespace Mercurio.Domain
         private string _configurationString;
 		private string _serviceType;
 		private string _name;
+        const string ServiceTypeKey = "ServiceType";
+        const string NameKey = "Name";
+        const string ConfigurationStringKey = "ConfigurationString";
 
         public PersistentQueueConfiguration(string name, string serviceType, string configurationString = "")
         {
@@ -20,6 +23,12 @@ namespace Mercurio.Domain
 			this._serviceType = serviceType;
         }
 
+        public PersistentQueueConfiguration(Dictionary<string, string> dictionary)
+        {
+            this._configurationString = dictionary[ConfigurationStringKey];
+            this._name = dictionary[NameKey];
+            this._serviceType = dictionary[ServiceTypeKey];
+        }
 		public string ConfigurationString
         { 
             get
@@ -56,5 +65,14 @@ namespace Mercurio.Domain
 				_serviceType = value;
 			}
 		}
+
+        public Dictionary<string, string> AsDictionary()
+        {
+            var dictionary = new Dictionary<string, string>();
+            dictionary[ServiceTypeKey] = _serviceType;
+            dictionary[NameKey] = _name;
+            dictionary[ConfigurationStringKey] = _configurationString;
+            return dictionary;
+        }
     }
 }

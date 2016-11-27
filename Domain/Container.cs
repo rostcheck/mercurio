@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Mercurio.Domain
 {
     /// <summary>
-    /// A collection of Records (basic container)
+    /// A collection of Documents (basic container)
     /// </summary>
     public class Container : IContainer
     {

@@ -5,3 +5,4 @@
 - If required arguments are not supplied, ask for them
 - Interactive tutorial that works through requisites
 - When completing arguments, see if command can help (ex. paths, container-names, etc)
+- Container names in substrate should not be encrypted

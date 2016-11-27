@@ -10,62 +10,71 @@ namespace Mercurio.Domain.Implementation
 {
     class PersistentQueueWithLocalFileStorage : IPersistentQueue
     {
-        private Serializer serializer;
-		private string name;
+        private Serializer _serializer;
+		private string _name;
+		private string _queueFileName;
 
         public PersistentQueueWithLocalFileStorage(PersistentQueueConfiguration configuration, Serializer serializer)
         {
 			if (configuration == null)
-				throw new ArgumentException("Must supply configuration to PersistetnQueueWithLocalFileStorage");
-			
-            this.serializer = serializer;
-			this.name = configuration.Name;
+				throw new ArgumentException("Must supply configuration to PersistentQueueWithLocalFileStorage");
+			if (string.IsNullOrWhiteSpace(configuration.Name))
+				throw new ArgumentException("Must supply queue name to PersistentQueueWithLocalFileStorage");
+			if (string.IsNullOrWhiteSpace(configuration.ServiceType) || configuration.ServiceType != PersistentQueueType.LocalFileStorage)				
+				throw new ArgumentException("Queue type for PersistentQueueWithLocalFileStorage must be " + PersistentQueueType.LocalFileStorage);
+			if (string.IsNullOrWhiteSpace(configuration.ConfigurationString))
+				throw new ArgumentException("Must supply queue configuration to PersistentQueueWithLocalFileStorage");
+
+            this._serializer = serializer;
+			this._name = configuration.Name;
+			this._queueFileName = configuration.ConfigurationString;
+
+            // Verify we could access this queue
+            if (Directory.Exists(this._queueFileName))
+            {
+                var filePath = Path.Combine(this._queueFileName, "tstfile.tst");
+                var stream = File.Create(filePath);
+                stream.Close();
+                File.Delete(filePath); 
+            }
+                
+			else
+				Directory.CreateDirectory(this._queueFileName);			
         }
 
 		public string Name
 		{
 			get
 			{
-				return name;
+				return _name;
 			}
 		}
 
         public void Add(EnvelopedMercurioMessage message)
         {
-            Queue<EnvelopedMercurioMessage> messages = OpenQueue(message.RecipientAddress);
-            messages.Enqueue(message);
-            serializer.Serialize(message.RecipientAddress, messages);
+            _serializer.Serialize(Path.Combine(_queueFileName, Guid.NewGuid().ToString(), ".msg"), message);
         }
 
         public EnvelopedMercurioMessage GetNext(string address)
         {
-            Queue<EnvelopedMercurioMessage> messages = OpenQueue(address);
-            if (messages.Count == 0)
+            var dirInfo = new DirectoryInfo(_queueFileName);
+            var fileInfo = dirInfo.GetFiles("*.msg").OrderBy(p => p.CreationTime);
+            if (fileInfo.Count() == 0)
             {
                 return null; // queue empty
             }
             else
             {
-                EnvelopedMercurioMessage message = messages.Dequeue();
-                serializer.Serialize(address, messages);
+                string fileName = Path.Combine(_queueFileName, Guid.NewGuid().ToString(), ".msg");
+                var message = _serializer.Deserialize<EnvelopedMercurioMessage>(fileName);
+                File.Delete(fileName);
                 return message;
             }
         }
 
         public int Length(string address)
         {
-            Queue<EnvelopedMercurioMessage> messages = OpenQueue(address);
-            return messages.Count;
-        }
-
-        private Queue<EnvelopedMercurioMessage> OpenQueue(string queueFileName)
-        {
-            Queue<EnvelopedMercurioMessage> messages;
-            if (File.Exists(queueFileName) && new FileInfo(queueFileName).Length > 0)
-                messages = serializer.Deserialize<Queue<EnvelopedMercurioMessage>>(queueFileName);
-            else
-                messages = new Queue<EnvelopedMercurioMessage>();
-            return messages;
+            return Directory.GetFiles(_queueFileName, "*.msg").Length;
         }
     }
 }

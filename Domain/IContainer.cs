@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Mercurio.Domain
 {
     /// <summary>
-    /// A collection of Records
+    /// A collection of Documents
     /// </summary>
     public interface IContainer
     {

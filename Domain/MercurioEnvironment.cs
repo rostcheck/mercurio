@@ -316,7 +316,17 @@ namespace Mercurio.Domain
 		public IPersistentQueue CreateQueue(string name, string serviceType, string queueInfo, Serializer serializer)
 		{
 			var configuration = new PersistentQueueConfiguration(name, serviceType, queueInfo);
-			return _queueFactory.Create(configuration, serializer);
+			var queue = _queueFactory.Create(configuration, serializer);
+
+            //TODO: store configuration in keychain
+            StoreToKeychain(configuration.AsDictionary());
+
+            return queue;
 		}
+
+        private void StoreToKeychain(Dictionary<string, string> dictionary)
+        {
+            
+        }
     }
 }

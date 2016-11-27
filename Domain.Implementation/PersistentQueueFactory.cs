@@ -13,9 +13,9 @@ namespace Mercurio.Domain.Implementation
         {
 			switch (configuration.ServiceType)
             {
-                case PeristentQueueType.LocalFileStorage:
+                case PersistentQueueType.LocalFileStorage:
                     return new PersistentQueueWithLocalFileStorage(configuration, serializer);
-                case PeristentQueueType.CloudQueueStorage:
+                case PersistentQueueType.CloudQueueStorage:
                     return new PersistentQueueWithCloudStorage(configuration, serializer);
                 default:
                     throw new NotImplementedException();

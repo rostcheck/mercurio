@@ -91,7 +91,7 @@ namespace MercurioAppServiceLayer
             this.logger = new FileLogger("mercurio_log.txt");
             
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration(ConfigurationManager.GetConfigurationValue("StorageConnectionString"));
-            queue = PersistentQueueFactory.Create(PeristentQueueType.CloudQueueStorage, 
+            queue = PersistentQueueFactory.Create(PersistentQueueType.CloudQueueStorage, 
                 queueConfiguration, serializer);
             this.messageService = new MessageService(queue, cryptoManager, serializer);
         }
@@ -101,7 +101,7 @@ namespace MercurioAppServiceLayer
             const string testMessageQueue = "messages_for_alice@maker.net";
             string testMessageQueuePath = Path.Combine(@"..", @"..", @"..", "TestKeyRings", testMessageQueue);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration("messages", "local");
-            IPersistentQueue queue = PersistentQueueFactory.Create(PeristentQueueType.LocalFileStorage, queueConfiguration, serializer);
+            IPersistentQueue queue = PersistentQueueFactory.Create(PersistentQueueType.LocalFileStorage, queueConfiguration, serializer);
             if (File.Exists(testMessageQueue))
                 File.Delete(testMessageQueue);
             File.Copy(testMessageQueuePath, testMessageQueue);
