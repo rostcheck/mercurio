@@ -172,6 +172,24 @@ namespace Mercurio.Domain
             get
             {
                 VerifyIsUnlocked();
+                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersion(s).IsDeleted == false).ToList();
+            }
+        }
+
+        public ICollection<string> DeletedDocuments
+        {
+            get
+            {
+                VerifyIsUnlocked();
+                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersion(s).IsDeleted == true).ToList();
+            }
+        }
+
+        public ICollection<string> AllDocuments
+        {
+            get
+            {
+                VerifyIsUnlocked();
                 return _privateMetadata.GetAvailableDocuments();
             }
         }
@@ -278,6 +296,9 @@ namespace Mercurio.Domain
         {
             VerifyIsUnlocked();
 
+            if (documentName.Contains("-schema"))
+                throw new MercurioException("Cannot delete a schema - delete the associated database document instead");
+                
             var documentMetadata = GetDocumentMetadata(documentName);
             if (documentMetadata == null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
@@ -285,24 +306,59 @@ namespace Mercurio.Domain
             var latestVersion = GetLatestDocumentVersion(documentName, true);
             if (latestVersion == null)
                 throw new MercurioException(string.Format("Document {0} does not have any versions in this container", documentName)); // internal inconsistency
+            if (latestVersion.IsDeleted)
+            {
+                SoftDeleteSchema(documentName, modifierIdentity); // If schema wasn't deleted, will delete it
+                return latestVersion;
+            }
 
             var newVersion = DocumentVersion.CreateDeleted(documentMetadata.Id, latestVersion.Id, latestVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier);
 
             _substrate.StoreDocumentVersion(this.Id, newVersion);
             _privateMetadata.AddDocumentVersion(documentMetadata, newVersion.Metadata);
+
+            // If the document is a database, also soft-delete its schema
+            if (documentMetadata.DocumentType == DocumentType.Database.ToString())
+                SoftDeleteSchema(documentName, modifierIdentity);
+            
             StorePrivateMetadata();
             return newVersion;
+        }
+
+        private void SoftDeleteSchema(string documentName, Identity modifierIdentity)
+        {
+            var schemaName = documentName + "-schema";
+            var schemaMetadata = GetDocumentMetadata(schemaName);
+            if (schemaMetadata != null)
+            {
+                var latestSchemaVersion = GetLatestDocumentVersion(schemaName, true);
+                if (latestSchemaVersion != null && latestSchemaVersion.IsDeleted == false)
+                {
+                    var newSchemaVersion = DocumentVersion.CreateDeleted(schemaMetadata.Id, latestSchemaVersion.Id, latestSchemaVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier);
+                    _substrate.StoreDocumentVersion(this.Id, newSchemaVersion);
+                    _privateMetadata.AddDocumentVersion(schemaMetadata, newSchemaVersion.Metadata);
+                }
+            }   
         }
 
         public virtual void RenameDocument(string oldDocumentName, string newDocumentName)
         {
             VerifyIsUnlocked();
+            if (oldDocumentName.Contains("-schema"))
+                throw new MercurioException("Cannot rename a schema");
 
-            var documentId = GetDocumentId(oldDocumentName);
-            if (documentId == Guid.Empty)
+            var metadata = GetDocumentMetadata(oldDocumentName);
+            if (metadata == null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", oldDocumentName));
 
             _privateMetadata.RenameDocument(oldDocumentName, newDocumentName);
+            // If we are renaming a database, also rename its schema
+            if (metadata.DocumentType == DocumentType.Database.ToString())
+            {
+                var oldSchemaName = oldDocumentName = "-schema";
+                var newSchemaName = newDocumentName + "-schema";
+                _privateMetadata.RenameDocument(oldSchemaName, newSchemaName);
+            }
             StorePrivateMetadata();
         }
 
@@ -310,8 +366,8 @@ namespace Mercurio.Domain
         {
             VerifyIsUnlocked();
 
-            var documentId = GetDocumentId(documentName);
-            if (documentId == Guid.Empty)
+            var metadata = GetDocumentMetadata(documentName);
+            if (metadata != null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
             var latestVersionMetadata = GetLatestDocumentVersionMetadata(documentName);
@@ -324,6 +380,20 @@ namespace Mercurio.Domain
             // Delete the empty version that serves as a delete marker
             _substrate.DeleteDocumentVersion(this.Id, latestVersionMetadata);
             _privateMetadata.RemoveDocumentVersion(documentName, latestVersionMetadata);
+            // If it's a database, see if it has a deleted schema; if so, undelete it too 
+            if (metadata.DocumentType == DocumentType.Database.ToString())
+            {
+                string schemaName = documentName + "-schema";
+                var schemaMetadata = GetDocumentMetadata(schemaName);
+                if (schemaMetadata != null)
+                {
+                    var schemaLatestVersionMetadata = GetLatestDocumentVersionMetadata(schemaName);
+                    if (schemaLatestVersionMetadata != null && schemaLatestVersionMetadata.IsDeleted)
+                    // Delete the empty version that serves as a delete marker
+                    _substrate.DeleteDocumentVersion(this.Id, schemaLatestVersionMetadata);
+                    _privateMetadata.RemoveDocumentVersion(schemaName, schemaLatestVersionMetadata);
+                }
+            }
             StorePrivateMetadata();
             return GetLatestDocumentVersion(documentName);
         }
@@ -332,8 +402,8 @@ namespace Mercurio.Domain
         {
             VerifyIsUnlocked();
 
-            var documentId = GetDocumentId(documentName);
-            if (documentId == Guid.Empty)
+            var metadata = GetDocumentMetadata(documentName);
+            if (metadata == null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
             var versions = ListAvailableVersions(documentName);
@@ -346,6 +416,26 @@ namespace Mercurio.Domain
                 catch (Exception) { } // Suppress errors deleting physical records; we're about to delete their metadata
             }
             _privateMetadata.RemoveDocument(documentName);
+
+            // If it's a database, delete its schema as well
+            if (metadata.DocumentType == DocumentType.Database.ToString())
+            {
+                var schemaName = documentName + "-schema";
+                var schemaMetadata = GetDocumentMetadata(schemaName);
+                if (schemaMetadata != null)
+                {
+                    var schemaVersions = ListAvailableVersions(schemaName);
+                    foreach (var version in schemaVersions)
+                    {
+                        try
+                        {
+                            _substrate.DeleteDocumentVersion(this.Id, version);
+                        }
+                        catch (Exception) { } // Suppress errors deleting physical records; we're about to delete their metadata
+                    }
+                    _privateMetadata.RemoveDocument(schemaName);
+                }
+            }
 
             StorePrivateMetadata();
         }

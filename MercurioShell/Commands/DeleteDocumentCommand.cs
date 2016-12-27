@@ -21,16 +21,21 @@ namespace MercurioShell
         {
             VerifyContainerIsOpen(context);
 
-            if (context.ConfirmAction("WARNING: Deleting a document will delete all its contents forever. Are you sure you want to do this?", context.Environment))
+            if (arguments.Contains("hard-delete"))
             {
-                if (arguments.Contains("hard-delete"))
-                    context.OpenContainer.DeleteDocumentHard(arguments["document-name"], context.Environment.GetActiveIdentity());
+                if (context.ConfirmAction("WARNING: Deleting a document will delete all its contents forever. Are you sure you want to do this?", context.Environment))
+                {
+                    if (arguments.Contains("hard-delete"))
+                        context.OpenContainer.DeleteDocumentHard(arguments["document-name"], context.Environment.GetActiveIdentity());
+                }
                 else
-                    context.OpenContainer.DeleteDocumentSoft(arguments["document-name"], context.Environment.GetActiveIdentity());
-                return new List<string>() { string.Format("Document {0} was deleted", arguments["document-name"]) };
+                    return new List<string>() { "Passphrase not correct - document not deleted" };
             }
             else
-                return new List<string>() { "Passphrase not correct - document not deleted" };
+            {
+                context.OpenContainer.DeleteDocumentSoft(arguments["document-name"], context.Environment.GetActiveIdentity());
+            }
+            return new List<string>() { string.Format("Document {0} was deleted", arguments["document-name"]) };
         }
     }
 }

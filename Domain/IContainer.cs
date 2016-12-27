@@ -23,6 +23,8 @@ namespace Mercurio.Domain
         IRevisionRetentionPolicy RevisionRetentionPolicy { get;  }
         void ChangeRevisionRetentionPolicy(RevisionRetentionPolicyType revisionRetentionPolicyType);
         ICollection<string> Documents { get; }
+        ICollection<string> AllDocuments { get; }
+        ICollection<string> DeletedDocuments { get; }
         ICollection<DocumentVersionMetadata> ListAvailableVersions(string documentName);
         DocumentVersion GetDocumentVersion(DocumentVersionMetadata versionMetadata, bool metadataOnly = false);
         DocumentVersion GetLatestDocumentVersion(string documentName, bool metadataOnly = false);

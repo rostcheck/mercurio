@@ -11,6 +11,7 @@ namespace MercurioShell
     {
         public ShowDocumentsCommand()
         {
+            AddOptionalParameter("show-all", "show-all");            
             AddAlias("Dir");
             AddAlias("ls");
         }
@@ -20,7 +21,10 @@ namespace MercurioShell
             VerifyContainerIsOpen(context);
 
             var returnList = new List<string>() { string.Format("Available documents in container {0} are:", context.OpenContainer.Name) };
-            returnList.AddRange(context.OpenContainer.Documents);
+            if (arguments.Contains("show-all"))
+                returnList.AddRange(context.OpenContainer.AllDocuments);
+            else
+                returnList.AddRange(context.OpenContainer.Documents);
             return returnList;
         }
     }

@@ -1,8 +1,11 @@
 - [Major] implement a replicating substrate
   - Implement keychain for storing secure configuration/credentials
+  - Requires implementing database document type
+  	- undeleting a database should undelete its schema
   - Add commands to create channels
 - Create identity when none are available
 - If required arguments are not supplied, ask for them
 - Interactive tutorial that works through requisites
 - When completing arguments, see if command can help (ex. paths, container-names, etc)
 - Container names in substrate should not be encrypted
+- Need better display of deleted files when listing container contents

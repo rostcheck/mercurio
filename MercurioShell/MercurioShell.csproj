@@ -70,6 +70,8 @@
     <Compile Include="MercurioConsole.cs" />
     <Compile Include="Commands\InspectContainerCommand.cs" />
     <Compile Include="Commands\CreateQueueCommand.cs" />
+    <Compile Include="Commands\CreateDatabaseCommand.cs" />
+    <Compile Include="Commands\DeleteDatabaseCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
