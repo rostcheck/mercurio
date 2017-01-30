@@ -93,6 +93,16 @@ namespace Mercurio.Domain
             return _documentVersionDirectory[documentId].Where(s => s.Id == documentVersionId).FirstOrDefault();
         }
 
+        public DocumentMetadata AddDatabase(string databaseName)
+        {
+            if (_documentDirectory.ContainsKey(databaseName))
+                throw new ArgumentException("Database already exists");
+
+            var metadata = DocumentMetadata.Create(databaseName, "mercurio-database");
+            _documentDirectory.Add(databaseName, metadata);
+            return metadata;
+        }
+
         public void AddDocumentVersion(DocumentMetadata documentMetadata, DocumentVersionMetadata documentVersionMetadata)
         {
             // Create directory entry if it doesn't exist

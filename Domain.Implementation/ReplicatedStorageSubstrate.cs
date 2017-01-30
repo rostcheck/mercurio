@@ -79,7 +79,24 @@ namespace Mercurio.Domain.Implementation
 			//_messageQueue.Add(new DeleteContainerMessage(containerId));
 		}
 
-		public string Name
+        public byte[] RetrieveDatabase(Guid containerId, Guid databaseId)
+        {
+            return _baseSubstrate.RetrieveDatabase(containerId, databaseId);
+        }
+
+        public void StoreDatabase(Guid containerId, Guid databaseId, Stream encryptedDatabaseData)
+        {
+            _baseSubstrate.StoreDatabase(containerId, databaseId, encryptedDatabaseData);
+            //_messageQueue.Add(new StoreDatabaseMessage(containerId, databaseId, encryptedDatabaseData));
+        }
+
+        public void DeleteDatabase(Guid containerId, Guid databaseId)
+        {
+            _baseSubstrate.DeleteDatabase(containerId, databaseId);
+            //_messageQueue.Add(new DeleteDatabaseMessage(containerId, databaseId));
+        }
+
+        public string Name
 		{
 			get
 			{

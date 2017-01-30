@@ -106,6 +106,8 @@
     <Compile Include="MercurioMessageBase.cs" />
     <Compile Include="IPersistentQueueFactory.cs" />
     <Compile Include="PersistentQueueConfiguration.cs" />
+    <Compile Include="Database.cs" />
+    <Compile Include="IDatabase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

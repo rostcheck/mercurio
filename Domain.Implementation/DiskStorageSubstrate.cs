@@ -58,6 +58,35 @@ namespace Mercurio.Domain.Implementation
             return returnList;
         }
 
+        public byte[] RetrieveDatabase(Guid containerId, Guid databaseId)
+        {
+            var diskPath = GetDatabasePath(containerId, databaseId);
+            if (diskPath == null || diskPath == string.Empty)
+                throw new MercurioException(string.Format("Container with id {0} or database with id {1} is not hosted on this substrate ({2})", containerId, databaseId, Name));
+            return File.ReadAllBytes(diskPath);
+        }
+
+        public void StoreDatabase(Guid containerId, Guid databaseId, Stream encryptedDatabaseData)
+        {
+            var folderName = GetFolderName(containerId);
+            if (!Directory.Exists(folderName))
+            {
+                Directory.CreateDirectory(folderName);
+            }
+            var path = GetDatabasePath(containerId, databaseId);
+            using (var fileStream = File.Create(path))
+            {
+                encryptedDatabaseData.Seek(0, SeekOrigin.Begin);
+                encryptedDatabaseData.CopyTo(fileStream);
+            }            
+        }
+
+        public void DeleteDatabase(Guid containerId, Guid databaseId)
+        {
+            File.Delete(GetDatabasePath(containerId, databaseId));
+        }
+
+
         public DocumentVersion RetrieveDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata)
         {
             var fileContent = File.ReadAllText(GetDocumentVersionPath(containerId, documentVersionMetadata.DocumentId, documentVersionMetadata.Id));
@@ -99,6 +128,11 @@ namespace Mercurio.Domain.Implementation
         private string GetPrivateMetadataFilePath(string containerId)
         {
             return Path.Combine(GetContainerPath(containerId), string.Format("{0}.mc0", containerId));
+        }
+
+        public string GetDatabasePath(Guid containerId, Guid databaseId)
+        {
+            return Path.Combine(GetContainerPath(containerId.ToString()), databaseId.ToString() + ".db");
         }
 
         public string GetDocumentPath(Guid containerId, Guid documentId)

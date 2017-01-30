@@ -28,11 +28,14 @@ namespace Mercurio.Domain
         ICollection<DocumentVersionMetadata> ListAvailableVersions(string documentName);
         DocumentVersion GetDocumentVersion(DocumentVersionMetadata versionMetadata, bool metadataOnly = false);
         DocumentVersion GetLatestDocumentVersion(string documentName, bool metadataOnly = false);
-
+        void CreateDatabase(string databaseName);
+        void AddDatabaseRecord(string databaseName, Record record, Identity modifierIdentity);
+        void ChangeDatabaseRecord(string databaseName, Record record, Identity modifierIdentity);
+        void DeleteDatabaseRecord(string databaseName, Guid recordId, Identity modifierIdentity);
+        List<Record> GetDatabaseRecords(string databaseName);
+        List<Record> GetRecordsWhere(string databaseName, Func<Record, bool> predicate);
         DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData);
         DocumentVersion ModifyTextDocument(string documentName, Identity modifierIdentity, string modifiedData);
-        void DeleteRecord(string recordId);
-        void ChangeRecord(Record changedRecord);
 
         bool ContainsDocument(string documentName);
         DocumentVersion DeleteDocumentSoft(string documentName, Identity modifierIdentity);

@@ -172,7 +172,7 @@ namespace Mercurio.Domain
             get
             {
                 VerifyIsUnlocked();
-                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersion(s).IsDeleted == false).ToList();
+                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersion(s, true).IsDeleted == false).ToList();
             }
         }
 
@@ -181,7 +181,7 @@ namespace Mercurio.Domain
             get
             {
                 VerifyIsUnlocked();
-                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersion(s).IsDeleted == true).ToList();
+                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersion(s, true).IsDeleted == true).ToList();
             }
         }
 
@@ -236,7 +236,7 @@ namespace Mercurio.Domain
 
             VerifyIsUnlocked();
             var availableVersions = _privateMetadata.GetAvailableVersions(documentName);
-            if (availableVersions == null)
+            if (availableVersions == null || availableVersions.Count == 0)
                 return null;
             return availableVersions.OrderByDescending(s => s.CreatedDateTime).First();
         }
@@ -255,8 +255,88 @@ namespace Mercurio.Domain
 
             _substrate.StoreDocumentVersion(this.Id, documentVersion);
             _privateMetadata.AddDocumentVersion(documentMetadata, documentVersion.Metadata);
+            DeleteUnwantedVersions(documentMetadata);
             StorePrivateMetadata();            
             return DocumentVersion.CreateWithUnencryptedContent(documentVersion, initialData);
+        }
+
+        public virtual void CreateDatabase(string databaseName)
+        {
+            _privateMetadata.AddDatabase(databaseName);
+        }
+
+        public void AddDatabaseRecord(string databaseName, Record record, Identity modifierIdentity)
+        {
+            var databaseData = GetDecryptedDatabase(databaseName);
+            databaseData.Database.AddRecord(record);
+            DoneWithDatabase(databaseData, modifierIdentity.UniqueIdentifier);       
+        }
+
+        private struct DatabaseData
+        {
+            public IDatabase Database;
+            public Guid Id;
+        }
+
+        // Note: Could add optimization (caching) here to reduce high encryption/IO load on small changes
+        private DatabaseData GetDecryptedDatabase(string databaseName)
+        {
+            var documentMetadata = GetDocumentMetadata(databaseName);
+            if (documentMetadata == null)
+                throw new MercurioException(string.Format("Database document {0} does not exist in this container", databaseName));
+
+            byte[] encryptedData = _substrate.RetrieveDatabase(this.Id, documentMetadata.Id);
+            var data = new DatabaseData();
+            data.Database = _cryptoManager.Decrypt<Database>(encryptedData, _serializer);
+            data.Id = documentMetadata.Id;
+            return data;
+        }
+
+        // Note: Could add optimization (caching) here to reduce high encryption/IO load on small changes
+        private void DoneWithDatabase(DatabaseData databaseData, string modifierId)
+        {
+            var memStream = new MemoryStream();
+            _serializer.Serialize(memStream, databaseData.Database);
+            memStream.Position = 0;
+            var encryptedDataStream = _cryptoManager.Encrypt(memStream, modifierId);
+            _substrate.StoreDatabase(Id, databaseData.Id, encryptedDataStream);
+        }
+
+        public void ChangeDatabaseRecord(string databaseName, Record record, Identity modifierIdentity)
+        {
+            var databaseData = GetDecryptedDatabase(databaseName);
+            databaseData.Database.ChangeRecord(record);
+            DoneWithDatabase(databaseData, modifierIdentity.UniqueIdentifier);
+        }
+
+        public void DeleteDatabaseRecord(string databaseName, Guid recordId, Identity modifierIdentity)
+        {
+            var databaseData = GetDecryptedDatabase(databaseName);
+            databaseData.Database.DeleteRecord(recordId);
+            DoneWithDatabase(databaseData, modifierIdentity.UniqueIdentifier);
+        }
+
+        public List<Record> GetDatabaseRecords(string databaseName)
+        {
+            var databaseData = GetDecryptedDatabase(databaseName);          
+            return new List<Record>(databaseData.Database.GetRecords());
+        }
+
+        public List<Record> GetRecordsWhere(string databaseName, Func<Record, bool> predicate)
+        {
+            var databaseData = GetDecryptedDatabase(databaseName);
+            return new List<Record>(databaseData.Database.GetRecordsWhere(predicate));            
+        }
+
+
+        private void DeleteUnwantedVersions(DocumentMetadata documentMetadata)
+        {
+            var retentionPolicy = Domain.RevisionRetentionPolicy.Create((RevisionRetentionPolicyType)_privateMetadata.RevisionRetentionPolicyType);
+            foreach (var deleteRevision in retentionPolicy.RevisionsToDelete(_privateMetadata.GetAvailableVersions(documentMetadata.Name).ToList()))
+            {
+                _privateMetadata.RemoveDocumentVersion(documentMetadata.Name, deleteRevision);
+                _substrate.DeleteDocumentVersion(this.Id, deleteRevision);
+            }
         }
 
         private Guid GetDocumentId(string documentName)
@@ -288,6 +368,7 @@ namespace Mercurio.Domain
 
             _substrate.StoreDocumentVersion(this.Id, newVersion);
             _privateMetadata.AddDocumentVersion(documentMetadata, newVersion.Metadata);
+            DeleteUnwantedVersions(documentMetadata); // Enforce policy, in case it has changed
             StorePrivateMetadata();
             return newVersion;
         }
@@ -367,7 +448,7 @@ namespace Mercurio.Domain
             VerifyIsUnlocked();
 
             var metadata = GetDocumentMetadata(documentName);
-            if (metadata != null)
+            if (metadata == null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
             var latestVersionMetadata = GetLatestDocumentVersionMetadata(documentName);
@@ -440,6 +521,7 @@ namespace Mercurio.Domain
             StorePrivateMetadata();
         }
 
+        //TODO: Implement 
         public virtual void DeleteRecord(string recordId)
         {
             VerifyIsUnlocked();

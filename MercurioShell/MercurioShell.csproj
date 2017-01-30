@@ -72,6 +72,7 @@
     <Compile Include="Commands\CreateQueueCommand.cs" />
     <Compile Include="Commands\CreateDatabaseCommand.cs" />
     <Compile Include="Commands\DeleteDatabaseCommand.cs" />
+    <Compile Include="Commands\UndeleteDatabaseCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

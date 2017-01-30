@@ -13,6 +13,8 @@ namespace Mercurio.Domain.Implementation
         private Dictionary<Guid, DocumentVersion> _documentVersions;
         private Dictionary<Guid, ContainerMetadata> _metadata;
         private Dictionary<Guid, byte[]> _privateMetadata;
+        private Dictionary<string, byte[]> _databases;
+
 
         public InMemoryStorageSubstrate()
 			: base(false) // InMemory substrate is not a valid default substrate; can't persist
@@ -87,6 +89,28 @@ namespace Mercurio.Domain.Implementation
         public void DeleteDocumentVersion(Guid containerId, DocumentVersionMetadata documentVersionMetadata)
         {
             _documentVersions.Remove(documentVersionMetadata.Id);
+        }
+
+        public byte[] RetrieveDatabase(Guid containerId, Guid databaseId)
+        {
+            return _databases[containerId.ToString() + ":" + databaseId.ToString()];
+        }
+
+        public void StoreDatabase(Guid containerId, Guid databaseId, Stream encryptedDatabaseData)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                encryptedDatabaseData.Position = 0;
+                encryptedDatabaseData.CopyTo(memoryStream);
+                _databases[containerId.ToString() + ":" + databaseId.ToString()] = memoryStream.ToArray();
+            }            
+        }
+
+        public void DeleteDatabase(Guid containerId, Guid databaseId)
+        {
+            string key = containerId.ToString() + ":" + databaseId.ToString();
+            if (_databases.ContainsKey(key))
+                _databases.Remove(key);
         }
     }
 }

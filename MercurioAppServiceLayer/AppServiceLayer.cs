@@ -90,9 +90,9 @@ namespace MercurioAppServiceLayer
             this.cryptoManager = CryptoManagerFactory.Create(GetCryptoManagerType(cryptoManagerType).ToString(), osAbstractor, configuration);
             this.logger = new FileLogger("mercurio_log.txt");
             
-            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration(ConfigurationManager.GetConfigurationValue("StorageConnectionString"));
-            queue = PersistentQueueFactory.Create(PersistentQueueType.CloudQueueStorage, 
-                queueConfiguration, serializer);
+            PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration(
+                "comm-queue", "Azure", ConfigurationManager.GetConfigurationValue("StorageConnectionString"));
+            queue = new PersistentQueueFactory().Create(queueConfiguration, serializer);
             this.messageService = new MessageService(queue, cryptoManager, serializer);
         }
 
@@ -101,7 +101,7 @@ namespace MercurioAppServiceLayer
             const string testMessageQueue = "messages_for_alice@maker.net";
             string testMessageQueuePath = Path.Combine(@"..", @"..", @"..", "TestKeyRings", testMessageQueue);
             PersistentQueueConfiguration queueConfiguration = new PersistentQueueConfiguration("messages", "local");
-            IPersistentQueue queue = PersistentQueueFactory.Create(PersistentQueueType.LocalFileStorage, queueConfiguration, serializer);
+            IPersistentQueue myQueue = new PersistentQueueFactory().Create(queueConfiguration, serializer);
             if (File.Exists(testMessageQueue))
                 File.Delete(testMessageQueue);
             File.Copy(testMessageQueuePath, testMessageQueue);
@@ -111,11 +111,11 @@ namespace MercurioAppServiceLayer
             while (!bExit)
             {
                 await Task.Delay(delay);
-                EnvelopedMercurioMessage message = queue.GetNext(testMessageQueue);
+                EnvelopedMercurioMessage message = myQueue.GetNext(testMessageQueue);
                 if (message == null)
                     bExit = true;
                 else
-                    queue.Add(message);
+                    myQueue.Add(message);
             }
         }
 
@@ -124,7 +124,9 @@ namespace MercurioAppServiceLayer
             const int delay = 500;
             listening = true;
             cryptoManager.SetCredential(credential);
+            #pragma warning disable CS4014 // Deliberately starting a second thread here
             Task.Factory.StartNew(() => InjectTestMessages());
+            #pragma warning restore CS4014
             IMercurioMessage nextMessage = null;
             while (listening)
             {

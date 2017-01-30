@@ -11,6 +11,7 @@ namespace Mercurio.Domain
     public class RecordChange
     {
         public ChangeType ChangeType { get; private set; }
+//        private List<AtomicDataElementChange> _changes;
 
         public RecordChange()
         {

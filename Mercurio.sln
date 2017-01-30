@@ -61,7 +61,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Todo.txt = Todo.txt
 		ReplicatingSubstrate.txt = ReplicatingSubstrate.txt
 		Mercurio - A Secure Computing Environment.txt = Mercurio - A Secure Computing Environment.txt
-		Documents vs Records.txt = Documents vs Records.txt
+		Documents vs Databases.txt = Documents vs Databases.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MercurioUIMockup", "MercurioUIMockup\MercurioUIMockup.csproj", "{D06E9FF1-FED4-4A75-B83E-D7E5A164F353}"

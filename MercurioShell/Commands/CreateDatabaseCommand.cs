@@ -51,6 +51,7 @@ namespace MercurioShell
                 else
                     context.OpenContainer.CreateTextDocument(schemaName, context.Environment.GetActiveIdentity(), editedContent);
             }
+            context.OpenContainer.CreateTextDocument(databaseName, context.Environment.GetActiveIdentity(), "");
             returnList.Add(string.Format("Created database {0} in container {1}", databaseName, context.OpenContainer.Name));
             returnList.AddRange(context.OpenContainer.Documents);
             return returnList;

@@ -26,5 +26,8 @@ namespace Mercurio.Domain
         void StoreMetadata(Guid containerId, ContainerMetadata metadata);
         void StorePrivateMetadata(Guid containerId, Stream encryptedPrivateMetadata);
         void DeleteContainer(Guid containerId);
+        byte[] RetrieveDatabase(Guid containerId, Guid databaseId);
+        void StoreDatabase(Guid containerId, Guid databaseId, Stream encryptedDatabaseData);
+        void DeleteDatabase(Guid containerId, Guid databaseId);
     }
 }

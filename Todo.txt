@@ -2,6 +2,7 @@
   - Implement keychain for storing secure configuration/credentials
   - Requires implementing database document type
   	- undeleting a database should undelete its schema
+  	* Storage substrate includes DB functionality; Container needs to call it
   - Add commands to create channels
 - Create identity when none are available
 - If required arguments are not supplied, ask for them

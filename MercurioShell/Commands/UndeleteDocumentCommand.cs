@@ -13,6 +13,7 @@ namespace MercurioShell.Commands
         {
             AddRequiredParameter("document-name", "name");
             AddAlias("Undel");
+            AddAlias("undeldb");
         }
 
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)

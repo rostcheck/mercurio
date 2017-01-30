@@ -60,7 +60,7 @@ namespace Entities
 			base.Initialize(senderAddress, recipientAddress, GetContent(publicKey, signatures, evidence));
 
             this._publicKey = publicKey;
-            this._signatures = signatures;
+//            this._signatures = signatures;
             this._evidence = evidence;
         }
 
