@@ -18,6 +18,9 @@ namespace Mercurio.Domain
 
         public void AddField(Field field)
         {
+            if (_fields == null)
+                _fields = new List<Field>();
+            
             _fields.Add(field);
         }
    

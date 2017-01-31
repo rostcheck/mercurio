@@ -27,7 +27,7 @@ namespace MercurioShell
             var returnList = new List<string>();
             if (context.OpenContainer.ContainsDocument(databaseName))
             {
-                var existingDocumentVersion = context.OpenContainer.GetLatestDocumentVersion(databaseName);
+                var existingDocumentVersion = context.OpenContainer.GetLatestDocumentVersionMetadata(databaseName);
                 if (existingDocumentVersion != null && existingDocumentVersion.IsDeleted)
                 {
                     returnList.Add(string.Format("Database {0} exists in container {1} but is is deleted.", databaseName, context.OpenContainer.Name));

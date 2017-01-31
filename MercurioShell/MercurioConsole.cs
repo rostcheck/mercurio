@@ -229,7 +229,9 @@ namespace MercurioShell
 				int remainingChars = (line.Length >= _blankLine.Length) ? 0 : _blankLine.Length - line.Length;
 				Console.Write(line + _blankLine.Substring(0, remainingChars));
 			}
-			Console.SetCursorPosition(finalCursorPos, rowNumber);
+            if (finalCursorPos == _blankLine.Length)
+                finalCursorPos = 0;
+            Console.SetCursorPosition(finalCursorPos, rowNumber);
 		}
 
 		private void AddToBuffers(string line)

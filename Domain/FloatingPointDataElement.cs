@@ -6,17 +6,17 @@
     public class FloatingPointDataElement : IAtomicDataElement
     {
         private double _doubleValue;
-        private Field _field;
+        private string _name;
 
         public FloatingPointDataElement(string name, double value)
         {
-            _field.Name = name;
+            _name = name;
             _doubleValue = value;
         }
 
         public FloatingPointDataElement(Field field)
-        {
-            _field = field;
+        {            
+            _name = field.Name;
         }
 
         public double Value
@@ -35,11 +35,11 @@
         {
             get
             {
-                return _field.Name;
+                return _name;
             }
             set
             {
-                _field.Name = value;
+                _name = value;
             }
         }
 
@@ -47,7 +47,7 @@
         {
             get
             {
-                return _field.ElementType;
+                return DataElementType.FloatingPoint;
             }
         }
     }

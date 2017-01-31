@@ -6,17 +6,17 @@
     public class StringDataElement : IAtomicDataElement
     {
         private string _stringValue;
-        private Field _field;
+        private string _name;
 
         public StringDataElement(string name, string value)
         {
-            _field.Name = name;
+            _name = name;
             _stringValue = value;
         }
 
         public StringDataElement(Field field)
         {
-            _field = field;
+            _name = field.Name;
         }
 
         public string Value
@@ -35,11 +35,11 @@
         {
             get
             {
-                return _field.Name;
+                return _name;
             }
             set
             {
-                _field.Name = value;
+                _name = value;
             }
         }
 
@@ -47,7 +47,7 @@
         {
             get
             {
-                return _field.ElementType;
+                return DataElementType.String;
             }
         }
     }

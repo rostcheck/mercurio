@@ -6,17 +6,17 @@
     public class IntegerDataElement : IAtomicDataElement
     {
         private int _intValue;
-        private Field _field;
+        private string _name;
 
         public IntegerDataElement(string name, int value)
         {
-            _field.Name = name;
+            _name = name;
             _intValue = value;
         }
 
         public IntegerDataElement(Field field)
         {
-            _field = field;
+            _name = field.Name;
         }
 
         public int Value
@@ -35,11 +35,11 @@
         {
             get
             {
-                return _field.Name;
+                return _name;
             }
             set
             {
-                _field.Name = value;
+                _name = value;
             }
         }
 
@@ -47,7 +47,7 @@
         {
             get
             {
-                return _field.ElementType;
+                return DataElementType.Integer;
             }
         }
     }

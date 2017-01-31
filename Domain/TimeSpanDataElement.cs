@@ -2,33 +2,33 @@
 namespace Mercurio.Domain
 {
     /// <summary>
-    /// Date time data element.
+    /// Time span data element.
     /// </summary>
-    public class DateTimeDataElement : IAtomicDataElement
+    public class TimeSpanDataElement : IAtomicDataElement
     {
-        private DateTime _dateTimeValue;
+        private TimeSpan _timeSpanValue;
         private string _name;
 
-        public DateTimeDataElement(string name, DateTime value)
+        public TimeSpanDataElement(string name, TimeSpan value)
         {
             _name = name;
-            _dateTimeValue = value;
+            _timeSpanValue = value;
         }
 
-        public DateTimeDataElement(Field field)
+        public TimeSpanDataElement(Field field)
         {
             _name = field.Name;
         }
 
-        public DateTime Value
+        public TimeSpan Value
         {
             get
             {
-                return _dateTimeValue;
+                return _timeSpanValue;
             }
             set
             {
-                _dateTimeValue = value;
+                _timeSpanValue = value;
             }
         }
 
@@ -48,7 +48,7 @@ namespace Mercurio.Domain
         {
             get
             {
-                return DataElementType.DateTime;
+                return DataElementType.TimeSpan;
             }
         }
     }

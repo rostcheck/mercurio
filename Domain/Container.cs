@@ -172,7 +172,7 @@ namespace Mercurio.Domain
             get
             {
                 VerifyIsUnlocked();
-                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersion(s, true).IsDeleted == false).ToList();
+                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersionMetadata(s).IsDeleted == false).ToList();
             }
         }
 
@@ -181,7 +181,7 @@ namespace Mercurio.Domain
             get
             {
                 VerifyIsUnlocked();
-                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersion(s, true).IsDeleted == true).ToList();
+                return _privateMetadata.GetAvailableDocuments().Where(s => GetLatestDocumentVersionMetadata(s).IsDeleted == true).ToList();
             }
         }
 
@@ -216,12 +216,13 @@ namespace Mercurio.Domain
             return DocumentVersion.CreateWithUnencryptedContent(documentVersion, unencryptedDocumentContent);
         }
 
-        public DocumentVersion GetLatestDocumentVersion(string documentName, bool metadataOnly = false)
+        public DocumentVersion GetLatestDocumentVersion(string documentName)
         {
-            var documentVersionMetadata = GetLatestDocumentVersionMetadata(documentName, metadataOnly);
+            var documentVersionMetadata = GetLatestDocumentVersionMetadata(documentName);
             if (documentVersionMetadata == null)
                 return null;
 
+            bool metadataOnly = false;
             var documentVersion = _substrate.RetrieveDocumentVersion(this.Id, documentVersionMetadata);
             if (documentVersionMetadata.IsDeleted)
                 metadataOnly = true;
@@ -229,7 +230,7 @@ namespace Mercurio.Domain
             return DocumentVersion.CreateWithUnencryptedContent(documentVersion, unencryptedDocumentContent);
         }
 
-        public DocumentVersionMetadata GetLatestDocumentVersionMetadata(string documentName, bool metadataOnly = false)
+        public DocumentVersionMetadata GetLatestDocumentVersionMetadata(string documentName)
         {
             if (string.IsNullOrEmpty(documentName))
                 throw new ArgumentException("documentName");
@@ -243,7 +244,7 @@ namespace Mercurio.Domain
 
         public virtual DocumentVersion CreateDocument(string documentName, DocumentType documentType, Identity creatorIdentity, Stream dataStream)
         {
-            var latestVersion = GetLatestDocumentVersion(documentName);
+            var latestVersion = GetLatestDocumentVersionMetadata(documentName);
             if (latestVersion != null)
                 throw new MercurioException(string.Format("Document {0} already exists in this container", documentName));
 
@@ -387,7 +388,7 @@ namespace Mercurio.Domain
 			if (documentMetadata == null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
-            var latestVersion = GetLatestDocumentVersion(documentName);
+            var latestVersion = GetLatestDocumentVersionMetadata(documentName);
             if (latestVersion == null)
                 throw new MercurioException(string.Format("Document {0} does not have any versions in this container", documentName)); // internal inconsistency
 
@@ -413,7 +414,7 @@ namespace Mercurio.Domain
             return (documentName.Contains(schemaSuffix));
         }
 
-        public virtual DocumentVersion DeleteDocumentSoft(string documentName, Identity modifierIdentity)
+        public virtual DocumentVersionMetadata DeleteDocumentSoft(string documentName, Identity modifierIdentity)
         {
             VerifyIsUnlocked();
 
@@ -424,7 +425,7 @@ namespace Mercurio.Domain
             if (documentMetadata == null)
                 throw new MercurioException(string.Format("Document {0} does not exist in this container", documentName));
 
-            var latestVersion = GetLatestDocumentVersion(documentName, true);
+            var latestVersion = GetLatestDocumentVersionMetadata(documentName);
             if (latestVersion == null)
                 throw new MercurioException(string.Format("Document {0} does not have any versions in this container", documentName)); // internal inconsistency
             if (latestVersion.IsDeleted)
@@ -443,7 +444,7 @@ namespace Mercurio.Domain
                 SoftDeleteSchema(documentName, modifierIdentity);
             
             StorePrivateMetadata();
-            return newVersion;
+            return newVersion.Metadata;
         }
 
         private void SoftDeleteSchema(string documentName, Identity modifierIdentity)
@@ -452,7 +453,7 @@ namespace Mercurio.Domain
             var schemaMetadata = GetDocumentMetadata(schemaName);
             if (schemaMetadata != null)
             {
-                var latestSchemaVersion = GetLatestDocumentVersion(schemaName, true);
+                var latestSchemaVersion = GetLatestDocumentVersionMetadata(schemaName);
                 if (latestSchemaVersion != null && latestSchemaVersion.IsDeleted == false)
                 {
                     var newSchemaVersion = DocumentVersion.CreateDeleted(schemaMetadata.Id, latestSchemaVersion.Id, latestSchemaVersion.CreatedDateTime.UtcTicks, modifierIdentity.UniqueIdentifier);

@@ -813,6 +813,9 @@ namespace Starksoft.Cryptography.OpenPGP
 
         private void AsyncErrorReader()
         {
+            if (_proc == null)
+                return;
+            
             Stream input = _proc.StandardError.BaseStream;
             Stream output = _errorStream;
 

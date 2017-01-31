@@ -114,6 +114,7 @@
     <Compile Include="IntegerDataElement.cs" />
     <Compile Include="FloatingPointDataElement.cs" />
     <Compile Include="StreamExtensions.cs" />
+    <Compile Include="TimeSpanDataElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

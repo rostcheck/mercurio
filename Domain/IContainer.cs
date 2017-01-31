@@ -30,7 +30,8 @@ namespace Mercurio.Domain
         ICollection<string> DeletedDocuments { get; }
         ICollection<DocumentVersionMetadata> ListAvailableVersions(string documentName);
         DocumentVersion GetDocumentVersion(DocumentVersionMetadata versionMetadata, bool metadataOnly = false);
-        DocumentVersion GetLatestDocumentVersion(string documentName, bool metadataOnly = false);
+        DocumentVersion GetLatestDocumentVersion(string documentName);
+        DocumentVersionMetadata GetLatestDocumentVersionMetadata(string documentName);
         bool ContainsDocument(string documentName);
 
         // Database manipulation
@@ -47,7 +48,7 @@ namespace Mercurio.Domain
         DocumentVersion CreateDocument(string documentName, DocumentType documentType, Identity creatorIdentity, Stream dataStream);
         DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData);
         DocumentVersion ModifyTextDocument(string documentName, Identity modifierIdentity, string modifiedData);
-        DocumentVersion DeleteDocumentSoft(string documentName, Identity modifierIdentity);
+        DocumentVersionMetadata DeleteDocumentSoft(string documentName, Identity modifierIdentity);
         void DeleteDocumentHard(string documentName, Identity modifierIdentity);
         DocumentVersion UnDeleteDocument(string documentName, Identity modifierIdentity); // Can only undelete soft-deleted documents
         void RenameDocument(string oldDocumentName, string newDocumentName);
