@@ -1,33 +1,33 @@
 ﻿namespace Mercurio.Domain
 {
     /// <summary>
-    /// String data element.
+    /// Floating point data element.
     /// </summary>
-    public class StringDataElement : IAtomicDataElement
+    public class FloatingPointDataElement : IAtomicDataElement
     {
-        private string _stringValue;
+        private double _doubleValue;
         private Field _field;
 
-        public StringDataElement(string name, string value)
+        public FloatingPointDataElement(string name, double value)
         {
             _field.Name = name;
-            _stringValue = value;
+            _doubleValue = value;
         }
 
-        public StringDataElement(Field field)
+        public FloatingPointDataElement(Field field)
         {
             _field = field;
         }
 
-        public string Value
+        public double Value
         {
             get
             {
-                return _stringValue;
+                return _doubleValue;
             }
             set
             {
-                _stringValue = value;
+                _doubleValue = value;
             }
         }
 

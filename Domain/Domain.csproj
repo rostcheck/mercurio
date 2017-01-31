@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessPermissionType.cs" />
-    <Compile Include="AtomicDataElement.cs" />
+    <Compile Include="IAtomicDataElement.cs" />
     <Compile Include="AtomicDataElementChange.cs" />
     <Compile Include="BinarySerializerCore.cs" />
     <Compile Include="ChangePolicy\ChangePolicyAllowAll.cs" />
@@ -97,7 +97,6 @@
     <Compile Include="RevisionRetentionPolicies\RevisionRetentionPolicyType.cs" />
     <Compile Include="IStorageSubstrate.cs" />
     <Compile Include="Serializer.cs" />
-    <Compile Include="StringDataElement.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IPersistentQueue.cs" />
@@ -108,6 +107,13 @@
     <Compile Include="PersistentQueueConfiguration.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="IDatabase.cs" />
+    <Compile Include="DatabaseSchema.cs" />
+    <Compile Include="Field.cs" />
+    <Compile Include="StringDataElement.cs" />
+    <Compile Include="DateTimeDataElement.cs" />
+    <Compile Include="IntegerDataElement.cs" />
+    <Compile Include="FloatingPointDataElement.cs" />
+    <Compile Include="StreamExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -12,7 +12,7 @@ namespace Mercurio.Domain
     public class Record
     {
         private List<DocumentVersion> _revisions;
-        private List<AtomicDataElement> _dataElements;
+        private List<IAtomicDataElement> _dataElements;
         private List<AtomicDataElementChange> _uncommittedRevisions;
 
         public Guid Id { get; private set; }
@@ -22,36 +22,43 @@ namespace Mercurio.Domain
             return new Record(name);
         }
 
+        public static Record Create(string name, List<IAtomicDataElement> dataElements)
+        {
+            return new Record(name, dataElements);
+        }
+
         public List<DocumentVersion> GetRevisions()
         {
             return new List<DocumentVersion>(_revisions);
         }
 
-        private Record(string name, List<AtomicDataElement> dataElements = null)
+        private Record(string name, List<IAtomicDataElement> dataElements = null)
         {
             _revisions = new List<DocumentVersion>();
-            _dataElements = dataElements ?? new List<AtomicDataElement>();
+            _dataElements = dataElements ?? new List<IAtomicDataElement>();
             _uncommittedRevisions = new List<AtomicDataElementChange>();
             Id = Guid.NewGuid();
         }
 
         public string Name { get; private set; }
 
-        public List<AtomicDataElement> GetDataElements()
+        public List<IAtomicDataElement> GetDataElements()
         {
-            return new List<AtomicDataElement>(_dataElements);
+            return new List<IAtomicDataElement>(_dataElements);
         }
 
         public void ChangeElement(AtomicDataElementChange dataElementChange)
         {
-            // delete any prior pending changes (sets or deletes) for this element
-            _uncommittedRevisions = _uncommittedRevisions.Where(s => !s.SameElementAs(dataElementChange)).ToList();
+            throw new NotImplementedException();
 
-            if (dataElementChange.ChangeType == ChangeType.Delete && _dataElements.Where(s => s.SameElementAs(dataElementChange)).SingleOrDefault() == null)
-            {
-                return; // Ignore deletes for non-existent records
-            }
-            _uncommittedRevisions.Add(dataElementChange);
+            // delete any prior pending changes (sets or deletes) for this element
+            //uncommittedRevisions = _uncommittedRevisions.Where(s => !s.SameElementAs(dataElementChange)).ToList();
+
+            //if (dataElementChange.ChangeType == ChangeType.Delete && _dataElements.Where(s => s.SameElementAs(dataElementChange)).SingleOrDefault() == null)
+            //{
+            //    return; // Ignore deletes for non-existent records
+            //}
+            //_uncommittedRevisions.Add(dataElementChange);
         }
 
         public void CommitChanges(string revisorIdentityUniqueId)

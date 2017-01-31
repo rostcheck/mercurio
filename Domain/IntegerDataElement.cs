@@ -1,33 +1,33 @@
 ﻿namespace Mercurio.Domain
 {
     /// <summary>
-    /// String data element.
+    /// Integer data element.
     /// </summary>
-    public class StringDataElement : IAtomicDataElement
+    public class IntegerDataElement : IAtomicDataElement
     {
-        private string _stringValue;
+        private int _intValue;
         private Field _field;
 
-        public StringDataElement(string name, string value)
+        public IntegerDataElement(string name, int value)
         {
             _field.Name = name;
-            _stringValue = value;
+            _intValue = value;
         }
 
-        public StringDataElement(Field field)
+        public IntegerDataElement(Field field)
         {
             _field = field;
         }
 
-        public string Value
+        public int Value
         {
             get
             {
-                return _stringValue;
+                return _intValue;
             }
             set
             {
-                _stringValue = value;
+                _intValue = value;
             }
         }
 

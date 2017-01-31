@@ -63,6 +63,12 @@ namespace Mercurio.Domain
             return _documentDirectory.Keys.ToList();
         }
 
+        public ICollection<string> GetAvailableDocuments(DocumentType documentType)
+        {
+            return _documentDirectory.Where(s => s.Value.DocumentType == documentType.ToString()).
+                                     Select(s => s.Key).ToList();
+        }
+
         public DocumentMetadata GetDocumentMetadata(string documentName)
         {
             return _documentDirectory.ContainsKey(documentName) ? _documentDirectory[documentName] : null;

@@ -73,6 +73,7 @@
     <Compile Include="Commands\CreateDatabaseCommand.cs" />
     <Compile Include="Commands\DeleteDatabaseCommand.cs" />
     <Compile Include="Commands\UndeleteDatabaseCommand.cs" />
+    <Compile Include="Commands\ImportDatabaseCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

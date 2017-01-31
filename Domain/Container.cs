@@ -241,7 +241,7 @@ namespace Mercurio.Domain
             return availableVersions.OrderByDescending(s => s.CreatedDateTime).First();
         }
 
-        public virtual DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData)
+        public virtual DocumentVersion CreateDocument(string documentName, DocumentType documentType, Identity creatorIdentity, Stream dataStream)
         {
             var latestVersion = GetLatestDocumentVersion(documentName);
             if (latestVersion != null)
@@ -249,15 +249,22 @@ namespace Mercurio.Domain
 
             VerifyIsUnlocked();
 
+            dataStream.Position = 0;
             var documentMetadata = DocumentMetadata.Create(documentName, DocumentType.TextDocument.ToString());
-            var encryptedInitialData = _cryptoManager.Encrypt(initialData, creatorIdentity.UniqueIdentifier);
-            var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, 0, creatorIdentity.UniqueIdentifier, encryptedInitialData, false);
+            var reader = new StreamReader(_cryptoManager.Encrypt(dataStream, creatorIdentity.UniqueIdentifier));
+            var initialData = reader.ReadToEnd();
+            var documentVersion = DocumentVersion.Create(documentMetadata.Id, Guid.Empty, 0, creatorIdentity.UniqueIdentifier, initialData, false);
 
             _substrate.StoreDocumentVersion(this.Id, documentVersion);
             _privateMetadata.AddDocumentVersion(documentMetadata, documentVersion.Metadata);
             DeleteUnwantedVersions(documentMetadata);
-            StorePrivateMetadata();            
-            return DocumentVersion.CreateWithUnencryptedContent(documentVersion, initialData);
+            StorePrivateMetadata();
+            return DocumentVersion.CreateWithUnencryptedContent(documentVersion, initialData);            
+        }
+
+        public virtual DocumentVersion CreateTextDocument(string documentName, Identity creatorIdentity, string initialData)
+        {
+            return CreateDocument(documentName, DocumentType.TextDocument, creatorIdentity, initialData.ToStream());
         }
 
         public virtual void CreateDatabase(string databaseName)
@@ -265,11 +272,32 @@ namespace Mercurio.Domain
             _privateMetadata.AddDatabase(databaseName);
         }
 
+        public virtual void AttachDatabaseSchema(string databaseName, DatabaseSchema schema, Identity modifierIdentity)
+        {
+            string schemaName = DatabaseSchemaName(databaseName);
+            if (ContainsDocument(schemaName))
+                throw new MercurioException("Database already has a schema attached");
+
+            var stream = new MemoryStream();
+            _serializer.Serialize(stream, schema);
+            stream.Position = 0;
+            CreateDocument(schemaName, DocumentType.TextDocument, modifierIdentity, stream);
+        }
+
+
         public void AddDatabaseRecord(string databaseName, Record record, Identity modifierIdentity)
         {
             var databaseData = GetDecryptedDatabase(databaseName);
             databaseData.Database.AddRecord(record);
             DoneWithDatabase(databaseData, modifierIdentity.UniqueIdentifier);       
+        }
+
+        public void AddDatabaseRecords(string databaseName, IEnumerable<Record> records, Identity modifierIdentity)
+        {
+            var databaseData = GetDecryptedDatabase(databaseName);
+            foreach (var record in records)
+                databaseData.Database.AddRecord(record);
+            DoneWithDatabase(databaseData, modifierIdentity.UniqueIdentifier);
         }
 
         private struct DatabaseData
@@ -373,11 +401,23 @@ namespace Mercurio.Domain
             return newVersion;
         }
 
+        private const string schemaSuffix = "-schema";
+
+        private string DatabaseSchemaName(string databaseName)
+        {
+            return (databaseName + schemaSuffix);
+        }
+
+        private bool DocumentNameIsSchema(string documentName)
+        {
+            return (documentName.Contains(schemaSuffix));
+        }
+
         public virtual DocumentVersion DeleteDocumentSoft(string documentName, Identity modifierIdentity)
         {
             VerifyIsUnlocked();
 
-            if (documentName.Contains("-schema"))
+            if (DocumentNameIsSchema(documentName))
                 throw new MercurioException("Cannot delete a schema - delete the associated database document instead");
                 
             var documentMetadata = GetDocumentMetadata(documentName);
@@ -408,7 +448,7 @@ namespace Mercurio.Domain
 
         private void SoftDeleteSchema(string documentName, Identity modifierIdentity)
         {
-            var schemaName = documentName + "-schema";
+            var schemaName = DatabaseSchemaName(documentName);
             var schemaMetadata = GetDocumentMetadata(schemaName);
             if (schemaMetadata != null)
             {
@@ -425,7 +465,7 @@ namespace Mercurio.Domain
         public virtual void RenameDocument(string oldDocumentName, string newDocumentName)
         {
             VerifyIsUnlocked();
-            if (oldDocumentName.Contains("-schema"))
+            if (DocumentNameIsSchema(oldDocumentName))
                 throw new MercurioException("Cannot rename a schema");
 
             var metadata = GetDocumentMetadata(oldDocumentName);
@@ -436,8 +476,8 @@ namespace Mercurio.Domain
             // If we are renaming a database, also rename its schema
             if (metadata.DocumentType == DocumentType.Database.ToString())
             {
-                var oldSchemaName = oldDocumentName = "-schema";
-                var newSchemaName = newDocumentName + "-schema";
+                var oldSchemaName = oldDocumentName + schemaSuffix;
+                var newSchemaName = newDocumentName + schemaSuffix;
                 _privateMetadata.RenameDocument(oldSchemaName, newSchemaName);
             }
             StorePrivateMetadata();
@@ -464,7 +504,7 @@ namespace Mercurio.Domain
             // If it's a database, see if it has a deleted schema; if so, undelete it too 
             if (metadata.DocumentType == DocumentType.Database.ToString())
             {
-                string schemaName = documentName + "-schema";
+                string schemaName = DatabaseSchemaName(documentName);
                 var schemaMetadata = GetDocumentMetadata(schemaName);
                 if (schemaMetadata != null)
                 {
@@ -501,7 +541,7 @@ namespace Mercurio.Domain
             // If it's a database, delete its schema as well
             if (metadata.DocumentType == DocumentType.Database.ToString())
             {
-                var schemaName = documentName + "-schema";
+                var schemaName = DatabaseSchemaName(documentName);
                 var schemaMetadata = GetDocumentMetadata(schemaName);
                 if (schemaMetadata != null)
                 {

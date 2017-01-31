@@ -11,6 +11,8 @@ namespace Mercurio.Domain
         String,
         Integer,
         FloatingPoint,
-        Binary
+        Binary,
+        DateTime,
+        TimeSpan
     }
 }

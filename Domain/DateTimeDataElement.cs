@@ -1,33 +1,34 @@
-﻿namespace Mercurio.Domain
+﻿using System;
+namespace Mercurio.Domain
 {
     /// <summary>
-    /// String data element.
+    /// Date time data element.
     /// </summary>
-    public class StringDataElement : IAtomicDataElement
+    public class DateTimeDataElement : IAtomicDataElement
     {
-        private string _stringValue;
+        private DateTime _dateTimeValue;
         private Field _field;
 
-        public StringDataElement(string name, string value)
+        public DateTimeDataElement(string name, DateTime value)
         {
             _field.Name = name;
-            _stringValue = value;
+            _dateTimeValue = value;
         }
 
-        public StringDataElement(Field field)
+        public DateTimeDataElement(Field field)
         {
             _field = field;
         }
 
-        public string Value
+        public DateTime Value
         {
             get
             {
-                return _stringValue;
+                return _dateTimeValue;
             }
             set
             {
-                _stringValue = value;
+                _dateTimeValue = value;
             }
         }
 

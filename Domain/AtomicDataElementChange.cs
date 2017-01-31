@@ -9,9 +9,12 @@ namespace Mercurio.Domain
     /// <summary>
     /// Represents a change (set value, delete value) to an AtomicDataElement
     /// </summary>
-    public class AtomicDataElementChange : AtomicDataElement
+    public class AtomicDataElementChange
     {        
         public ChangeType ChangeType { get; private set; }
+        public string Name;
+        public object Value;
+        public DataElementType ElementType;
 
         private AtomicDataElementChange()
         {
