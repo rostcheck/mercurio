@@ -44,7 +44,7 @@ namespace MercurioShell
             // Read file and create schema
             bool hasHeader = false;
             var schema = ParseSchema(path, out hasHeader);
-            context.OpenContainer.CreateDatabase(databaseName);
+            context.OpenContainer.CreateDatabase(databaseName, context.Environment.GetActiveIdentity());
 
             var lines = new List<string>(File.ReadLines(path));
             var records = new List<Record>();

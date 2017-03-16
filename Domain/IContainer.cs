@@ -35,7 +35,7 @@ namespace Mercurio.Domain
         bool ContainsDocument(string documentName);
 
         // Database manipulation
-        void CreateDatabase(string databaseName);
+        void CreateDatabase(string databaseName, Identity creatorIdentity);
         void AttachDatabaseSchema(string databaseName, DatabaseSchema schema, Identity modifierIdentity);
         void AddDatabaseRecord(string databaseName, Record record, Identity modifierIdentity);
         void AddDatabaseRecords(string databaseName, IEnumerable<Record> records, Identity modifierIdentity);

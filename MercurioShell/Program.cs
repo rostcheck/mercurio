@@ -46,7 +46,7 @@ namespace MercurioShell
 							line = console.PushCommandLine();
 							break;
 						case ConsoleKey.Backspace:
-						case ConsoleKey.Delete:
+						case ConsoleKey.Delete:                            
 							console.DeleteKey();
 							break;
 						case ConsoleKey.UpArrow:
@@ -77,7 +77,11 @@ namespace MercurioShell
 										break;
 									case ConsoleKey.E:
 										console.GoToLineEnd();
-										break;									
+										break;
+                                    case ConsoleKey.D:
+                                        console.CursorRight();
+                                        console.DeleteKey();
+                                        break;
 								}
 							}
 							break;

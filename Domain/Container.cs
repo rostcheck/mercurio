@@ -268,9 +268,10 @@ namespace Mercurio.Domain
             return CreateDocument(documentName, DocumentType.TextDocument, creatorIdentity, initialData.ToStream());
         }
 
-        public virtual void CreateDatabase(string databaseName)
+        public virtual void CreateDatabase(string databaseName, Identity creatorIdentity)
         {
-            _privateMetadata.AddDatabase(databaseName);
+            //_privateMetadata.AddDatabase(databaseName);
+            CreateDocument(databaseName, DocumentType.Database, creatorIdentity, new MemoryStream());
         }
 
         public virtual void AttachDatabaseSchema(string databaseName, DatabaseSchema schema, Identity modifierIdentity)

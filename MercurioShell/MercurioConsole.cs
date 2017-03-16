@@ -12,8 +12,9 @@ namespace MercurioShell
 	{
 		const int MonitorRow = 0;
 		const int BufferSize = 100;
+        const int CommandBufferRows = 2;
 		private int _writerRow;
-		private int _cursorPosition = 0;
+		private CursorPosition _cursorPosition;
 		private int _originalCursorSize = 0;
 		private int _consoleWidth;
 		private int _currentCommandOffset = 1;
@@ -24,6 +25,12 @@ namespace MercurioShell
 		private List<string> ContentBuffer { get; set; } // Allows infinite line length
 		private List<string> CommandBuffer { get; set; }
 
+        private struct CursorPosition
+        {
+            public int Column;
+            public int Row;
+        }
+
 		public MercurioConsole()
 		{
 			HandleGeometryChange();
@@ -32,6 +39,7 @@ namespace MercurioShell
 			CommandBuffer = new List<string>(BufferSize);
 			_originalCursorSize = Console.CursorSize;
 			InsertMode(true);
+            _cursorPosition = new CursorPosition() { Column = 0, Row = Console.WindowHeight - CommandBufferRows };
 		}			
 
 		public List<string> CreateScreenBuffer()
@@ -74,7 +82,8 @@ namespace MercurioShell
 
 		public void GoToLineStart()
 		{
-			SetCursorPosition(0);
+            _cursorPosition.Row = 0;
+			SetCursorPosition(_cursorPosition);
 		}
 
 		public void GoToLineEnd()
@@ -85,29 +94,49 @@ namespace MercurioShell
 		public void AddKey(string key)
 		{
 			string newCommandLine;
-			newCommandLine = _currentCommandLine.Substring(0, _cursorPosition);
+            _cursorPosition.Column = _cursorPosition.Column % _blankLine.Length;
+            int splicePos = GetSplicePosition();
+            newCommandLine = _currentCommandLine.Substring(0, splicePos); // Front part of string
 			newCommandLine += key;
-			int splicePos = _cursorPosition;
-			if (!_insertMode && splicePos < _currentCommandLine.Length)
-				splicePos++;
-			newCommandLine += _currentCommandLine.Substring(splicePos, _currentCommandLine.Length - splicePos);
+            if (_insertMode && splicePos < _currentCommandLine.Length)
+            {
+                // If splicing, splice in the back part of string
+                newCommandLine += _currentCommandLine.Substring(splicePos, _currentCommandLine.Length - splicePos);
+            }
 			_currentCommandLine = newCommandLine;
-			_cursorPosition++;
-			RedrawRow(_writerRow, _currentCommandLine, _cursorPosition);
+			_cursorPosition.Column++;
+			_cursorPosition = RedrawCommandRegion(_cursorPosition, _currentCommandLine);
+            if ((int)(_currentCommandLine.Length / _blankLine.Length + 1) >= CommandBufferRows)
+                WriteMonitor(ScreenBuffer); // Rewrite ScreenBuffer if we scrolled over it
+            SetCursorPosition(_cursorPosition);
 		}
+
+        private int GetSplicePosition()
+        {
+            int offset = 0;
+            int numLines = _currentCommandLine.Length / _blankLine.Length;
+            if (numLines > 0)
+                offset = numLines * _blankLine.Length;
+            int newPos = offset + _cursorPosition.Column;
+            return(newPos > _currentCommandLine.Length ? _currentCommandLine.Length : newPos);
+        }
 
 		public void DeleteKey()
 		{
 			string newCommandLine;
-			int splicePos = _cursorPosition - 1;
+            int splicePos = GetSplicePosition() - 1;
 			if (splicePos < 0)
 				return; //splicePos = 0;
 			newCommandLine = _currentCommandLine.Substring(0, splicePos);
 			splicePos += 1;
 			newCommandLine += _currentCommandLine.Substring(splicePos, _currentCommandLine.Length - splicePos);
 			_currentCommandLine = newCommandLine;
-			_cursorPosition--;
-			RedrawRow(_writerRow, _currentCommandLine, _cursorPosition);
+			_cursorPosition.Column--;
+
+            _cursorPosition = RedrawCommandRegion(_cursorPosition, _currentCommandLine);
+            if ((int)(_currentCommandLine.Length / _blankLine.Length + 1) >= CommandBufferRows)
+                WriteMonitor(ScreenBuffer); // Rewrite ScreenBuffer if we scrolled over it
+            SetCursorPosition(_cursorPosition);
 		}
 
 		public void ResetCommandLine(string line = null)
@@ -118,23 +147,39 @@ namespace MercurioShell
 				_currentCommandLine = "";
 
 			ClearRow(_writerRow, line);
-			SetCursorPosition(line != null ? line.Count() % _blankLine.Length : 0);
+            _cursorPosition.Column = (line != null) ? line.Count() % _blankLine.Length : 0;
+			SetCursorPosition(_cursorPosition);
 		}
 
-		private void SetCursorPosition(int column)
+		private void SetCursorPosition(CursorPosition pos)
 		{
-			_cursorPosition = column;
-			Console.SetCursorPosition(_cursorPosition, _writerRow);
+            _cursorPosition = FixCursorPos(pos);
+ 			Console.SetCursorPosition(_cursorPosition.Column, _cursorPosition.Row);
 		}
 
+        private CursorPosition FixCursorPos(CursorPosition pos)
+        {
+            if (pos.Column >= _blankLine.Length)
+            {
+                pos.Column = 0;
+                pos.Row++;
+                if (pos.Row > Console.WindowHeight - 1)
+                    pos.Row = Console.WindowHeight - 1;
+            }
+            return(pos);
+        }
 		public void CursorLeft()
 		{
-			SetCursorPosition(_cursorPosition > 0 ? _cursorPosition - 1 : _cursorPosition);
+            //CursorPosition pos = new CursorPosition() {
+            if (_cursorPosition.Column > 0)
+                _cursorPosition.Column -= 1;
+			SetCursorPosition(_cursorPosition);
 		}
 
 		public void CursorRight()
 		{
-			SetCursorPosition(_cursorPosition + 1);
+            _cursorPosition.Column += 1;
+			SetCursorPosition(_cursorPosition);
 		}
 
 		public void ResetHistory()
@@ -181,15 +226,16 @@ namespace MercurioShell
 			if (newCommandLine != _currentCommandLine)
 				Console.Beep();
 			_currentCommandLine = newCommandLine;
-			_cursorPosition = _currentCommandLine.Length;
-			RedrawRow(_writerRow, _currentCommandLine, _cursorPosition);
-
+			_cursorPosition.Column = _currentCommandLine.Length;
+            _cursorPosition.Row = _writerRow;
+			_cursorPosition = RedrawCommandRegion(_cursorPosition, _currentCommandLine);
+            SetCursorPosition(_cursorPosition);
 		}
 
 		private void WriteMonitor(List<string> buffer)
 		{
 			Console.ForegroundColor = ConsoleColor.Gray;
-			int numWindowRows = Console.WindowHeight - 1;
+            int numWindowRows = Console.WindowHeight - CommandBufferRows;
 			int rowsToWrite = (buffer.Count > numWindowRows) ? numWindowRows : buffer.Count;
 			int bufferRowStart = (buffer.Count > numWindowRows) ? buffer.Count - numWindowRows : 0;
 			string line = null;
@@ -219,9 +265,10 @@ namespace MercurioShell
 			}
 		}
 
-		private void RedrawRow(int rowNumber, string line, int finalCursorPos)
+        private CursorPosition RedrawCommandRegion(CursorPosition pos, string line)
 		{
-			Console.SetCursorPosition(0, rowNumber);
+            int adjustedPos = pos.Column % _blankLine.Length;
+			Console.SetCursorPosition(0, pos.Row);
 			if (line == null)
 				Console.Write(_blankLine);
 			else
@@ -229,9 +276,10 @@ namespace MercurioShell
 				int remainingChars = (line.Length >= _blankLine.Length) ? 0 : _blankLine.Length - line.Length;
 				Console.Write(line + _blankLine.Substring(0, remainingChars));
 			}
-            if (finalCursorPos == _blankLine.Length)
-                finalCursorPos = 0;
-            Console.SetCursorPosition(finalCursorPos, rowNumber);
+            if (pos.Column == _blankLine.Length)
+                pos.Column = 0;
+            Console.SetCursorPosition(pos.Column, pos.Row);
+            return _cursorPosition;
 		}
 
 		private void AddToBuffers(string line)
@@ -249,7 +297,7 @@ namespace MercurioShell
 			_consoleWidth = Console.WindowWidth;
 			ScreenBuffer = CreateScreenBuffer(); // Regen for new geometry
 			_blankLine = new string(' ', Console.WindowWidth);
-			_writerRow = Console.WindowHeight - 1;			
+            _writerRow = Console.WindowHeight - CommandBufferRows;			
 		}
 
 		private void AddToScreenBuffer(string line)
