@@ -28,10 +28,8 @@ namespace MercurioShell
             bool exit = false;		
 			var keys = new List<ConsoleKeyInfo>();
 
-			Console.BackgroundColor = ConsoleColor.Black;
-			console.WriteToConsole("");
-			console.ResetCommandLine();
-            Console.WriteLine("Welcome to Project Mercurio. Type 'help' for help or 'quit' to exit.");
+			Console.BackgroundColor = ConsoleColor.Black;			
+            console.WriteToConsole("Welcome to Project Mercurio. Type 'help' for help or 'quit' to exit.");
 
 			do
 			{	// Process until exit
@@ -159,7 +157,12 @@ namespace MercurioShell
                 }
                 else
                 {
-					var identityNumber = Convert.ToInt32(identityNumberText);
+                    int identityNumber = -1;
+                    try
+                    {
+                        identityNumber = Convert.ToInt32(identityNumberText);
+                    }
+                    catch (Exception) { } // Eat exception
 					if (identityNumber < 0 || identityNumber >= identities.Count)
 					{
 						Console.WriteLine(string.Format("'{0}' is not a valid choice. Please choose from the list above.", identityNumber));

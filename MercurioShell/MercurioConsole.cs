@@ -13,7 +13,6 @@ namespace MercurioShell
 		const int MonitorRow = 0;
 		const int BufferSize = 100;
         const int CommandBufferRows = 2;
-		private int _writerRow;
 		private CursorPosition _cursorPosition;
 		private int _originalCursorSize = 0;
 		private int _consoleWidth;
@@ -62,13 +61,14 @@ namespace MercurioShell
 				AddToBuffers(line);
 			AddToBuffers(_blankLine);			
 			WriteMonitor(ScreenBuffer);
+            ResetCommandLine();
 		}
 
 		public void WriteToConsole(string line)
 		{
-			AddToBuffers(line);
-			//AddToBuffers(System.Environment.NewLine);
-			WriteMonitor(ScreenBuffer);
+            AddToBuffers(line);
+            WriteMonitor(ScreenBuffer);
+            ResetCommandLine();
 		}
 
 		public void InsertMode(bool insertMode)
@@ -82,7 +82,8 @@ namespace MercurioShell
 
 		public void GoToLineStart()
 		{
-            _cursorPosition.Row = 0;
+            _cursorPosition.Column = 0;
+            _cursorPosition.Row = Console.WindowHeight - CommandBufferRows;
 			SetCursorPosition(_cursorPosition);
 		}
 
@@ -146,7 +147,7 @@ namespace MercurioShell
 			else
 				_currentCommandLine = "";
 
-			ClearRow(_writerRow, line);
+			ClearRow(Console.WindowHeight - CommandBufferRows, line);
             _cursorPosition.Column = (line != null) ? line.Count() % _blankLine.Length : 0;
 			SetCursorPosition(_cursorPosition);
 		}
@@ -227,7 +228,7 @@ namespace MercurioShell
 				Console.Beep();
 			_currentCommandLine = newCommandLine;
 			_cursorPosition.Column = _currentCommandLine.Length;
-            _cursorPosition.Row = _writerRow;
+            _cursorPosition.Row = _currentCommandLine.Length / _blankLine.Length;
 			_cursorPosition = RedrawCommandRegion(_cursorPosition, _currentCommandLine);
             SetCursorPosition(_cursorPosition);
 		}
@@ -267,7 +268,6 @@ namespace MercurioShell
 
         private CursorPosition RedrawCommandRegion(CursorPosition pos, string line)
 		{
-            int adjustedPos = pos.Column % _blankLine.Length;
 			Console.SetCursorPosition(0, pos.Row);
 			if (line == null)
 				Console.Write(_blankLine);
@@ -297,7 +297,6 @@ namespace MercurioShell
 			_consoleWidth = Console.WindowWidth;
 			ScreenBuffer = CreateScreenBuffer(); // Regen for new geometry
 			_blankLine = new string(' ', Console.WindowWidth);
-            _writerRow = Console.WindowHeight - CommandBufferRows;			
 		}
 
 		private void AddToScreenBuffer(string line)

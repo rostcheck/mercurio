@@ -3,6 +3,7 @@ using CommandLine.Utility;
 using System.Collections.Generic;
 using Mercurio.Domain;
 using System.IO;
+using Microsoft.VisualBasic.FileIO;
 
 namespace MercurioShell
 {
@@ -19,6 +20,9 @@ namespace MercurioShell
 
         protected override ICollection<string> Execute(string commandName, Arguments arguments, MercurioShellContext context)
         {
+            string saveLine = "";
+            string saveField = "";
+
             VerifyContainerIsOpen(context);
 
             var databaseName = arguments["database-name"];
@@ -46,22 +50,41 @@ namespace MercurioShell
             var schema = ParseSchema(path, out hasHeader);
             context.OpenContainer.CreateDatabase(databaseName, context.Environment.GetActiveIdentity());
 
-            var lines = new List<string>(File.ReadLines(path));
+            //var lines = new List<string>(File.ReadLines(path));
             var records = new List<Record>();
-            for (int lineCounter = (hasHeader) ? 1 : 0; lineCounter < lines.Count; lineCounter++)
+            int lineCounter = 0;
+            try
             {
-                var fields = lines[lineCounter].Split(',');
-                var atomicElements = new List<IAtomicDataElement>();
-                for (int fieldCounter = 0; fieldCounter < schema.Fields.Count; fieldCounter++)
+                using (TextFieldParser parser = new TextFieldParser(path))
                 {
-                    string strippedField = fields[fieldCounter].Trim(escapeChars);
-                    atomicElements.Add(GetDataElement(strippedField, schema, lineCounter, fieldCounter));
+                    parser.TextFieldType = FieldType.Delimited;
+                    parser.SetDelimiters(",");
+                    while (!parser.EndOfData) 
+                    //for (int lineCounter = (hasHeader) ? 1 : 0; lineCounter < lines.Count; lineCounter++)
+                    {
+                        //saveLine = lines[lineCounter];
+                        var fields = parser.ReadFields();
+                        if (lineCounter++ == 0 && hasHeader)
+                            continue;
+                            //lines[lineCounter].Split(',');
+                        var atomicElements = new List<IAtomicDataElement>();
+                        for (int fieldCounter = 0; fieldCounter < schema.Fields.Count; fieldCounter++)
+                        {
+                            string strippedField = fields[fieldCounter].Trim(escapeChars);
+                            saveField = strippedField;
+                            atomicElements.Add(GetDataElement(strippedField, schema, lineCounter, fieldCounter));
 
-                    records.Add(Record.Create(lineCounter.ToString(), atomicElements));
+                            records.Add(Record.Create(lineCounter.ToString(), atomicElements));
+                        }
+                    }
+                    context.OpenContainer.AddDatabaseRecords(databaseName, records, context.Environment.GetActiveIdentity());
+                    context.OpenContainer.AttachDatabaseSchema(databaseName, schema, context.Environment.GetActiveIdentity());
                 }
             }
-            context.OpenContainer.AddDatabaseRecords(databaseName, records, context.Environment.GetActiveIdentity());
-            context.OpenContainer.AttachDatabaseSchema(databaseName, schema, context.Environment.GetActiveIdentity());
+            catch (Exception ex)
+            {
+                returnList.Add(ex.Message);
+            }
 
             return returnList;
         }
@@ -71,6 +94,8 @@ namespace MercurioShell
             switch (schema.Fields[fieldCounter].ElementType)
             {                
                 case DataElementType.DateTime:
+                    if (field == "0000-00-00")
+                        field = "1970-01-01";
                     return new DateTimeDataElement(lineCounter.ToString(), DateTime.Parse(field));                    
                 case DataElementType.FloatingPoint:
                     return new FloatingPointDataElement(lineCounter.ToString(), double.Parse(field));
